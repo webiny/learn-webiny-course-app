@@ -1,0 +1,76 @@
+---
+title: "Creating Content Models"
+---
+
+# Creating Content Models
+
+Learn how to create and manage content models in Webiny's Headless CMS.
+
+## What are content models?
+
+Content models define the structure of your content. Think of them as blueprints for your data - they specify what fields your content will have and what type of data each field can hold.
+
+<Callout type="info">
+Content models in Webiny are similar to database schemas, but they're managed through a visual interface.
+</Callout>
+
+## Creating your first content model
+
+To create a content model:
+
+1. Open the Webiny Admin panel
+2. Navigate to **Headless CMS** > **Models**
+3. Click **New Content Model**
+4. Add fields by dragging them from the sidebar
+
+<CodeBlock
+  language="typescript"
+  filename="Example: Blog Post Model"
+  code={`{
+  "name": "Blog Post",
+  "fields": [
+    {
+      "fieldId": "title",
+      "type": "text",
+      "label": "Title",
+      "validation": "required"
+    },
+    {
+      "fieldId": "content",
+      "type": "rich-text",
+      "label": "Content"
+    },
+    {
+      "fieldId": "author",
+      "type": "ref",
+      "label": "Author"
+    }
+  ]
+}`}
+/>
+
+## Available field types
+
+Webiny provides many field types:
+
+- **Text**: Short text fields
+- **Rich Text**: Long-form content with formatting
+- **Number**: Numeric values
+- **Boolean**: True/false values
+- **Date/Time**: Date and time values
+- **File**: Upload files and images
+- **Reference**: Link to other content
+
+<Quiz
+  question="What field type should you use for a blog post's main content?"
+  options={[
+    { id: "a", label: "A", text: "Text" },
+    { id: "b", label: "B", text: "Rich Text" },
+    { id: "c", label: "C", text: "Long Text" },
+    { id: "d", label: "D", text: "File" }
+  ]}
+  correctAnswer="b"
+  hint="The content needs formatting support like bold, italic, and headings."
+  explanation="Rich Text is the correct choice for blog content because it supports formatting, images, and other rich content elements."
+/>
+\`\`\`

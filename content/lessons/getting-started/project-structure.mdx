@@ -1,0 +1,58 @@
+---
+title: "Project Structure"
+---
+
+# Understanding the Project Structure
+
+Let's explore the folder structure of a Webiny project and understand what each part does.
+
+## Top-level folders
+
+<CodeBlock
+  language="plaintext"
+  filename="project structure"
+  code={`my-webiny-app/
+├── api/              # Backend API code
+├── apps/             # Frontend applications
+├── packages/         # Custom packages
+├── .webiny/          # Webiny configuration
+└── webiny.config.js  # Project configuration`}
+/>
+
+### The API folder
+
+The `api` folder contains all your backend code, including:
+
+- Lambda functions
+- GraphQL schemas
+- Business logic
+- Database models
+
+<Callout type="hint">
+All backend code is serverless and runs on AWS Lambda. You don't need to manage servers!
+</Callout>
+
+### The Apps folder
+
+The `apps` folder contains your frontend applications:
+
+- **admin**: The admin panel for managing content
+- **website**: Your public-facing website
+
+Each app is a standalone React application that can be deployed independently.
+
+<Quiz
+  question="Where should you add custom backend logic?"
+  options={[
+    { id: "a", label: "A", text: "In the apps folder" },
+    { id: "b", label: "B", text: "In the api folder" },
+    { id: "c", label: "C", text: "In the packages folder" },
+    { id: "d", label: "D", text: "In the .webiny folder" }
+  ]}
+  correctAnswer="b"
+  hint="Think about where backend code belongs."
+  explanation="Custom backend logic should go in the api folder, where all Lambda functions and GraphQL resolvers live."
+/>
+
+Now that you understand the project structure, let's start building with the Headless CMS!
+\`\`\`

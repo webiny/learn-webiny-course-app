@@ -1,0 +1,118 @@
+## Performance Optimization
+
+Learn how to optimize your Webiny applications for better performance and user experience.
+
+<ChapterOverview
+  items={[
+    { icon: "FileText", text: "Caching strategies for content delivery." },
+    { icon: "Code", text: "Optimizing GraphQL queries." },
+    { icon: "Zap", text: "Performance monitoring and metrics." },
+  ]}
+/>
+
+### Content Caching
+
+Webiny provides built-in caching mechanisms to improve content delivery speed:
+
+- **CDN Integration**: Automatically cache content at edge locations
+- **GraphQL Query Caching**: Cache frequent queries to reduce database load
+- **Static Generation**: Pre-render pages for instant loading
+
+<CodeBlock
+  language="typescript"
+  filename="api/graphql/content.ts"
+  code={`// Enable caching for content queries
+export default {
+  cache: {
+    enabled: true,
+    ttl: 3600, // 1 hour
+  },
+  // Your query resolvers
+}`}
+/>
+
+<Callout type="hint">
+Enable CDN caching for static assets to reduce server load and improve global performance.
+</Callout>
+
+### Optimizing GraphQL Queries
+
+Write efficient queries to minimize data transfer and processing time:
+
+1. **Select only required fields** - Don't fetch unnecessary data
+2. **Use pagination** - Limit results to manageable chunks
+3. **Implement field-level caching** - Cache expensive computations
+
+<CodeBlock
+  language="graphql"
+  code={`# Good: Only fetch needed fields
+query GetPosts {
+  posts(limit: 10) {
+    data {
+      id
+      title
+      createdOn
+    }
+  }
+}
+
+# Avoid: Fetching all fields unnecessarily
+query GetAllPosts {
+  posts {
+    data {
+      *
+    }
+  }
+}`}
+/>
+
+### Performance Monitoring
+
+Track and improve your application's performance:
+
+- **Real User Monitoring (RUM)**: Track actual user experience
+- **Synthetic Monitoring**: Automated performance tests
+- **Core Web Vitals**: Monitor LCP, FID, and CLS metrics
+
+<Callout type="info">
+Webiny integrates with popular monitoring tools like New Relic and Datadog.
+</Callout>
+
+<Quiz
+  question="What is the recommended approach for optimizing GraphQL queries in Webiny?"
+  options={[
+    "Fetch all data and filter on the client",
+    "Select only required fields and use pagination",
+    "Always use REST instead of GraphQL",
+    "Disable caching for real-time data"
+  ]}
+  correctAnswer="Select only required fields and use pagination"
+  explanation="Selecting only required fields and using pagination minimizes data transfer and improves query performance."
+/>
+
+### Image Optimization
+
+Optimize images for faster loading:
+
+- Use WebP format for better compression
+- Implement lazy loading for images
+- Use responsive images with srcset
+- Leverage Webiny's built-in image transformations
+
+<Callout type="warning">
+Large unoptimized images are one of the most common performance bottlenecks in web applications.
+</Callout>
+
+### Serverless Best Practices
+
+Optimize your serverless functions:
+
+- **Cold start optimization**: Keep functions warm for critical paths
+- **Bundle size reduction**: Minimize dependencies
+- **Connection pooling**: Reuse database connections
+- **Async operations**: Use parallel execution where possible
+
+---
+
+By implementing these performance optimization techniques, you can significantly improve your Webiny application's speed and user experience.
+\`\`\`

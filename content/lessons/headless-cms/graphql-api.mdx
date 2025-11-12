@@ -1,0 +1,98 @@
+---
+title: "Using the GraphQL API"
+---
+
+# Using the GraphQL API
+
+Learn how to query and mutate your content using Webiny's GraphQL API.
+
+## Automatic API generation
+
+When you create a content model in Webiny, the system automatically generates a GraphQL API for it. No additional configuration needed!
+
+<Callout type="hint">
+Every content model gets its own set of queries and mutations automatically.
+</Callout>
+
+## Querying content
+
+Here's how to fetch blog posts from your API:
+
+<CodeBlock
+  language="graphql"
+  filename="Query: List Blog Posts"
+  code={`query ListBlogPosts {
+  listBlogPosts {
+    data {
+      id
+      title
+      content
+      createdOn
+      author {
+        name
+      }
+    }
+  }
+}`}
+/>
+
+## Creating content
+
+To create new content, use a mutation:
+
+<CodeBlock
+  language="graphql"
+  filename="Mutation: Create Blog Post"
+  code={`mutation CreateBlogPost {
+  createBlogPost(
+    data: {
+      title: "My First Post"
+      content: "This is the content..."
+      author: "author-id-here"
+    }
+  ) {
+    id
+    title
+  }
+}`}
+/>
+
+## Using the API in React
+
+Here's how to fetch data in a React component:
+
+<CodeBlock
+  language="typescript"
+  filename="components/BlogList.tsx"
+  code={`import { useQuery, gql } from '@apollo/client';
+
+const LIST_POSTS = gql\`
+  query ListBlogPosts {
+    listBlogPosts {
+      data {
+        id
+        title
+      }
+    }
+  }
+\`;
+
+export function BlogList() {
+  const { data, loading } = useQuery(LIST_POSTS);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <ul>
+      {data.listBlogPosts.data.map(post => (
+        <li key={post.id}>{post.title}</li>
+      ))}
+    </ul>
+  );
+}`}
+/>
+
+<Callout type="warning">
+Remember to handle loading and error states when fetching data!
+</Callout>
+\`\`\`
