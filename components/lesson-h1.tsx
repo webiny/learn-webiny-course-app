@@ -3,7 +3,7 @@
 import { useLessonContext } from "@/components/lesson-context"
 
 export function LessonH1({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  const { chapterNumber, chapterTitle, lessonNumber } = useLessonContext()
+  const { lessonNumber } = useLessonContext()
 
   return (
     <div className="flex gap-8 items-start mb-12 mt-8">
@@ -17,7 +17,7 @@ export function LessonH1({ children, ...props }: React.HTMLAttributes<HTMLHeadin
       {/* Chapter Title and Lesson Title */}
       <div className="flex-1 pt-3">
         <div className="text-sm text-muted-foreground mb-2 font-medium tracking-wide">
-          Chapter {chapterNumber}
+          Lesson {lessonNumber}
         </div>
         <h1 className="m-0 -mt-2 text-5xl font-bold leading-tight tracking-tight" {...props}>
           {children}
