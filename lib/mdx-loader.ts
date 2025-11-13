@@ -36,8 +36,8 @@ function getLessonFilePath(slug: string): string {
     "getting-started/project-structure": path.join(contentDir, "getting-started", "project-structure.mdx"),
     "headless-cms/content-models": path.join(contentDir, "headless-cms", "content-models.mdx"),
     "headless-cms/graphql-api": path.join(contentDir, "headless-cms", "graphql-api.mdx"),
-    "page-builder/creating-pages": path.join(contentDir, "page-builder", "creating-pages.mdx"),
-    "page-builder/custom-elements": path.join(contentDir, "page-builder", "custom-elements.mdx"),
+    "website-builder/creating-pages": path.join(contentDir, "website-builder", "creating-pages.mdx"),
+    "website-builder/custom-elements": path.join(contentDir, "website-builder", "custom-elements.mdx"),
     "serverless/architecture": path.join(contentDir, "serverless", "architecture.mdx"),
     "serverless/deployment": path.join(contentDir, "serverless", "deployment.mdx"),
     "best-practices/performance": path.join(contentDir, "best-practices", "performance.mdx"),
@@ -82,11 +82,11 @@ export async function loadMDXContent(slug: string): Promise<MDXContent | null> {
       case "headless-cms/graphql-api":
         mdxModule = await import("@/content/lessons/headless-cms/graphql-api.mdx")
         break
-      case "page-builder/creating-pages":
-        mdxModule = await import("@/content/lessons/page-builder/creating-pages.mdx")
+      case "website-builder/creating-pages":
+        mdxModule = await import("@/content/lessons/website-builder/creating-pages.mdx")
         break
-      case "page-builder/custom-elements":
-        mdxModule = await import("@/content/lessons/page-builder/custom-elements.mdx")
+      case "website-builder/custom-elements":
+        mdxModule = await import("@/content/lessons/website-builder/custom-elements.mdx")
         break
       case "serverless/architecture":
         mdxModule = await import("@/content/lessons/serverless/architecture.mdx")

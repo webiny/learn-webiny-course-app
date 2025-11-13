@@ -1,12 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import type { BundledLanguage } from "shiki"
+
+// Import dynamically to avoid build errors if shiki is not installed
+let codeToHtml: any
 
 interface CodeBlockProps {
   code: string
-  language: "javascript" | "typescript" | "tsx" | "jsx" | "css" | "html"
+  language: BundledLanguage | "javascript" | "typescript" | "tsx" | "jsx" | "css" | "html" | "json" | "bash" | "shell"
   filename?: string
   highlightLines?: number[]
   showLineNumbers?: boolean
@@ -15,14 +20,89 @@ interface CodeBlockProps {
 const fileIcons = {
   javascript: { icon: "FileCode", label: "JS", color: "bg-yellow-500" },
   typescript: { icon: "FileCode", label: "TS", color: "bg-blue-500" },
-  tsx: { icon: "FileCode", label: "TS", color: "bg-blue-500" },
-  jsx: { icon: "FileCode", label: "JS", color: "bg-yellow-500" },
+  tsx: { icon: "FileCode", label: "TSX", color: "bg-blue-500" },
+  jsx: { icon: "FileCode", label: "JSX", color: "bg-yellow-500" },
   css: { icon: "FileText", label: "CSS", color: "bg-purple-500" },
   html: { icon: "FileText", label: "HTML", color: "bg-orange-500" },
+  json: { icon: "FileText", label: "JSON", color: "bg-green-500" },
+  bash: { icon: "Terminal", label: "BASH", color: "bg-gray-500" },
+  shell: { icon: "Terminal", label: "SH", color: "bg-gray-500" },
 }
 
-export function CodeBlock({ code, language, filename, highlightLines = [], showLineNumbers = false }: CodeBlockProps) {
+export function CodeBlock({
+  code,
+  language,
+  filename,
+  highlightLines = [],
+  showLineNumbers = true
+}: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
+  const [highlightedCode, setHighlightedCode] = useState<string>("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Don't run until mounted
+    if (!mounted) return
+
+    async function highlight() {
+      // Wait for theme to be available
+      if (!code || resolvedTheme === undefined) {
+        return
+      }
+
+      setIsLoading(true)
+
+      try {
+        // Dynamically import shiki to handle cases where it's not installed
+        if (!codeToHtml) {
+          const shiki = await import("shiki")
+          codeToHtml = shiki.codeToHtml
+        }
+
+        const isDark = resolvedTheme === "dark"
+
+        const html = await codeToHtml(code, {
+          lang: language as BundledLanguage,
+          theme: isDark ? "github-dark" : "github-light",
+          transformers: [
+            {
+              line(node: any, line: number) {
+                // Add line highlighting
+                if (highlightLines.includes(line)) {
+                  if (!node.properties) node.properties = {}
+                  if (!node.properties.class) node.properties.class = ""
+                  node.properties.class += " highlighted-line"
+                }
+                // Add line numbers if enabled
+                if (showLineNumbers) {
+                  if (!node.properties) node.properties = {}
+                  if (!node.properties.class) node.properties.class = ""
+                  node.properties.class += " line-with-number"
+                  node.properties["data-line"] = line
+                }
+              },
+            },
+          ],
+        })
+        setHighlightedCode(html)
+      } catch (error) {
+        console.error("Error highlighting code:", error)
+        // Fallback to plain text
+        setHighlightedCode(`<pre class="shiki"><code>${escapeHtml(code)}</code></pre>`)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    highlight()
+  }, [code, language, resolvedTheme, mounted])
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code)
@@ -38,8 +118,7 @@ export function CodeBlock({ code, language, filename, highlightLines = [], showL
     )
   }
 
-  const fileInfo = fileIcons[language] || fileIcons.typescript
-  const lines = code.split("\n")
+  const fileInfo = fileIcons[language as keyof typeof fileIcons] || fileIcons.typescript
 
   return (
     <div className="my-6 rounded-lg border border-border overflow-hidden bg-muted/30">
@@ -78,113 +157,77 @@ export function CodeBlock({ code, language, filename, highlightLines = [], showL
 
       {/* Code Content */}
       <div className="relative overflow-x-auto">
-        <pre className="p-4 text-sm font-mono leading-relaxed">
-          <code>
-            {lines.map((line, index) => {
-              const lineNumber = index + 1
-              const isHighlighted = highlightLines.includes(lineNumber)
-
-              return (
-                <div key={index} className={cn("relative", isHighlighted && "bg-blue-500/10")}>
-                  {isHighlighted && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500" />}
-                  <div className={cn("flex", isHighlighted && "pl-3")}>
-                    {showLineNumbers && (
-                      <span className="inline-block w-8 text-right mr-4 text-muted-foreground select-none">
-                        {lineNumber}
-                      </span>
-                    )}
-                    <span
-                      className="flex-1"
-                      dangerouslySetInnerHTML={{
-                        __html: highlightSyntax(line, language),
-                      }}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </code>
-        </pre>
+        {!mounted || isLoading ? (
+          <div className="p-4 text-sm text-muted-foreground">Loading...</div>
+        ) : (
+          <div
+            className="shiki-wrapper"
+            dangerouslySetInnerHTML={{ __html: highlightedCode }}
+          />
+        )}
       </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        .shiki-wrapper :global(pre) {
+          margin: 0;
+          padding: 1rem;
+          background: transparent !important;
+          overflow-x: auto;
+        }
+
+        .shiki-wrapper :global(code) {
+          font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+          font-size: 0.875rem;
+          line-height: 0.2;
+          counter-reset: line;
+        }
+
+        .shiki-wrapper :global(.line) {
+          display: block;
+        }
+
+        .shiki-wrapper :global(.line),
+        .shiki-wrapper :global(.line span) {
+          background: transparent !important;
+        }
+
+        .shiki-wrapper :global(.line-with-number) {
+          padding-left: 3.5rem;
+          position: relative;
+        }
+
+        .shiki-wrapper :global(.line-with-number::before) {
+          content: attr(data-line);
+          position: absolute;
+          left: 0;
+          width: 2.5rem;
+          text-align: right;
+          padding-right: 1rem;
+          color: hsl(var(--muted-foreground));
+          opacity: 0.5;
+          user-select: none;
+        }
+
+        .shiki-wrapper :global(.highlighted-line) {
+          background: rgba(59, 130, 246, 0.1);
+          border-left: 3px solid rgb(59, 130, 246);
+          padding-left: calc(3.5rem - 3px);
+        }
+
+        .shiki-wrapper :global(.highlighted-line::before) {
+          left: 3px;
+        }
+      `}</style>
     </div>
   )
 }
 
-function highlightSyntax(line: string, language: string): string {
-  // Escape HTML first
-  let escaped = line
+function escapeHtml(text: string): string {
+  return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-
-  if (language === "typescript" || language === "tsx" || language === "javascript" || language === "jsx") {
-    // Use a placeholder-based approach to avoid regex conflicts
-    const tokens: Array<{ text: string; color?: string }> = []
-    let current = 0
-
-    // Process the line character by character to extract tokens
-    while (current < escaped.length) {
-      const remaining = escaped.slice(current)
-
-      // Check for strings (single or double quotes)
-      const stringMatch = remaining.match(/^(['"`])(?:\\.|(?!\1).)*\1/)
-      if (stringMatch) {
-        tokens.push({ text: stringMatch[0], color: "#16a34a" })
-        current += stringMatch[0].length
-        continue
-      }
-
-      // Check for comments
-      if (remaining.startsWith("//")) {
-        tokens.push({ text: remaining, color: "#6b7280" })
-        break
-      }
-
-      // Check for keywords
-      const keywordMatch = remaining.match(/^(import|export|default|function|const|let|var|return|if|else|for|while|class|interface|type|async|await|from|as|new|this|extends|implements|enum|namespace|declare|public|private|protected|readonly|static)\b/)
-      if (keywordMatch) {
-        tokens.push({ text: keywordMatch[0], color: "#d946ef" })
-        current += keywordMatch[0].length
-        continue
-      }
-
-      // Check for numbers
-      const numberMatch = remaining.match(/^\d+(\.\d+)?/)
-      if (numberMatch) {
-        tokens.push({ text: numberMatch[0], color: "#f97316" })
-        current += numberMatch[0].length
-        continue
-      }
-
-      // Check for identifiers followed by parentheses (function calls)
-      const functionMatch = remaining.match(/^([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/)
-      if (functionMatch) {
-        tokens.push({ text: functionMatch[1], color: "#3b82f6" })
-        current += functionMatch[1].length
-        continue
-      }
-
-      // Otherwise, just take the next character
-      tokens.push({ text: escaped[current] })
-      current++
-    }
-
-    // Build the highlighted HTML
-    return tokens.map(token => {
-      if (token.color) {
-        return `<span style="color: ${token.color};">${token.text}</span>`
-      }
-      return token.text
-    }).join("")
-  } else if (language === "css") {
-    // Simple CSS highlighting
-    if (escaped.match(/^\s*[.#]?[a-zA-Z-]+\s*{/)) {
-      return escaped.replace(/([.#]?[a-zA-Z-]+)/, '<span style="color: #a855f7;">$1</span>')
-    }
-    if (escaped.match(/:\s*[^;]+;/)) {
-      return escaped.replace(/([a-zA-Z-]+)(:)/, '<span style="color: #3b82f6;">$1</span>$2')
-    }
-  }
-
-  return escaped
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
 }

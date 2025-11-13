@@ -71,12 +71,12 @@ export const courseData: Course = {
         {
           id: "creating-pages",
           title: "Creating Pages",
-          slug: "page-builder/creating-pages",
+          slug: "website-builder/creating-pages",
         },
         {
           id: "custom-elements",
           title: "Custom Page Elements",
-          slug: "page-builder/custom-elements",
+          slug: "website-builder/custom-elements",
         },
       ],
     },
