@@ -3,7 +3,7 @@ import { CourseSidebar } from "@/components/course-sidebar"
 import { LessonHeader } from "@/components/lesson-header"
 import { LessonContentWrapper } from "@/components/lesson-content-wrapper"
 import { LessonNavigation } from "@/components/lesson-navigation"
-import { getLessonBySlug, getNextLesson, getPreviousLesson, isLastLessonInChapter } from "@/lib/course-data"
+import { getLessonBySlug, getNextLesson, getPreviousLesson, isLastLessonInChapter, getLessonNumberInChapter } from "@/lib/course-data"
 import { loadMDXContent } from "@/lib/mdx-loader"
 
 interface LessonPageProps {
@@ -31,6 +31,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const nextLesson = getNextLesson(lessonSlug)
   const previousLesson = getPreviousLesson(lessonSlug)
   const isLastLesson = isLastLessonInChapter(lessonSlug)
+  const lessonNumber = getLessonNumberInChapter(lessonSlug)
 
   const mdxContent = await loadMDXContent(lessonSlug)
 
@@ -54,7 +55,13 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
         <main className="flex-1">
           <div className="container mx-auto px-4 py-8 max-w-4xl">
-            <LessonContentWrapper lessonSlug={lessonSlug} lessonTitle={displayTitle} chapterTitle={chapter.title}>
+            <LessonContentWrapper
+              lessonSlug={lessonSlug}
+              lessonTitle={displayTitle}
+              chapterTitle={chapter.title}
+              chapterNumber={chapter.number}
+              lessonNumber={lessonNumber}
+            >
               <MDXComponent />
             </LessonContentWrapper>
 

@@ -10,6 +10,9 @@ import { useProgress } from "@/hooks/use-progress"
 import { getChapterProgress } from "@/lib/progress"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { FontSizeControl } from "@/components/font-size-control"
+import {WebinyLogo} from "@/components/webiny-logo";
+import {ChapterCoverIcon} from "@/components/chapter-cover";
+import { ChapterIcon } from "@/lib/chapter-icons"
 
 export default function CoursePage() {
   const { progress, mounted } = useProgress()
@@ -18,18 +21,16 @@ export default function CoursePage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="container mx-auto flex max-w-5xl items-center justify-between px-4 h-16 flex items-center">
           <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
-            <div className="w-8 h-8 bg-foreground text-background rounded flex items-center justify-center font-bold">
-              N
-            </div>
-            <span>NEXT.js</span>
+            <WebinyLogo/>
+            <span>Webiny</span>
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
               {mounted ? `${progress.completedLessons.length} lessons completed` : "Loading..."}
-            <FontSizeControl />
             </span>
+            <FontSizeControl />
             <ThemeSwitcher />
           </div>
         </div>
@@ -43,7 +44,7 @@ export default function CoursePage() {
         </div>
 
         {/* Chapters Grid */}
-        <div className="grid gap-6 md:grid-cols-2 mb-12">
+        <div className="grid gap-0 md:grid-cols-2 mb-12">
           {courseData.chapters.map((chapter) => {
             const progressPercent = mounted ? getChapterProgress(chapter.id, chapter.lessons) : 0
             const isComplete = progressPercent === 100
@@ -53,11 +54,11 @@ export default function CoursePage() {
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center text-2xl">
-                        {chapter.icon}
+                      <div className="mt-4  mr-5 ml-2 w-12 h-12 bg-secondary flex items-center justify-center text-2xl">
+                        <ChapterCoverIcon icon={<ChapterIcon type={chapter.icon} size={20} />}/>
                       </div>
                       <div>
-                        <CardTitle className="text-lg">
+                        <CardTitle className="text-lg font-extrabold">
                           {chapter.number}. {chapter.title}
                         </CardTitle>
                         <CardDescription className="text-sm mt-1">
@@ -66,9 +67,9 @@ export default function CoursePage() {
                       </div>
                     </div>
                     {isComplete && (
-                      <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
+                        <div className="w-6 h-6 rounded-full bg-foreground mt-2 flex items-center justify-center dark:bg-foreground">
+                          <Check className="w-4 h-4 text-accent-foreground dark:text-background" />
+                        </div>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">{chapter.description}</p>
@@ -100,7 +101,9 @@ export default function CoursePage() {
             {courseData.chapters.map((chapter) => (
               <div key={chapter.id}>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <span className="text-2xl">{chapter.icon}</span>
+                  <span className="text-2xl">
+                    <ChapterIcon type={chapter.icon} size={24} />
+                  </span>
                   <span>
                     Chapter {chapter.number}: {chapter.title}
                   </span>
@@ -117,10 +120,10 @@ export default function CoursePage() {
                       >
                         <div
                           className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
-                            isComplete ? "bg-green-500 text-white" : "bg-secondary text-muted-foreground"
+                            isComplete ? "bg-foreground text-white dark:bg-foreground" : "bg-secondary text-muted-foreground"
                           }`}
                         >
-                          {isComplete ? <Check className="w-4 h-4" /> : index + 1}
+                          {isComplete ? <Check className="w-4 h-4 text-accent-foreground dark:text-background" /> : index + 1}
                         </div>
                         <span className="flex-1 group-hover:text-foreground transition-colors">{lesson.title}</span>
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />

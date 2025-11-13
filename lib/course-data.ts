@@ -1,3 +1,5 @@
+import { ChapterIconType } from "./chapter-icons"
+
 export interface Lesson {
   id: string
   title: string
@@ -9,7 +11,7 @@ export interface Chapter {
   number: number
   title: string
   description: string
-  icon: string
+  icon: ChapterIconType
   lessons: Lesson[]
 }
 
@@ -28,10 +30,10 @@ export const courseData: Course = {
   chapters: [
     {
       id: "introduction",
-      number: 0,
+      number: 1,
       title: "Introduction",
       description: "Dive into the course materials",
-      icon: "📖",
+      icon: "book",
       lessons: [
         {
           id: "intro",
@@ -42,10 +44,10 @@ export const courseData: Course = {
     },
     {
       id: "getting-started",
-      number: 1,
+      number: 2,
       title: "Getting Started",
       description: "Learn how to create a Webiny application and run your local development server.",
-      icon: "🚀",
+      icon: "rocket",
       lessons: [
         {
           id: "setup",
@@ -60,30 +62,11 @@ export const courseData: Course = {
       ],
     },
     {
-      id: "headless-cms",
-      number: 2,
-      title: "Headless CMS",
-      description: "Learn how to use Webiny's Headless CMS to manage your content.",
-      icon: "📝",
-      lessons: [
-        {
-          id: "content-models",
-          title: "Creating Content Models",
-          slug: "headless-cms/content-models",
-        },
-        {
-          id: "graphql-api",
-          title: "Using the GraphQL API",
-          slug: "headless-cms/graphql-api",
-        },
-      ],
-    },
-    {
-      id: "page-builder",
+      id: "website-builder",
       number: 3,
-      title: "Page Builder",
-      description: "Learn how to build pages with Webiny's visual page builder.",
-      icon: "🎨",
+      title: "Website Builder",
+      description: "Learn how to build pages with Webiny's visual website builder.",
+      icon: "palette",
       lessons: [
         {
           id: "creating-pages",
@@ -98,11 +81,30 @@ export const courseData: Course = {
       ],
     },
     {
-      id: "serverless",
+      id: "headless-cms",
       number: 4,
+      title: "Headless CMS",
+      description: "Learn how to use Webiny's Headless CMS to manage your content.",
+      icon: "edit",
+      lessons: [
+        {
+          id: "content-models",
+          title: "Creating Content Models",
+          slug: "headless-cms/content-models",
+        },
+        {
+          id: "graphql-api",
+          title: "Using the GraphQL API",
+          slug: "headless-cms/graphql-api",
+        },
+      ],
+    },
+    {
+      id: "serverless",
+      number: 5,
       title: "Serverless Architecture",
       description: "Learn about Webiny's serverless architecture and deployment.",
-      icon: "☁️",
+      icon: "cloud",
       lessons: [
         {
           id: "architecture",
@@ -118,10 +120,10 @@ export const courseData: Course = {
     },
     {
       id: "best-practices",
-      number: 5,
+      number: 6,
       title: "Best Practices",
       description: "Learn best practices for performance and security in Webiny.",
-      icon: "⚡",
+      icon: "zap",
       lessons: [
         {
           id: "performance",
@@ -212,3 +214,19 @@ export function getNextChapter(currentSlug: string): Chapter | null {
 export function getChapterById(chapterId: string): Chapter | null {
   return courseData.chapters.find((c) => c.id === chapterId) || null
 }
+
+export function getLessonNumber(slug: string): number {
+  const allLessons = getAllLessons()
+  const index = allLessons.findIndex((l) => l.slug === slug)
+  return index !== -1 ? index + 1 : 0
+}
+
+export function getLessonNumberInChapter(slug: string): number {
+  const result = getLessonBySlug(slug)
+  if (!result) return 0
+
+  const { chapter, lesson } = result
+  const lessonIndex = chapter.lessons.findIndex((l) => l.id === lesson.id)
+  return lessonIndex !== -1 ? lessonIndex + 1 : 0
+}
+

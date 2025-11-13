@@ -8,6 +8,8 @@ import { courseData } from "@/lib/course-data"
 import { useProgress } from "@/hooks/use-progress"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { ChapterIcon } from "@/lib/chapter-icons"
+import {WebinyLogo} from "@/components/webiny-logo";
 
 export function CourseSidebar() {
   const pathname = usePathname()
@@ -27,10 +29,8 @@ export function CourseSidebar() {
     <div className="flex flex-col h-full">
       <div className="p-4 border-b">
         <Link href="/course" className="flex items-center gap-2 font-semibold text-lg">
-          <div className="w-8 h-8 bg-foreground text-background rounded flex items-center justify-center font-bold">
-            N
-          </div>
-          <span>Learn Next.js</span>
+          <WebinyLogo/>
+          <span>Webiny</span>
         </Link>
       </div>
 
@@ -60,12 +60,9 @@ export function CourseSidebar() {
               <div key={chapter.id}>
                 <div className="flex items-center gap-2 mb-3">
                   <div
-                    className={cn(
-                      "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
-                      isChapterComplete ? "bg-green-500/10" : "bg-secondary",
-                    )}
+                    className={"w-8 h-8 rounded-lg flex items-center justify-center text-lg bg-secondary"}
                   >
-                    {chapter.icon}
+                    <ChapterIcon type={chapter.icon} size={18} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-sm truncate">
@@ -77,7 +74,7 @@ export function CourseSidebar() {
                   </div>
                   {isChapterComplete && (
                     <svg
-                      className="w-4 h-4 text-green-500 flex-shrink-0"
+                      className="w-4 h-4 text-foreground flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -100,7 +97,7 @@ export function CourseSidebar() {
                         className={cn(
                           "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
                           isActive
-                            ? "bg-accent text-accent-foreground font-medium"
+                            ? "bg-foreground text-accent-foreground font-medium dark:text-black"
                             : "hover:bg-secondary/50 text-muted-foreground hover:text-foreground",
                         )}
                       >
@@ -108,7 +105,7 @@ export function CourseSidebar() {
                           className={cn(
                             "w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0",
                             isComplete
-                              ? "bg-green-500 text-white"
+                              ? "bg-accent-foreground/50 dark:text-background"
                               : isActive
                                 ? "bg-accent-foreground/20"
                                 : "bg-secondary",

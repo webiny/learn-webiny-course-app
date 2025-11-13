@@ -3,6 +3,7 @@ import { Quiz } from "@/components/quiz"
 import { Callout } from "@/components/callout"
 import { CodeBlock } from "@/components/code-block"
 import { ChapterOverview } from "@/components/chapter-overview"
+import { LessonH1 } from "@/components/lesson-h1"
 
 export const mdxComponents: MDXComponents = {
   // Custom components available in MDX
@@ -11,7 +12,7 @@ export const mdxComponents: MDXComponents = {
   CodeBlock,
   ChapterOverview,
   // Override default HTML elements with custom styling
-  h1: (props) => <h1 className="text-4xl font-bold mt-8 mb-4" {...props} />,
+  h1: LessonH1,
   h2: (props) => <h2 className="text-3xl font-bold mt-6 mb-3" {...props} />,
   h3: (props) => <h3 className="text-2xl font-semibold mt-4 mb-2" {...props} />,
   p: (props) => <p className="mb-4 leading-7" {...props} />,
