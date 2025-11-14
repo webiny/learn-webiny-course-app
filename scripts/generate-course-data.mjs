@@ -138,6 +138,7 @@ function generateCourseData() {
 
   const chapters = discoverLessonsWithMetadata()
   const chapterArray = Object.values(chapters)
+    .sort((a, b) => a.number - b.number) // Sort by chapter number
 
   console.log(`✅ Found ${chapterArray.length} chapters with ${chapterArray.reduce((sum, ch) => sum + ch.lessons.length, 0)} lessons\n`)
 

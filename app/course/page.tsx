@@ -17,6 +17,9 @@ import { ChapterIcon } from "@/lib/chapter-icons"
 export default function CoursePage() {
   const { progress, mounted } = useProgress()
 
+  // Sort chapters by number to ensure correct order
+  const sortedChapters = [...courseData.chapters].sort((a, b) => a.number - b.number)
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -45,7 +48,7 @@ export default function CoursePage() {
 
         {/* Chapters Grid */}
         <div className="grid gap-0 md:grid-cols-2 mb-12">
-          {courseData.chapters.map((chapter) => {
+          {sortedChapters.map((chapter) => {
             const progressPercent = mounted ? getChapterProgress(chapter.id, chapter.lessons) : 0
             const isComplete = progressPercent === 100
 
@@ -98,7 +101,7 @@ export default function CoursePage() {
         <div>
           <h2 className="text-2xl font-bold mb-6">All Lessons</h2>
           <div className="space-y-6">
-            {courseData.chapters.map((chapter) => (
+            {sortedChapters.map((chapter) => (
               <div key={chapter.id}>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
                   <span className="text-2xl">

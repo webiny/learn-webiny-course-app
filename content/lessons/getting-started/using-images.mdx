@@ -1,0 +1,83 @@
+---
+title: "Using Images in Lessons"
+description: "Learn how to add images to your lesson content"
+---
+
+export const imageExampleCode = `<Image
+  src="/images/my-screenshot.png"
+  alt="Description of the image"
+  title="Optional caption that appears below the image"
+/>`;
+
+# Using Images in Lessons
+
+This lesson demonstrates how to use the Image component in MDX files.
+
+## Basic Image Example
+
+Here's a basic image using a placeholder from the public folder:
+
+<Image
+  src="/placeholder.jpg"
+  alt="Placeholder image"
+  title="This is a placeholder image - click to view fullscreen!"
+/>
+
+## How It Works
+
+The Image component provides several features:
+
+1. **Click to Enlarge** - Click any image to view it in fullscreen mode
+2. **Responsive** - Images automatically scale to fit the container
+3. **Optimized** - Uses Next.js Image optimization for fast loading
+4. **Accessible** - Includes proper alt text and keyboard navigation
+
+## Using in Your Lessons
+
+To add an image to your lesson, use this syntax:
+
+<CodeBlock language="jsx" filename="example.mdx" code={imageExampleCode} />
+
+## Another Example
+
+<Image
+  src="/placeholder-logo.svg"
+  alt="Webiny logo placeholder"
+  title="Webiny logo - SVG format"
+  width={400}
+  height={200}
+/>
+
+## Image Best Practices
+
+<Callout type="tip">
+**Pro Tips:**
+- Always provide meaningful alt text for accessibility
+- Use descriptive filenames for your images
+- Keep image file sizes reasonable (under 2MB)
+- Place images in `public/images/` folder
+- Use appropriate dimensions to avoid excessive scaling
+</Callout>
+
+## Try It!
+
+Click on any of the images above to see the fullscreen viewer in action. You can:
+- Click the image to enlarge it
+- Press ESC to close the fullscreen view
+- Click outside the image to close
+- Use the X button in the top-right corner
+
+<Callout type="info">
+The fullscreen viewer uses a dark backdrop and displays the image at maximum quality for the best viewing experience.
+</Callout>
+
+## Next Steps
+
+Now you can add images to your own lessons! Just remember to:
+1. Place your images in the `public/images/` folder
+2. Reference them with the `/images/filename.ext` path
+3. Add helpful alt text and optional titles
+4. Test the click-to-fullscreen functionality
+
+Happy lesson creating! 🎉
+

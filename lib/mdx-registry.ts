@@ -11,6 +11,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
+  "getting-started/using-images": () => import("@/content/lessons/getting-started/using-images.mdx"),
   "headless-cms/content-models": () => import("@/content/lessons/headless-cms/content-models.mdx"),
   "headless-cms/graphql-api": () => import("@/content/lessons/headless-cms/graphql-api.mdx"),
   "introduction": () => import("@/content/lessons/introduction/introduction.mdx"),
@@ -65,6 +66,15 @@ export const mdxRegistry: LessonRegistryItem[] = [
     import: () => import("@/content/lessons/getting-started/setup.mdx"),
     frontmatter: {
           "title": "Setting Up Your Webiny Project"
+    },
+    chapter: "getting-started"
+  },
+  {
+    slug: "getting-started/using-images",
+    import: () => import("@/content/lessons/getting-started/using-images.mdx"),
+    frontmatter: {
+          "title": "Using Images in Lessons",
+          "description": "Learn how to add images to your lesson content"
     },
     chapter: "getting-started"
   },

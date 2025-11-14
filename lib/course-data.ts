@@ -63,6 +63,11 @@ export const courseData: Course = {
                             "id": "setup",
                             "title": "Setting Up Your Webiny Project",
                             "slug": "getting-started/setup"
+                  },
+                  {
+                            "id": "using-images",
+                            "title": "Using Images in Lessons",
+                            "slug": "getting-started/using-images"
                   }
         ]
     },

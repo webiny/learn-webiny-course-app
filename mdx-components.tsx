@@ -4,6 +4,7 @@ import { Callout } from "@/components/callout"
 import { CodeBlock } from "@/components/code-block"
 import { ChapterOverview } from "@/components/chapter-overview"
 import { LessonH1 } from "@/components/lesson-h1"
+import { ImageComponent } from "@/components/image"
 
 export const mdxComponents: MDXComponents = {
   // Custom components available in MDX
@@ -11,6 +12,7 @@ export const mdxComponents: MDXComponents = {
   Callout,
   CodeBlock,
   ChapterOverview,
+  Image: ImageComponent,
   // Override default HTML elements with custom styling
   h1: LessonH1,
   h2: (props) => <h2 className="text-3xl font-bold mt-6 mb-3" {...props} />,
