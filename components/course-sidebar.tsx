@@ -199,7 +199,7 @@ export function CourseSidebar() {
       </aside>
 
       {/* Desktop Sidebar Spacer */}
-      <div className="hidden lg:block w-80 flex-shrink-0" />
+      <div className="hidden lg:block w-90 flex-shrink-0" />
     </>
   )
 }
