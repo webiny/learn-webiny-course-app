@@ -123,7 +123,7 @@ function parseComponent(content: string): React.ReactNode | null {
       const highlightLines = highlightMatch ? JSON.parse(highlightMatch[1]) : undefined
       return (
         <CodeBlock
-          language={langMatch[1]}
+          language={langMatch[1] as any}
           filename={filenameMatch?.[1]}
           code={codeMatch[1]}
           highlightLines={highlightLines}
