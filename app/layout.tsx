@@ -9,9 +9,31 @@ const _geis = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Learn Webiny - Master Webiny from Beginner to Expert",
+  metadataBase: new URL('https://learn.webiny.com'),
+  title: {
+    template: '%s | Learn Webiny',
+    default: 'Learn Webiny - Master Webiny from Beginner to Expert',
+  },
   description:
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.",
+  keywords: ['Webiny', 'Serverless', 'Headless CMS', 'AWS', 'React', 'GraphQL', 'Page Builder', 'Tutorial', 'Course'],
+  authors: [{ name: 'Webiny' }],
+  creator: 'Webiny',
+  publisher: 'Webiny',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://learn.webiny.com',
+    title: 'Learn Webiny - Master Webiny from Beginner to Expert',
+    description: 'Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.',
+    siteName: 'Learn Webiny',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Learn Webiny - Master Webiny from Beginner to Expert',
+    description: 'Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.',
+    creator: '@WebinyCMS',
+  },
   icons: {
     icon: [
       {

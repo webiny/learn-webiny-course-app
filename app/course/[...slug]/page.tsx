@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import { CourseSidebar } from "@/components/course-sidebar"
 import { LessonHeader } from "@/components/lesson-header"
 import { LessonContentWrapper } from "@/components/lesson-content-wrapper"
@@ -10,6 +11,30 @@ interface LessonPageProps {
   params: Promise<{
     slug: string[]
   }>
+}
+
+export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
+  const { slug } = await params
+  const lessonSlug = slug.join("/")
+
+  const lessonData = getLessonDataBySlug(lessonSlug)
+
+  if (!lessonData) {
+    return {
+      title: "Lesson Not Found - Learn Webiny",
+      description: "The requested lesson could not be found.",
+    }
+  }
+
+  const { chapter, lesson } = lessonData
+  const mdxContent = await loadMDXContent(lessonSlug)
+  const displayTitle = mdxContent?.frontmatter?.title || lesson.title
+  const description = mdxContent?.frontmatter?.description || `Learn ${displayTitle} in Chapter ${chapter.number}: ${chapter.title}`
+
+  return {
+    title: `${displayTitle} - ${chapter.title} - Learn Webiny`,
+    description: description,
+  }
 }
 
 export default async function LessonPage({ params }: LessonPageProps) {

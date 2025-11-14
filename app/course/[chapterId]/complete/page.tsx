@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import { CourseSidebar } from "@/components/course-sidebar"
 import { LessonHeader } from "@/components/lesson-header"
 import { ChapterCompletion } from "@/components/chapter-completion"
@@ -8,6 +9,23 @@ interface ChapterCompletePageProps {
   params: Promise<{
     chapterId: string
   }>
+}
+
+export async function generateMetadata({ params }: ChapterCompletePageProps): Promise<Metadata> {
+  const { chapterId } = await params
+  const chapter = getChapterById(chapterId)
+
+  if (!chapter) {
+    return {
+      title: "Chapter Not Found - Learn Webiny",
+      description: "The requested chapter could not be found.",
+    }
+  }
+
+  return {
+    title: `Chapter ${chapter.number} Complete: ${chapter.title} - Learn Webiny`,
+    description: `Congratulations! You've completed Chapter ${chapter.number}: ${chapter.title}. Continue your learning journey with the next chapter.`,
+  }
 }
 
 export default async function ChapterCompletePage({ params }: ChapterCompletePageProps) {
