@@ -2,6 +2,24 @@
 title: "Creating Pages"
 ---
 
+export const pricingCardCode = `import React from 'react';
+import { PbEditorElement } from '@webiny/app-page-builder/types';
+
+interface PricingCardProps {
+  title: string;
+  price: number;
+  features: string[];
+}`;
+
+export const cssCode = `.pricing-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}`;
+
+export const shellCode = `# Install Webiny CLI`;
+
 # Creating Pages
 
 Learn how to build beautiful pages with Webiny's visual page builder.
@@ -64,4 +82,26 @@ Webiny comes with many built-in elements:
   hint="Think about who can use the Page Builder."
   explanation="The main advantage is that anyone can create pages visually without writing code, making it accessible to non-developers."
 />
-\`\`\`
+
+## Testing the code block
+
+This is one:
+
+<CodeBlock
+  language="typescript"
+  filename="elements/PricingCard/PricingCard.tsx"
+  code={pricingCardCode}
+/>
+
+<CodeBlock
+  language="css"
+  filename="elements/PricingCard/style.css"
+  code={cssCode}
+/>
+
+
+<CodeBlock
+  language="shell"
+  filename="Terminal"
+  code={shellCode}
+/>

@@ -17,16 +17,34 @@ interface CodeBlockProps {
   showLineNumbers?: boolean
 }
 
+const FileCodeIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+  </svg>
+)
+
+const FileTextIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+)
+
+const TerminalIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+)
+
 const fileIcons = {
-  javascript: { icon: "FileCode", label: "JS", color: "bg-yellow-500" },
-  typescript: { icon: "FileCode", label: "TS", color: "bg-blue-500" },
-  tsx: { icon: "FileCode", label: "TSX", color: "bg-blue-500" },
-  jsx: { icon: "FileCode", label: "JSX", color: "bg-yellow-500" },
-  css: { icon: "FileText", label: "CSS", color: "bg-purple-500" },
-  html: { icon: "FileText", label: "HTML", color: "bg-orange-500" },
-  json: { icon: "FileText", label: "JSON", color: "bg-green-500" },
-  bash: { icon: "Terminal", label: "BASH", color: "bg-gray-500" },
-  shell: { icon: "Terminal", label: "SH", color: "bg-gray-500" },
+  javascript: { icon: FileCodeIcon, label: "JS", color: "bg-yellow-500" },
+  typescript: { icon: FileCodeIcon, label: "TS", color: "bg-blue-500" },
+  tsx: { icon: FileCodeIcon, label: "TSX", color: "bg-blue-500" },
+  jsx: { icon: FileCodeIcon, label: "JSX", color: "bg-yellow-500" },
+  css: { icon: FileTextIcon, label: "CSS", color: "bg-purple-500" },
+  html: { icon: FileTextIcon, label: "HTML", color: "bg-orange-500" },
+  json: { icon: FileTextIcon, label: "JSON", color: "bg-green-500" },
+  bash: { icon: TerminalIcon, label: "BASH", color: "bg-gray-500" },
+  shell: { icon: TerminalIcon, label: "SH", color: "bg-gray-500" },
 }
 
 export function CodeBlock({
@@ -128,11 +146,11 @@ export function CodeBlock({
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                "flex items-center justify-center w-6 h-6 rounded text-xs font-bold text-white",
+                "flex items-center justify-center w-6 h-6 rounded text-white",
                 fileInfo.color,
               )}
             >
-              {fileInfo.label}
+              <fileInfo.icon />
             </div>
             <span className="text-sm font-mono text-foreground">{filename}</span>
           </div>
