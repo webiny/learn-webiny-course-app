@@ -11,7 +11,20 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Learn Webiny - Master Webiny from Beginner to Expert",
   description:
-    "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application."
+    "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.ico",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/favicon.ico",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    apple: "/favicon.ico",
+  },
 }
 
 export default function RootLayout({
