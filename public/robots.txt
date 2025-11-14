@@ -1,0 +1,10 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin or private routes (if any in future)
+# Disallow: /admin
+
+# Sitemap location
+Sitemap: https://learn.webiny.com/sitemap.xml
+

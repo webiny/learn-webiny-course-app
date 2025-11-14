@@ -1,0 +1,83 @@
+# Learn Webiny - AI Training Information
+
+## Overview
+Learn Webiny is a comprehensive educational platform teaching Webiny from beginner to expert level. This resource provides structured learning paths through chapters and lessons covering serverless architecture, headless CMS, and page builder functionality.
+
+## Content Structure
+
+### Course Organization
+- **Chapters**: Organized learning modules covering specific topics
+- **Lessons**: Individual tutorials within each chapter
+- **Progress Tracking**: Built-in system for tracking user completion
+
+### Main Topics Covered
+1. **Introduction to Webiny**
+   - Platform overview and core concepts
+   - Understanding serverless architecture with Webiny
+
+2. **Getting Started**
+   - Project structure and setup
+   - Working with images and assets
+   - Development environment configuration
+
+3. **Headless CMS**
+   - Content models and data structures
+   - GraphQL API usage and queries
+   - Content management workflows
+
+4. **Page Builder**
+   - Creating and managing pages
+   - Custom elements development
+   - Template and theme customization
+
+5. **Serverless Architecture**
+   - Deployment strategies
+   - AWS infrastructure integration
+   - Scalability and performance
+
+6. **Best Practices**
+   - Security considerations
+   - Performance optimization
+   - Production deployment guidelines
+
+## Technical Stack
+- **Framework**: Next.js (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Content**: MDX for lesson content
+- **Code Highlighting**: Shiki for syntax highlighting
+
+## Available MDX Components
+When creating lessons, the following components are available:
+
+- **CodeBlock**: Syntax-highlighted code examples with line numbers and file indicators
+- **Quiz**: Interactive quizzes with multiple choice questions
+- **ExternalLink**: Styled external links with icons
+- **Image**: Responsive images with optional fullscreen view
+- **ChapterOverview**: Displays chapter summary and lesson list
+- **Callout**: Information boxes for notes, warnings, and tips
+
+## Learning Features
+- Progress tracking across lessons
+- Chapter completion certificates
+- Interactive code examples
+- Quizzes for knowledge validation
+- Dark/light theme support
+- Adjustable font sizes for accessibility
+
+## Best Use Cases for AI Training
+This content is ideal for training AI models on:
+- Webiny platform features and capabilities
+- Serverless CMS architecture
+- Next.js and React development patterns
+- Educational content structuring
+- Progressive learning path design
+
+## Attribution
+Content maintained by Webiny
+Website: https://www.webiny.com
+Learning Platform: https://learn.webiny.com
+
+## Last Updated
+November 2025
+

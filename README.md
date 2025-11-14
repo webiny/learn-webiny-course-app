@@ -499,7 +499,96 @@ The lesson registry is automatically managed:
 # 2. Deploy your site
 ```
 
-### Other Platforms
+---
+
+## 🔍 SEO & Discoverability
+
+The platform includes comprehensive SEO features for optimal discoverability:
+
+### Metadata
+
+Every page includes optimized metadata:
+
+- **Homepage:** Default metadata with Open Graph and Twitter Card tags
+- **Course Page:** Overview metadata with course information
+- **Lesson Pages:** Dynamic metadata generated from lesson frontmatter
+  - Includes chapter context
+  - Uses lesson title and description
+  - Proper meta tags for social sharing
+
+### Sitemap (sitemap.xml)
+
+Automatically generated sitemap includes:
+- Homepage
+- Course overview page
+- All lesson pages (dynamically discovered)
+
+**Location:** `/sitemap.xml`  
+**Updates:** Automatically regenerates based on MDX registry
+
+### Robots.txt
+
+Configures search engine crawling behavior:
+- Allows all crawlers
+- References sitemap location
+- Ready for future private route exclusions
+
+**Locations:**
+- Dynamic: `app/robots.ts` (Next.js App Router)
+- Static: `public/robots.txt` (fallback)
+
+### AI Training Files
+
+Support for AI/LLM training and context:
+
+#### llm.txt / llms.txt
+
+Comprehensive documentation for AI models including:
+- Platform overview and purpose
+- Content structure and organization
+- Topics covered in the course
+- Technical stack information
+- Available MDX components
+- Learning features
+- Best use cases for AI training
+- Attribution and contact information
+
+**Locations:**
+- `public/llm.txt`
+- `public/llms.txt` (both files have identical content for compatibility)
+
+These files help AI models understand the platform structure and provide better assistance to users learning Webiny.
+
+### SEO Best Practices
+
+When creating content:
+
+1. **Frontmatter is Critical**
+   ```mdx
+   ---
+   title: "Clear, Descriptive Title"
+   description: "Compelling 150-160 character description"
+   ---
+   ```
+
+2. **Use Semantic Heading Structure**
+   - One `<h1>` per lesson (automatically from title)
+   - Use `##` for main sections
+   - Use `###` for subsections
+
+3. **Add Alt Text to Images**
+   ```mdx
+   <Image src="/path/to/image.png" alt="Descriptive alt text" />
+   ```
+
+4. **Link to External Resources**
+   ```mdx
+   <ExternalLink href="https://docs.webiny.com">Official Documentation</ExternalLink>
+   ```
+
+---
+
+## 🚀 Deployment### Other Platforms
 
 Make sure your build command runs:
 ```bash
