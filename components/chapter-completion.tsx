@@ -15,10 +15,10 @@ export function ChapterCompletion({ completedChapter, nextChapter }: ChapterComp
     <div className="flex flex-col items-center gap-8 py-12 mt-8 border-t">
       {/* Chapter number badge with checkmark */}
       <div className="relative">
-        <div className="w-32 h-32 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center">
-          <span className="text-6xl font-bold text-blue-600 dark:text-blue-400">{completedChapter.number}</span>
+        <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-100 flex items-center justify-center">
+          <span className="text-6xl font-bold text-gray-600 dark:text-gray-400">{completedChapter.number}</span>
         </div>
-        <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-blue-600 dark:bg-blue-500 flex items-center justify-center border-4 border-background">
+        <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-gray-600 dark:bg-gray-500 flex items-center justify-center border-4 border-background">
           <Check className="w-6 h-6 text-white" />
         </div>
       </div>

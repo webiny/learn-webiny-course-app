@@ -40,7 +40,7 @@ export function LessonCompleteCard({ lessonSlug }: LessonCompleteCardProps) {
           onClick={handleMarkComplete}
           disabled={completed}
           variant={completed ? "outline" : "default"}
-          className="ml-4"
+          className={completed ? "ml-4" : "ml-4 cursor-pointer"}
         >
           {completed ? (
             <>
