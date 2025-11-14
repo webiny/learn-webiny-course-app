@@ -56,29 +56,29 @@ export function Callout({ type, title, children }: CalloutProps) {
     hint: {
       icon: icons.hint,
       borderColor: "border-gray-200",
-      titleColor: "text-gray-900",
-      textColor: "text-gray-700",
+      titleColor: "text-gray-900 dark:text-gray-100",
+      textColor: "text-gray-700 dark:text-gray-100",
       defaultTitle: "Tip:",
     },
     warning: {
       icon: icons.warning,
       borderColor: "border-orange-200",
-      titleColor: "text-gray-900",
-      textColor: "text-gray-700",
+      titleColor: "text-gray-900 dark:text-gray-100",
+      textColor: "text-gray-700 dark:text-gray-100",
       defaultTitle: "Warning:",
     },
     info: {
       icon: icons.info,
       borderColor: "border-blue-200",
-      titleColor: "text-gray-900",
-      textColor: "text-gray-700",
+      titleColor: "text-gray-900 dark:text-gray-100",
+      textColor: "text-gray-700 dark:text-gray-100",
       defaultTitle: "Info:",
     },
     success: {
       icon: icons.success,
       borderColor: "border-green-200",
-      titleColor: "text-gray-900",
-      textColor: "text-gray-700",
+      titleColor: "text-gray-900 dark:text-gray-100",
+      textColor: "text-gray-700 dark:text-gray-100",
       defaultTitle: "Success:",
     },
   }
@@ -86,13 +86,13 @@ export function Callout({ type, title, children }: CalloutProps) {
   const { icon, borderColor, titleColor, textColor, defaultTitle } = config[type]
 
   return (
-    <div className={`${borderColor} border rounded-lg px-4 py-3 my-6 bg-white`}>
+    <div className={`${borderColor} border rounded-lg px-4 py-3 my-6 bg-white dark:bg-white/1`}>
       <div className="flex gap-3">
         <div className={`flex-shrink-0 mt-0.5 ${textColor}`}>{icon}</div>
         <div className="flex-1">
-          <div className="text-sm leading-relaxed">
+          <div className={`text-sm leading-relaxed ${textColor} -mb-4`}>
             <span className={`font-semibold ${titleColor}`}>{title || defaultTitle}</span>{" "}
-            <span className={textColor}>{children}</span>
+            {children}
           </div>
         </div>
       </div>
