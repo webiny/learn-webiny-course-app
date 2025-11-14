@@ -81,7 +81,7 @@ export default function HomePage() {
                       <div className="flex items-start gap-3">
                         <div
                             className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-sm font-medium">0</span>
+                          <span className="text-sm font-medium">1</span>
                         </div>
                         <div>
                           <h3 className="font-medium mb-1">Chapter 1: Introduction</h3>
