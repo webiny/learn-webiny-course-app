@@ -89,7 +89,7 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
                 onClick={() => handleSelectOption(option.id)}
                 disabled={hasAnswered}
                 className={cn(
-                  "w-full p-4 rounded-lg border-2 transition-all text-left flex items-start gap-3",
+                  "w-full cursor-pointer p-4 rounded-lg border-2 transition-all text-left flex items-start gap-3",
                   "hover:border-primary/50 disabled:cursor-not-allowed",
                   isSelected && !showResult && "border-primary bg-primary/5",
                   showCorrect && "border-green-500 bg-green-50 dark:bg-green-950/20",
@@ -154,11 +154,11 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
         {/* Action Buttons */}
         <div className="flex justify-end">
           {!showResult ? (
-            <Button onClick={handleCheckAnswer} disabled={!selectedAnswer} size="lg" className="min-w-[140px]">
+            <Button onClick={handleCheckAnswer} disabled={!selectedAnswer} size="lg" className="cursor-pointer min-w-[140px]">
               Check Answer
             </Button>
           ) : !isCorrect ? (
-            <Button onClick={handleTryAgain} variant="outline" size="lg" className="min-w-[140px] bg-transparent">
+            <Button onClick={handleTryAgain} variant="outline" size="lg" className="cursor-pointer min-w-[140px] bg-transparent">
               <span className="mr-2">↻</span>
               Try Again
             </Button>
