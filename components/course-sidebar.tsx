@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 import { ChapterIcon } from "@/lib/chapter-icons"
 import { WebinyLogo } from "@/components/webiny-logo"
 import { getChapterMetadata } from "@/lib/chapter-metadata"
+import { SidebarFooter } from "@/components/sidebar-footer"
 
 export function CourseSidebar() {
   const pathname = usePathname()
@@ -150,13 +151,7 @@ export function CourseSidebar() {
         </div>
       </ScrollArea>
 
-      {!isOnLessonPage && (
-        <div className="p-4 border-t">
-          <Button asChild variant="outline" className="w-full bg-transparent">
-            <Link href="/course">View All Chapters</Link>
-          </Button>
-        </div>
-      )}
+      <SidebarFooter />
     </div>
   )
 

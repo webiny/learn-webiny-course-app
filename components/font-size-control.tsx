@@ -13,9 +13,9 @@ import {
 type FontSize = "small" | "medium" | "large"
 
 const fontSizeMap = {
-  small: "14px",
-  medium: "16px",
-  large: "18px",
+  small: "15px",
+  medium: "17px",
+  large: "19px",
 }
 
 export function FontSizeControl() {
@@ -57,17 +57,17 @@ export function FontSizeControl() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => changeFontSize("small")} className="cursor-pointer">
           <span className={fontSize === "small" ? "font-semibold" : ""}>
-            Small (14px)
+            Small
           </span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeFontSize("medium")} className="cursor-pointer">
           <span className={fontSize === "medium" ? "font-semibold" : ""}>
-            Medium (16px)
+            Medium
           </span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeFontSize("large")} className="cursor-pointer">
           <span className={fontSize === "large" ? "font-semibold" : ""}>
-            Large (18px)
+            Large
           </span>
         </DropdownMenuItem>
       </DropdownMenuContent>
