@@ -78,6 +78,23 @@ Webiny comes with many built-in elements:
 - **Grid**: Create layouts with rows and columns
 - **Form**: Embed forms
 
+----
+
+### Headings
+
+# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+
+----
+
+The code above is a good example of **imperative programming**. You're writing the steps for how the user interface should be updated. But when it comes to building user interfaces, a declarative approach is often preferred because it can speed up the development process. Instead of having to write DOM methods, it would be helpful if developers were able to declare what they want to show (in this case, an h1 tag with some text).
+
+In other words, imperative programming is like giving a chef step-by-step instructions on how to make a pizza. Declarative programming is like ordering a pizza without being concerned about the steps it takes to make the pizza. 🍕
+
+React is a popular declarative library that you can use build user interfaces.
+
 <Quiz
   question="What's the main advantage of using the Page Builder?"
   options={[
@@ -117,3 +134,19 @@ This is one:
 ## Image component
 
 <Image src="https://www.webiny.com/static/media/headless-cms-cover.83ff8ed7.png" title="My screenshot" />
+
+## External Links
+
+You can add external links that open in a new tab with a nice icon indicator:
+
+<ExternalLink href="https://www.webiny.com">Visit Webiny Website</ExternalLink>
+
+Or without the icon:
+
+<ExternalLink href="https://www.webiny.com" showIcon={false}>Webiny Website</ExternalLink>
+
+Check out these resources:
+- <ExternalLink href="https://www.webiny.com/docs">Webiny Documentation</ExternalLink>
+- <ExternalLink href="https://github.com/webiny/webiny-js">Webiny GitHub Repository</ExternalLink>
+- <ExternalLink href="https://www.webiny.com/blog">Webiny Blog</ExternalLink>
+

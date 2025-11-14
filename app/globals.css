@@ -129,5 +129,7 @@
   }
 
   /* Typography styles for lesson content */
-
+  .prose {
+    font-family: "Geist", "Inter", "-apple-system", "sans-serif";
+  }
 }

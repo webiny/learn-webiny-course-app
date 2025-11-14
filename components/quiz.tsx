@@ -62,7 +62,7 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
   }
 
   return (
-    <Card className="p-8 my-8 bg-muted/30">
+    <Card className="p-8 my-8 bg-muted/30 rounded-lg">
       {/* Quiz Header */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4">
@@ -89,12 +89,12 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
                 onClick={() => handleSelectOption(option.id)}
                 disabled={hasAnswered}
                 className={cn(
-                  "w-full cursor-pointer p-4 rounded-lg border-2 transition-all text-left flex items-start gap-3",
+                  "w-full cursor-pointer p-4 rounded-lg border-1 transition-all text-left flex items-start gap-3",
                   "hover:border-primary/50 disabled:cursor-not-allowed",
                   isSelected && !showResult && "border-primary bg-primary/5",
                   showCorrect && "border-green-500 bg-green-50 dark:bg-green-950/20",
                   showIncorrect && "border-red-500 bg-red-50 dark:bg-red-950/20",
-                  !isSelected && !showCorrect && !showIncorrect && "border-border",
+                  !isSelected && !showCorrect && !showIncorrect && "border-border hover:bg-gray-50",
                 )}
               >
                 <div
