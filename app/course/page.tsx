@@ -55,7 +55,7 @@ export default function CoursePage() {
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className="mt-4  mr-5 ml-2 w-12 h-12 bg-secondary flex items-center justify-center text-2xl">
-                        <ChapterCoverIcon icon={<ChapterIcon type={chapter.icon} size={20} />}/>
+                        <ChapterCoverIcon icon={<ChapterIcon type={chapter.icon} size={32} />}/>
                       </div>
                       <div>
                         <CardTitle className="text-lg font-extrabold">
