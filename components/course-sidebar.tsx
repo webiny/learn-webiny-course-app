@@ -4,12 +4,13 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { courseData } from "@/lib/course-data"
+import { getChaptersWithLessons } from "@/lib/mdx-registry";
 import { useProgress } from "@/hooks/use-progress"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { ChapterIcon } from "@/lib/chapter-icons"
-import {WebinyLogo} from "@/components/webiny-logo";
+import { WebinyLogo } from "@/components/webiny-logo"
+import { getChapterMetadata } from "@/lib/chapter-metadata"
 
 export function CourseSidebar() {
   const pathname = usePathname()
@@ -18,12 +19,31 @@ export function CourseSidebar() {
 
   const currentSlug = pathname.replace("/course/", "")
 
-  const currentChapter = courseData.chapters.find((chapter) =>
-    chapter.lessons.some((lesson) => lesson.slug === currentSlug),
-  )
-
   const isOnLessonPage = pathname.startsWith("/course/") && pathname !== "/course"
-  const chaptersToShow = isOnLessonPage && currentChapter ? [currentChapter] : courseData.chapters
+  const chaptersMap = getChaptersWithLessons();
+
+  // Get current chapter from the slug (e.g., "getting-started/setup" -> "getting-started")
+  const currentChapterId = currentSlug.split('/')[0]
+
+  // Build all chapters data
+  const allChapters = Object.entries(chaptersMap).map(([chapterId, lessons]) => {
+    // Get chapter metadata (title, icon, number, description)
+    const metadata = getChapterMetadata(chapterId)
+
+    return {
+      id: chapterId,
+      lessons,
+      title: metadata.title,
+      description: metadata.description,
+      icon: metadata.icon,
+      number: metadata.number,
+    }
+  });
+
+  // Show only current chapter when on a lesson page, all chapters on course overview
+  const chaptersToShow = isOnLessonPage
+    ? allChapters.filter(chapter => chapter.id === currentChapterId)
+    : allChapters;
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -34,7 +54,7 @@ export function CourseSidebar() {
         </Link>
       </div>
 
-      {isOnLessonPage && currentChapter && (
+      {isOnLessonPage && (
         <div className="p-4 border-b">
           <Button asChild variant="ghost" className="w-full justify-start -ml-2">
             <Link href="/course">
@@ -91,7 +111,7 @@ export function CourseSidebar() {
 
                     return (
                       <Link
-                        key={lesson.id}
+                        key={lesson.slug}
                         href={`/course/${lesson.slug}`}
                         onClick={() => setIsOpen(false)}
                         className={cn(
@@ -119,7 +139,7 @@ export function CourseSidebar() {
                             index + 1
                           )}
                         </div>
-                        <span className="flex-1 truncate">{lesson.title}</span>
+                        <span className="flex-1 truncate">{lesson.frontmatter.title}</span>
                       </Link>
                     )
                   })}
@@ -171,7 +191,7 @@ export function CourseSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full w-80 bg-background border-r z-40 transition-transform duration-300 lg:translate-x-0",
+          "fixed top-0 left-0 h-full w-90 bg-background border-r z-40 transition-transform duration-300 lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >

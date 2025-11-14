@@ -3,7 +3,7 @@ import { CourseSidebar } from "@/components/course-sidebar"
 import { LessonHeader } from "@/components/lesson-header"
 import { LessonContentWrapper } from "@/components/lesson-content-wrapper"
 import { LessonNavigation } from "@/components/lesson-navigation"
-import { getLessonBySlug, getNextLesson, getPreviousLesson, isLastLessonInChapter, getLessonNumberInChapter } from "@/lib/course-data"
+import { getLessonDataBySlug, getNextLesson, getPreviousLesson, isLastLessonInChapter, getLessonNumberInChapter } from "@/lib/mdx-registry-helpers"
 import { loadMDXContent } from "@/lib/mdx-loader"
 
 interface LessonPageProps {
@@ -18,7 +18,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   console.log("[v0] Loading lesson page for slug:", lessonSlug)
 
-  const lessonData = getLessonBySlug(lessonSlug)
+  const lessonData = getLessonDataBySlug(lessonSlug)
 
   if (!lessonData) {
     console.log("[v0] Lesson data not found for slug:", lessonSlug)

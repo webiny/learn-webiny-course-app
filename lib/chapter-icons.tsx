@@ -142,7 +142,7 @@ export type ChapterIconType = keyof typeof ChapterIcons
 
 // Generic component to render any chapter icon
 export function ChapterIcon({ type, className, size = 24 }: { type: ChapterIconType } & ChapterIconProps) {
-  const IconComponent = ChapterIcons[type]
+  const IconComponent = ChapterIcons[type] || BookIcon
   return <IconComponent className={className} size={size} />
 }
 

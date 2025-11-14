@@ -5,8 +5,14 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:watch": "concurrently \"npm run dev\" \"npm run watch-mdx\" --names \"next,watch\" --prefix-colors \"cyan,magenta\"",
+    "dev:auto": "npm run generate-mdx-registry && npm run dev:watch",
+    "watch-mdx": "node scripts/watch-mdx-lessons.mjs",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "generate-mdx-registry": "node scripts/generate-mdx-registry.mjs",
+    "generate-course-data": "node scripts/generate-course-data.mjs",
+    "generate-all": "npm run generate-mdx-registry && npm run generate-course-data"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -74,6 +80,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.1.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",

@@ -9,7 +9,7 @@ export function LessonH1({ children, ...props }: React.HTMLAttributes<HTMLHeadin
     <div className="flex gap-8 items-start mb-12 mt-8">
       {/* Large Lesson Number */}
       <div className="flex-shrink-0">
-        <div className="text-[100px] leading-none font-bold text-muted-foreground/15 select-none">
+        <div className="text-[100px] w-[50px] leading-none font-bold text-muted-foreground/15 select-none">
           {lessonNumber}
         </div>
       </div>

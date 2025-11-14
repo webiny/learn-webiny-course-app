@@ -2,6 +2,7 @@ import { ComponentType } from "react"
 import fs from "fs"
 import path from "path"
 import matter from "gray-matter"
+import { mdxImportRegistry } from "./mdx-registry"
 
 /**
  * Frontmatter metadata extracted from MDX files
@@ -24,36 +25,63 @@ export interface MDXContent {
 }
 
 /**
+ * Scans the lessons directory and returns a map of slug to file path
+ * This runs at build time and runtime to discover all available lessons
+ */
+function discoverLessons(): Record<string, string> {
+  const contentDir = path.join(process.cwd(), "content", "lessons")
+  const pathMap: Record<string, string> = {}
+
+  if (!fs.existsSync(contentDir)) {
+    console.warn(`[MDX Loader] Content directory not found: ${contentDir}`)
+    return pathMap
+  }
+
+  // Read all chapter directories
+  const chapters = fs.readdirSync(contentDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.'))
+
+  for (const chapter of chapters) {
+    const chapterPath = path.join(contentDir, chapter.name)
+
+    // Read all MDX files in the chapter directory
+    const files = fs.readdirSync(chapterPath)
+      .filter(file => file.endsWith('.mdx'))
+
+    for (const file of files) {
+      const fileName = file.replace('.mdx', '')
+      const filePath = path.join(chapterPath, file)
+
+      // Create slug: for files named same as directory, use just directory name
+      // Otherwise use directory/filename format
+      const slug = fileName === chapter.name
+        ? chapter.name
+        : `${chapter.name}/${fileName}`
+
+      pathMap[slug] = filePath
+    }
+  }
+
+  return pathMap
+}
+
+// Cache the discovered lessons to avoid repeated filesystem scans
+let lessonsCache: Record<string, string> | null = null
+
+/**
  * Gets the file path for a lesson slug
  */
 function getLessonFilePath(slug: string): string {
-  const contentDir = path.join(process.cwd(), "content", "lessons")
-
-  // Map slugs to their file paths
-  const pathMap: Record<string, string> = {
-    "introduction": path.join(contentDir, "introduction", "introduction.mdx"),
-    "getting-started/setup": path.join(contentDir, "getting-started", "setup.mdx"),
-    "getting-started/project-structure": path.join(contentDir, "getting-started", "project-structure.mdx"),
-    "headless-cms/content-models": path.join(contentDir, "headless-cms", "content-models.mdx"),
-    "headless-cms/graphql-api": path.join(contentDir, "headless-cms", "graphql-api.mdx"),
-    "website-builder/creating-pages": path.join(contentDir, "website-builder", "creating-pages.mdx"),
-    "website-builder/custom-elements": path.join(contentDir, "website-builder", "custom-elements.mdx"),
-    "serverless/architecture": path.join(contentDir, "serverless", "architecture.mdx"),
-    "serverless/deployment": path.join(contentDir, "serverless", "deployment.mdx"),
-    "best-practices/performance": path.join(contentDir, "best-practices", "performance.mdx"),
-    "best-practices/security": path.join(contentDir, "best-practices", "security.mdx"),
+  if (!lessonsCache) {
+    lessonsCache = discoverLessons()
   }
-
-  return pathMap[slug] || ""
+  return lessonsCache[slug] || ""
 }
 
 /**
  * Dynamically loads an MDX file based on the lesson slug
- * This replaces the hardcoded mdx-registry approach
- *
- * Since Next.js doesn't support fully dynamic imports with template literals,
- * we use a mapping approach that still allows us to add new lessons
- * without manually updating a registry - just drop MDX files in the folder.
+ * Uses Next.js-compatible dynamic imports via static registry
+ * The registry is auto-generated from filesystem - see lib/mdx-registry.ts
  *
  * @param slug - The lesson slug (e.g., "introduction", "getting-started/setup")
  * @returns An object containing the MDX component and its frontmatter metadata
@@ -62,51 +90,20 @@ export async function loadMDXContent(slug: string): Promise<MDXContent | null> {
   try {
     console.log(`[MDX Loader] Attempting to load MDX for slug: ${slug}`)
 
-    let mdxModule: any
+    // Check if we have an import function for this slug
+    const importFn = mdxImportRegistry[slug]
 
-    // Dynamic import with all possible paths
-    // Next.js will bundle all these at build time
-    switch (slug) {
-      case "introduction":
-        mdxModule = await import("@/content/lessons/introduction/introduction.mdx")
-        break
-      case "getting-started/setup":
-        mdxModule = await import("@/content/lessons/getting-started/setup.mdx")
-        break
-      case "getting-started/project-structure":
-        mdxModule = await import("@/content/lessons/getting-started/project-structure.mdx")
-        break
-      case "headless-cms/content-models":
-        mdxModule = await import("@/content/lessons/headless-cms/content-models.mdx")
-        break
-      case "headless-cms/graphql-api":
-        mdxModule = await import("@/content/lessons/headless-cms/graphql-api.mdx")
-        break
-      case "website-builder/creating-pages":
-        mdxModule = await import("@/content/lessons/website-builder/creating-pages.mdx")
-        break
-      case "website-builder/custom-elements":
-        mdxModule = await import("@/content/lessons/website-builder/custom-elements.mdx")
-        break
-      case "serverless/architecture":
-        mdxModule = await import("@/content/lessons/serverless/architecture.mdx")
-        break
-      case "serverless/deployment":
-        mdxModule = await import("@/content/lessons/serverless/deployment.mdx")
-        break
-      case "best-practices/performance":
-        mdxModule = await import("@/content/lessons/best-practices/performance.mdx")
-        break
-      case "best-practices/security":
-        mdxModule = await import("@/content/lessons/best-practices/security.mdx")
-        break
-      default:
-        console.error(`[MDX Loader] No MDX file configured for slug: ${slug}`)
-        return null
+    if (!importFn) {
+      console.error(`[MDX Loader] No import registered for slug: ${slug}`)
+      console.error(`[MDX Loader] Available slugs:`, Object.keys(mdxImportRegistry))
+      return null
     }
 
+    // Import the MDX module
+    const mdxModule = await importFn()
+
     if (!mdxModule || !mdxModule.default) {
-      console.error(`[MDX Loader] No default export found for: ${slug}`)
+      console.error(`[MDX Loader] No default export found for slug: ${slug}`)
       return null
     }
 
@@ -125,7 +122,7 @@ export async function loadMDXContent(slug: string): Promise<MDXContent | null> {
       // Continue with empty frontmatter rather than failing
     }
 
-    console.log(`[MDX Loader] Successfully loaded MDX for slug: ${slug}`, frontmatter)
+    console.log(`[MDX Loader] Successfully loaded MDX for slug: ${slug}`)
 
     return {
       Component: mdxModule.default as ComponentType,
@@ -135,5 +132,16 @@ export async function loadMDXContent(slug: string): Promise<MDXContent | null> {
     console.error(`[MDX Loader] Failed to load MDX for slug: ${slug}`, error)
     return null
   }
+}
+
+/**
+ * Get all available lesson slugs by scanning the filesystem
+ * Useful for generating static paths
+ */
+export function getAllLessonSlugs(): string[] {
+  if (!lessonsCache) {
+    lessonsCache = discoverLessons()
+  }
+  return Object.keys(lessonsCache)
 }
 

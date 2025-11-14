@@ -1,16 +1,18 @@
 import { Badge } from "@/components/ui/badge"
 import { Clock, User, Calendar, AlertCircle } from "lucide-react"
-import { MDXFrontmatter } from "@/lib/mdx-loader"
+import { getLessonBySlug } from "@/lib/mdx-registry"
 
 interface LessonMetadataProps {
-  frontmatter: MDXFrontmatter
+  slug: string
 }
 
 /**
  * Component to display lesson metadata from frontmatter
- * Usage: <LessonMetadata frontmatter={frontmatter} />
+ * Usage: <LessonMetadata slug={lessonSlug} />
  */
-export function LessonMetadata({ frontmatter }: LessonMetadataProps) {
+export function LessonMetadata({ slug }: LessonMetadataProps) {
+  const lesson = getLessonBySlug(slug)
+  const frontmatter = lesson?.frontmatter || {}
   if (!frontmatter || Object.keys(frontmatter).length === 0) {
     return null
   }
@@ -71,7 +73,7 @@ export function LessonMetadata({ frontmatter }: LessonMetadataProps) {
       {/* Tags */}
       {frontmatter.tags && frontmatter.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
-          {frontmatter.tags.map((tag) => (
+          {frontmatter.tags.map((tag: string) => (
             <Badge key={tag} variant="outline">
               {tag}
             </Badge>
@@ -93,4 +95,3 @@ export function LessonMetadata({ frontmatter }: LessonMetadataProps) {
     </div>
   )
 }
-
