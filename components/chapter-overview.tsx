@@ -6,7 +6,8 @@ interface ChapterTopic {
 }
 
 interface ChapterOverviewProps {
-  topics: ChapterTopic[]
+  topics?: ChapterTopic[]
+  items?: ChapterTopic[]
 }
 
 const IconSVG = ({ type }: { type: string }) => {
@@ -70,8 +71,11 @@ const IconSVG = ({ type }: { type: string }) => {
   return icons[type as keyof typeof icons] || icons.info
 }
 
-export function ChapterOverview({ topics }: ChapterOverviewProps) {
-  if (!topics || !Array.isArray(topics)) {
+export function ChapterOverview({ topics, items }: ChapterOverviewProps) {
+  // Support both 'topics' and 'items' prop names
+  const displayItems = topics || items
+
+  if (!displayItems || !Array.isArray(displayItems)) {
     return null
   }
 
@@ -81,7 +85,7 @@ export function ChapterOverview({ topics }: ChapterOverviewProps) {
       <p className="text-muted-foreground mb-6">Here are the topics we'll cover</p>
 
       <div className="bg-background rounded-lg border divide-y">
-        {topics.map((topic, index) => (
+        {displayItems.map((topic, index) => (
           <div key={index} className="flex items-start gap-4 p-4">
             <div className="text-muted-foreground flex-shrink-0 mt-0.5">
               <IconSVG type={topic.icon} />
