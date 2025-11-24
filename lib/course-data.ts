@@ -51,6 +51,17 @@ export const courseData: Course = {
         ]
     },
     {
+        id: "foundation",
+        ...chapterMetadata["foundation"],
+        lessons: [
+                  {
+                            "id": "about",
+                            "title": "About Webiny",
+                            "slug": "foundation/about"
+                  }
+        ]
+    },
+    {
         id: "getting-started",
         ...chapterMetadata["getting-started"],
         lessons: [
@@ -113,6 +124,11 @@ export const courseData: Course = {
                             "slug": "serverless/deployment"
                   }
         ]
+    },
+    {
+        id: "webiny-foundations",
+        ...chapterMetadata["webiny-foundations"],
+        lessons: []
     },
     {
         id: "website-builder",

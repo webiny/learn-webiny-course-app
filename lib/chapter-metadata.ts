@@ -17,6 +17,12 @@ export interface ChapterMetadata {
  * Maps chapter slugs to their display information
  */
 export const chapterMetadata: Record<string, ChapterMetadata> = {
+  'foundation': {
+    number: 0,
+    title: 'Foundation',
+    description: 'Learn the fundamentals of Webiny',
+    icon: 'crown'
+  },
   'introduction': {
     number: 1,
     title: 'Introduction',

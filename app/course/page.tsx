@@ -84,12 +84,18 @@ export default function CoursePage() {
                       <span className="font-medium">{progressPercent}%</span>
                     </div>
                     <Progress value={progressPercent} className="h-2" />
-                    <Button asChild variant={progressPercent > 0 ? "default" : "outline"} className="w-full">
-                      <Link href={`/course/${chapter.lessons[0].slug}`}>
-                        {progressPercent > 0 ? "Continue" : "Start Chapter"}
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
+                    {chapter.lessons.length > 0 ? (
+                      <Button asChild variant={progressPercent > 0 ? "default" : "outline"} className="w-full">
+                        <Link href={`/course/${chapter.lessons[0].slug}`}>
+                          {progressPercent > 0 ? "Continue" : "Start Chapter"}
+                          <ChevronRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button disabled className="w-full">
+                        Coming Soon
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -101,7 +107,7 @@ export default function CoursePage() {
         <div>
           <h2 className="text-2xl font-bold mb-6">All Lessons</h2>
           <div className="space-y-6">
-            {sortedChapters.map((chapter) => (
+            {sortedChapters.filter(chapter => chapter.lessons.length > 0).map((chapter) => (
               <div key={chapter.id}>
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
                   <span className="text-2xl">

@@ -9,6 +9,7 @@
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "best-practices/performance": () => import("@/content/lessons/best-practices/performance.mdx"),
   "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
+  "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
   "getting-started/using-images": () => import("@/content/lessons/getting-started/using-images.mdx"),
@@ -52,6 +53,15 @@ export const mdxRegistry: LessonRegistryItem[] = [
     import: () => import("@/content/lessons/best-practices/security.mdx"),
     frontmatter: {},
     chapter: "best-practices"
+  },
+  {
+    slug: "foundation/about",
+    import: () => import("@/content/lessons/foundation/about.mdx"),
+    frontmatter: {
+          "title": "About Webiny",
+          "description": "An introduction to Webiny and its core concepts."
+    },
+    chapter: "foundation"
   },
   {
     slug: "getting-started/project-structure",

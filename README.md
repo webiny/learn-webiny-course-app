@@ -44,6 +44,7 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
 - `edit` - Editing/CMS
 - `cloud` - Cloud/serverless
 - `zap` - Performance/speed
+- `criwb` - Foundation
 
 ### 2. Creating Lessons
 
@@ -68,7 +69,7 @@ description: "Brief description of what this lesson covers"
 author: "Your Name"
 date: "2024-01-15"
 estimatedTime: "15 min"
-difficulty: "beginner"
+difficulty: "beginner | intermediate | advanced"
 ---
 
 # Your Lesson Content Here
@@ -310,25 +311,46 @@ Display a list of chapter topics at the beginning of a lesson.
 ```mdx
 <ChapterOverview 
   items={[
-    { icon: "file", text: "Setting up your environment" },
-    { icon: "pencil", text: "Creating your first project" },
+    { icon: "description", text: "Setting up your environment" },
+    { icon: "edit", text: "Creating your first project" },
     { icon: "code", text: "Building with components" },
-    { icon: "check", text: "Testing and deployment" }
+    { icon: "check_circle", text: "Testing and deployment" }
   ]} 
 />
 ```
 
-**Available Icons:**
-- `file` - Files/documents
-- `pencil` - Editing/writing
+**Icon Options:**
+
+You can use **any icon** from [Google Material Icons](https://fonts.google.com/icons). Just use the icon name in lowercase with underscores.
+
+**Popular Icons:**
+- `description` - Files/documents
+- `edit` - Editing/writing
 - `code` - Coding/development
-- `check` - Completion/success
-- `alert` - Warnings/important
+- `check_circle` - Completion/success
+- `warning` - Warnings/alerts
 - `info` - Information
+- `settings` - Configuration
+- `folder` - Folders/organization
+- `terminal` - Command line
+- `api` - APIs/endpoints
+- `security` - Security/permissions
+- `database` - Databases
+- `cloud` - Cloud/hosting
+- `bolt` - Performance/speed
+- `lock` - Security/privacy
+- `shield` - Protection/safety
+
+**More Icons:** Browse the full collection at [Google Material Icons](https://fonts.google.com/icons)
+
+**Props:**
+- `items` (required): Array of `{ icon: string, text: string }` objects
+- `topics` (alternative): Same as `items` (supports both prop names)
 
 **Features:**
 - ✅ Clean, organized layout
-- ✅ Icon indicators
+- ✅ Access to 2000+ Material Icons
+- ✅ Theme-aware styling
 - ✅ Responsive design
 
 ---
