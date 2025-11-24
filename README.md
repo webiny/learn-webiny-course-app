@@ -355,6 +355,57 @@ You can use **any icon** from [Google Material Icons](https://fonts.google.com/i
 
 ---
 
+### IconTitle
+
+Create visually appealing headings with Material Icons.
+
+**Basic Usage (default h2):**
+```mdx
+<IconTitle icon="rocket_launch" title="Getting Started" />
+```
+
+**With Different Heading Levels:**
+```mdx
+<IconTitle icon="settings" title="Configuration" heading="h3" />
+<IconTitle icon="code" title="Implementation Details" heading="h4" />
+<IconTitle icon="info" title="Important Note" heading="h5" />
+```
+
+**Examples with Different Icons:**
+```mdx
+<IconTitle icon="lightbulb" title="Key Concepts" heading="h2" />
+<IconTitle icon="terminal" title="Command Line Usage" heading="h3" />
+<IconTitle icon="shield" title="Security Best Practices" heading="h2" />
+<IconTitle icon="database" title="Database Schema" heading="h3" />
+```
+
+**Props:**
+- `icon` (required): Material Icon name (e.g., `"rocket_launch"`, `"code"`, `"settings"`)
+- `title` (required): The heading text to display
+- `heading` (optional): Heading level - `"h1"`, `"h2"`, `"h3"`, `"h4"`, `"h5"`, `"h6"` (default: `"h2"`)
+
+**Icon Options:**
+
+Use **any icon** from [Google Material Icons](https://fonts.google.com/icons). Popular choices:
+- `rocket_launch` - Launch/getting started
+- `lightbulb` - Ideas/tips
+- `terminal` - Command line
+- `code` - Code/development
+- `settings` - Configuration
+- `shield` - Security
+- `database` - Data/storage
+- `api` - APIs
+- `build` - Building/construction
+- `speed` - Performance
+
+**Features:**
+- ✅ Automatic icon sizing per heading level
+- ✅ Theme-aware icon colors (primary)
+- ✅ 2000+ Material Icons available
+- ✅ Semantic HTML headings
+
+---
+
 ## 📝 Complete Lesson Example
 
 Here's a full example showing multiple components:
