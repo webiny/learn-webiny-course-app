@@ -10,6 +10,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "best-practices/performance": () => import("@/content/lessons/best-practices/performance.mdx"),
   "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
+  "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
   "getting-started/using-images": () => import("@/content/lessons/getting-started/using-images.mdx"),
@@ -60,6 +61,15 @@ export const mdxRegistry: LessonRegistryItem[] = [
     frontmatter: {
           "title": "About Webiny",
           "description": "An introduction to Webiny and its core concepts."
+    },
+    chapter: "foundation"
+  },
+  {
+    slug: "foundation/webiny-parts",
+    import: () => import("@/content/lessons/foundation/webiny-parts.mdx"),
+    frontmatter: {
+          "title": "Parts that make Webiny",
+          "description": "An overview of the core components that make the Webiny platform."
     },
     chapter: "foundation"
   },

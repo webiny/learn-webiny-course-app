@@ -24,9 +24,9 @@ const MaterialIcon = ({ name, size }: { name: string; size: string }) => {
 
 export function IconTitle({ icon, title, heading = "h2" }: IconTitleProps) {
   const headingStyles = {
-    h1: "text-4xl font-bold mb-6",
-    h2: "text-3xl font-bold mb-4",
-    h3: "text-2xl font-semibold mb-3",
+    h1: "text-4xl font-bold mb-6 mt-6",
+    h2: "text-3xl font-bold mb-4 mt-6",
+    h3: "text-2xl font-semibold mb-3 mt-6",
     h4: "text-xl font-semibold mb-3",
     h5: "text-lg font-semibold mb-2",
     h6: "text-base font-semibold mb-2",

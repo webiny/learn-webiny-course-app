@@ -3,7 +3,7 @@ title: "About Webiny"
 description: "An introduction to Webiny and its core concepts."
 ---
 
-## About Webiny
+# About Webiny
 
 In this lesson, we will explore the fundamentals of Webiny - a content platform with an application framework built for developer and content editorial teams to operate and manage content at scale, no matter the use-case.
 
@@ -11,18 +11,17 @@ In this lesson, we will explore the fundamentals of Webiny - a content platform 
   items={[
     { icon: "info", text: "About this course and what will you learn." },
     { icon: "campaign", text: "Why we created Webiny, what was the need behind it." },
-    { icon: "brick", text: "Parts that make up Webiny as solution." },
     { icon: "license", text: "Webiny licenses and their differences." },
   ]}
 />
 
 ## About this course
 
-This course is designed to provide you with a comprehensive understanding of Webiny, its apps & architecture, and how to effectively utilize its features for content management and application development. By the end of this course, you will have a solid foundation in Webiny and will be equipped to build and manage content-driven applications.
+This course is designed to provide you with a comprehensive understanding of Webiny, its apps & architecture, and how to effectively utilize its features for content management and application development. By the end of this course, you will have a solid foundation in Webiny and will be equipped to build and manage content-driven applications and websites.
 
-We structured the course into several chapters, each focusing on different aspects of Webiny. You will learn about its core components, how to set up and configure a Webiny project, and best practices for content management and application development.
+We structured the course into several chapters, each focusing on different aspects of Webiny. You will learn about its core components, how to set up and configure a Webiny project, and general best practices.
 
-We encourage you to follow along with the practical examples and exercises provided throughout the course to reinforce your learning. In case you have any questions or need further clarification, feel free to reach out to the Webiny community or support channels. All the details are in the sidebar on the left.
+We encourage you to follow along with the practical examples and exercises provided throughout the course to reinforce your learning. In case you have any questions or need further clarification, feel free to reach out to the Webiny community and support channels. All the details are in the sidebar on the left.
 
 <Callout type="info" title="Use alongisde the docs">
   This corse is designed to be used alongside the official Webiny documentation. While the course provides a structured learning path, the documentation serves as a comprehensive reference for deeper dives into specific topics and features. If you're new to Webiny, we recommend you start with the course and use the documentation as a supplementary resource.
@@ -30,16 +29,48 @@ We encourage you to follow along with the practical examples and exercises provi
 
 ## Why Webiny?
 
-Webiny was created to address the growing need for a flexible, scalable, and developer-friendly content platform that can handle complex content management requirements. Traditional CMS solutions often fall short when it comes to customization, scalability, and developer experience. Webiny aims to fill this gap by providing a modern, serverless architecture that allows developers to build and manage content-driven applications with ease.
+Webiny was created to address the growing need for a flexible, scalable, and developer-friendly content platform that can handle complex content management requirements. We're talking projects with large amounts of content, multiple content types, and complex editorial workflows.
+
+Traditional CMS solutions often fall short when it comes to customization, scalability, and developer experience.
+
+Webiny aims to fill this gap by providing a modern, serverless architecture that allows developers to build and manage a content platform with ease. Developers can leverage familiar technologies like React and GraphQL, while content editors benefit from a user-friendly interface for managing content.
+
+In the real-world Webiny handles projects with 100's of millions of records, peta-bytes of assets, and thousands of content editors. All while providing a highly reliable, secure and cost-effective solution.
+
+But Webiny is not for everyone. In the next sections, we'll explore when to use Webiny and when it might not be the best fit for your project.
 
 <IconTitle icon="thumb_up" title="When to use Webiny?" heading="h3" />
 
 Webiny is an excellent choice for projects that require:
-- **Scalability**: Webiny's serverless architecture allows your applications to scale automatically based on demand, making it suitable for projects with fluctuating traffic.
+- **Scalability**: Webiny's serverless architecture allows your applications to scale automatically based on demand, making it suitable for projects with fluctuating traffic or very large and sudden spikes.
 - **Data privacy and control**: With Webiny, you have full control over your data and infrastructure, allowing you to comply with data privacy regulations and maintain ownership of your content.
-- **Customization**: Webiny's modular architecture enables developers to customize and extend the platform to meet specific project requirements.
-- **Operational efficiency**: Webiny's built-in features, such as content modeling, page building, content approval workflows, and asset management, streamline content management processes and improve editorial workflows, especially within large and distributed teams.
-- **Security**: Webiny's architecture is designed with security in mind, providing features such as role-based access control, folder level permissions, SOC2 compliance, SSO integration and secure content delivery.
-- **Multi-tenant architecture**: Webiny supports multi-tenant setups, making it ideal for agencies or organizations managing multiple websites or applications from a single instance.
+- **Customization**: Webiny's modular architecture and built-in framework enables developers to customize and extend the platform to meet specific project requirements.
+- **Operational efficiency**: Webiny's features, such as content modeling, page building, content approval workflows, and asset management, streamline content management processes and improve editorial workflows, especially within large and distributed teams.
+- **Security**: Webiny is architected with security in mind, providing features such as role-based access control, folder level permissions, SOC2 compliance, SSO integration and secure content delivery.
+- **Multi-tenant architecture**: Webiny supports multi-tenant setups, making it ideal for agencies or organizations managing multiple websites or applications from a single instance or for embedding inside existing SaaS products.
 
 <IconTitle icon="thumb_down" title="When not to use Webiny?" heading="h3" />
+
+These are just some of examples where Webiny might not be the best fit:
+- **Simple websites or applications**: For small-scale projects with minimal content management needs, a lightweight CMS or static site generator may be more appropriate.
+- **Tight budgets**: While Webiny is cost-effective for many use cases, the serverless architecture may incur higher costs for projects with very low traffic or minimal resource usage compared to traditional hosting solutions.
+- **Limited technical expertise**: Webiny requires a certain level of technical knowledge to set up and manage. If your team lacks the necessary skills, you may need to invest in training, hire additional resources or work with a Webiny partner.
+- **Specific technology stacks**: If your project relies heavily on technologies that are not compatible with Webiny's architecture or framework, you may need to consider alternative solutions.
+- **On-premises hosting requirements**: Webiny is designed for cloud-based deployments, primarily on AWS. If your project requires on-premises hosting due to regulatory or organizational policies, Webiny may not be suitable.
+
+<Callout type="info" title="Still unsure if Webiny is right for you?">
+    If you're still unsure whether Webiny is the right fit for your project, we recommend reaching out to the Webiny community or consulting with a Webiny expert. They can help you evaluate your specific requirements and provide guidance on the best solution for your needs.
+</Callout>
+
+## Webiny licenses
+Webiny is available under a dual-license model, offering both an open-source Community Edition and a commercial Enterprise Edition. This approach allows users to choose the version that best fits their needs, whether they require basic content management capabilities or advanced features and support for enterprise-level applications.
+
+**The Community Edition** of Webiny is open-source and available under the MIT License. This edition provides a solid foundation for building content-driven applications and websites, including core features such as the Headless CMS, Website Builder and File Manager. The Community Edition is ideal for small to medium-sized projects, individual developers, and teams looking for a cost-effective solution with the flexibility to customize and extend the platform.
+
+**The Enterprise Edition** of Webiny is a commercial offering that includes additional features, enhancements, and support tailored for enterprise-level applications. This edition is designed to meet the needs of large organizations and projects with complex content management requirements. Key features of the Enterprise Edition include advanced security and compliance features (SOC2, SSO, RBAC), performance optimizations, priority support, and access to exclusive plugins and integrations. The Enterprise Edition is suitable for businesses that require a robust, scalable, and secure content platform with dedicated support and services.
+
+<Callout type="info" title="Choosing the right license">
+    When deciding between the Community and Enterprise Editions of Webiny, consider factors such as your project's size, complexity, budget, and specific feature requirements. If you're unsure which edition is best suited for your needs, we recommend reviewing our pricing page, or reaching out to the Webiny sales team for guidance.
+</Callout>
+
+The large majority of lessons and features discussed in this course are based on the Community Edition of Webiny. However, we'll actually install a free tier of the Enterprise edition to demonstrate the full capability of the platform. In cases where features are specifict to the Enterprise edition, we'll make sure to clearly indicate that in the lesson.
