@@ -79,7 +79,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         <LessonHeader title={displayTitle} chapterTitle={chapter.title} />
 
         <main className="flex-1">
-          <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <div className="container mx-auto py-8 max-w-4xl 2xl:px-4 md:px-24 ">
             <LessonContentWrapper
               lessonSlug={lessonSlug}
               lessonTitle={displayTitle}

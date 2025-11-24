@@ -6,17 +6,75 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { getChaptersWithLessons } from "@/lib/mdx-registry";
 import { useProgress } from "@/hooks/use-progress"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { ChapterIcon } from "@/lib/chapter-icons"
 import { WebinyLogo } from "@/components/webiny-logo"
 import { getChapterMetadata } from "@/lib/chapter-metadata"
 import { SidebarFooter } from "@/components/sidebar-footer"
 
+const MIN_WIDTH = 250
+const MAX_WIDTH = 600
+const DEFAULT_WIDTH = 360
+
 export function CourseSidebar() {
   const pathname = usePathname()
   const { progress, mounted } = useProgress()
   const [isOpen, setIsOpen] = useState(false)
+  const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_WIDTH)
+  const [isResizing, setIsResizing] = useState(false)
+  const sidebarRef = useRef<HTMLDivElement>(null)
+
+  // Load sidebar width from localStorage on mount
+  useEffect(() => {
+    const savedWidth = localStorage.getItem('sidebar-width')
+    if (savedWidth) {
+      const width = parseInt(savedWidth, 10)
+      if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+        setSidebarWidth(width)
+      }
+    }
+  }, [])
+
+  // Save sidebar width to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('sidebar-width', sidebarWidth.toString())
+  }, [sidebarWidth])
+
+  // Handle mouse move during resize
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return
+
+      const newWidth = e.clientX
+      if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
+        setSidebarWidth(newWidth)
+      }
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+
+    if (isResizing) {
+      document.body.style.cursor = 'col-resize'
+      document.body.style.userSelect = 'none'
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing])
+
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+  }
 
   const currentSlug = pathname.replace("/course/", "")
 
@@ -185,16 +243,30 @@ export function CourseSidebar() {
 
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
+        style={{ width: `${sidebarWidth}px` }}
         className={cn(
-          "fixed top-0 left-0 h-full w-90 bg-background border-r z-40 transition-transform duration-300 lg:translate-x-0",
-          isOpen ? "translate-x-0" : "-translate-x-full",
+          "fixed top-0 left-0 h-full bg-background border-r z-40 transition-transform duration-300",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          "w-[280px] lg:w-auto" // Fixed width on mobile, dynamic on desktop
         )}
       >
         {sidebarContent}
+
+        {/* Resize Handle - Desktop Only */}
+        <div
+          className="hidden lg:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors group"
+          onMouseDown={handleResizeStart}
+        >
+          <div className="absolute top-0 right-0 w-1 h-full bg-transparent group-hover:bg-primary/50 transition-colors" />
+        </div>
       </aside>
 
       {/* Desktop Sidebar Spacer */}
-      <div className="hidden lg:block w-90 flex-shrink-0" />
+      <div
+        className="hidden lg:block flex-shrink-0"
+        style={{ width: `${sidebarWidth}px` }}
+      />
     </>
   )
 }
