@@ -47,7 +47,7 @@ export function LessonNavigation({
   }, [previousLesson, nextUrl, router])
 
   return (
-    <div className="flex flex-col gap-4 pt-8 mt-8 border-t">
+    <div className="flex flex-col gap-4 pt-8 mt-8 border-t mx-[-75px] px-[75px] pb-[50px]">
       <div className="text-center text-sm text-muted-foreground">
         <p>
           Use <kbd className="px-2 py-1 text-xs bg-muted rounded border">Alt</kbd> +{" "}
@@ -62,7 +62,7 @@ export function LessonNavigation({
         </p>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-[-45px]">
         <div>
           {previousLesson ? (
             <Button asChild variant="outline">
