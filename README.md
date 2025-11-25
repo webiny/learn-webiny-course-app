@@ -76,15 +76,43 @@ Every lesson needs frontmatter at the top:
 ---
 title: "Your Lesson Title"
 description: "Brief description of what this lesson covers"
-author: "Your Name"
-date: "2024-01-15"
-estimatedTime: "15 min"
-difficulty: "beginner | intermediate | advanced"
+order: 1                                 # Optional: Controls lesson order in sidebar (lower = first)
+author: "Your Name"                      # Optional
+date: "2024-01-15"                       # Optional
+estimatedTime: "15 min"                  # Optional
+difficulty: "beginner | intermediate | advanced"  # Optional
 ---
 
 # Your Lesson Content Here
 
 This is your lesson content...
+```
+
+**Lesson Ordering:**
+- Add an `order` field to control the sequence of lessons within a chapter
+- Lessons with lower order numbers appear first (e.g., `order: 1`, `order: 2`, `order: 3`)
+- Lessons without an `order` field are sorted alphabetically and appear after ordered lessons
+- The order only affects lessons within the same chapter
+
+**Example:**
+```mdx
+# First lesson in the chapter
+---
+title: "Introduction"
+order: 1
+---
+
+# Second lesson in the chapter
+---
+title: "Getting Started"
+order: 2
+---
+
+# Third lesson in the chapter
+---
+title: "Advanced Topics"
+order: 3
+---
 ```
 
 #### Step 3: Write your content
@@ -159,23 +187,22 @@ Display images with click-to-fullscreen functionality.
 
 **Basic Usage:**
 ```mdx
+<Image src="/images/screenshot.png" title="Dashboard screenshot" />
+```
+
+**Alt text usage:**
+```mdx
 <Image src="/images/screenshot.png" alt="Dashboard screenshot" />
 ```
 
-**With Caption:**
-```mdx
-<Image 
-  src="/images/diagram.png" 
-  alt="Architecture diagram"
-  title="The complete system architecture - click to enlarge"
-/>
-```
+A title prop is displayed as a caption below the image. An alt prop provides accessibility text and is not visible.
+An image requires either a `title` or `alt` prop for accessibility. If both are not provided, an error will be shown.
 
 **Custom Dimensions:**
 ```mdx
 <Image 
   src="/images/photo.jpg" 
-  alt="Photo"
+  title="Photo"
   width={1200}
   height={800}
 />
@@ -183,8 +210,8 @@ Display images with click-to-fullscreen functionality.
 
 **Props:**
 - `src` (required): Path to image (place images in `public/images/`)
-- `alt` (optional): Alt text for accessibility
 - `title` (optional): Caption shown below image
+- `alt` (optional): Alt text for accessibility
 - `width` (optional): Width in pixels (default: 800)
 - `height` (optional): Height in pixels (default: 600)
 
@@ -446,7 +473,6 @@ In this lesson, you'll learn how to create reusable React components.
 
 <Image 
   src="/images/component-example.png" 
-  alt="Example component"
   title="The component we'll build in this lesson"
 />
 
@@ -659,9 +685,9 @@ When creating content:
    - Use `##` for main sections
    - Use `###` for subsections
 
-3. **Add Alt Text to Images**
+3. **Add Title Text to Images**
    ```mdx
-   <Image src="/path/to/image.png" alt="Descriptive alt text" />
+   <Image src="/path/to/image.png" title="Descriptive alt text" />
    ```
 
 4. **Link to External Resources**

@@ -109,6 +109,7 @@ ${lessons.map(({ slug, importPath, frontmatter }) => {
 
 /**
  * Get all chapters with their lessons
+ * Lessons are sorted by the 'order' field in frontmatter, or alphabetically by slug if no order is specified
  */
 export function getChaptersWithLessons() {
   const chapters: Record<string, LessonRegistryItem[]> = {}
@@ -116,6 +117,23 @@ export function getChaptersWithLessons() {
     if (!chapters[item.chapter]) chapters[item.chapter] = []
     chapters[item.chapter].push(item)
   })
+  
+  // Sort lessons within each chapter by order field (if present) or by slug
+  Object.keys(chapters).forEach(chapterKey => {
+    chapters[chapterKey].sort((a, b) => {
+      // If both have order, sort by order
+      const orderA = a.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
+      const orderB = b.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
+      
+      if (orderA !== orderB) {
+        return orderA - orderB
+      }
+      
+      // If order is the same (or both missing), sort alphabetically by slug
+      return a.slug.localeCompare(b.slug)
+    })
+  })
+  
   return chapters
 }
 

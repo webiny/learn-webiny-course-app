@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils"
 
 interface ImageComponentProps {
   src: string
-  alt?: string
   title?: string
+  alt?: string
   width?: number
   height?: number
   className?: string
@@ -22,8 +22,8 @@ interface ImageComponentProps {
  */
 export function ImageComponent({
   src,
-  alt = "",
   title,
+  alt = '',
   width = 800,
   height = 600,
   className
@@ -71,16 +71,22 @@ export function ImageComponent({
     }
   }, [isFullscreen])
 
-    if(!alt && title){
-        alt = title
+
+
+  if(alt==='') {
+    if (!title || title==='') {
+      throw new Error(`Image component requires at least an alt text or a title for accessibility. (Image path: ${src})`);
+    }else {
+      alt = title;
     }
+  }
 
   return (
     <>
       {/* Regular Image */}
       <figure className={cn("my-6", className)}>
         <div
-          className="relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-gray-100"
+          className="relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-muted/50 group mx-[-75px] px-[75px] pt-[75px] pb-[50px] mb-16"
           onClick={handleClick}
           role="button"
           tabIndex={0}
@@ -99,19 +105,19 @@ export function ImageComponent({
             className="w-full h-auto p-2"
             style={{ objectFit: "contain" }}
           />
-          {/* Zoom indicator */}
-          <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+          {title && (
+              <figcaption className="text-sm text-muted-foreground text-center mt-2 italic">
+                {title}
+              </figcaption>
+          )}
+          {/* Zoom indicator - only visible on hover */}
+          <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
             </svg>
             <span>Click to enlarge</span>
           </div>
         </div>
-        {title && (
-          <figcaption className="text-sm text-muted-foreground text-center mt-2 italic">
-            {title}
-          </figcaption>
-        )}
       </figure>
 
       {/* Fullscreen Modal */}
@@ -139,7 +145,7 @@ export function ImageComponent({
               alt={alt}
               width={1920}
               height={1080}
-              className="max-w-full max-h-[95vh] w-auto h-auto object-contain"
+              className="max-w-full max-h-[90vh] w-auto h-auto object-contain"
               quality={100}
             />
             {title && (

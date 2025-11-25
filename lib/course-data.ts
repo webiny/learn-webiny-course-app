@@ -60,6 +60,11 @@ export const courseData: Course = {
                             "slug": "foundation/about"
                   },
                   {
+                            "id": "webiny-apps",
+                            "title": "Webiny Applications",
+                            "slug": "foundation/webiny-apps"
+                  },
+                  {
                             "id": "webiny-parts",
                             "title": "Parts that make Webiny",
                             "slug": "foundation/webiny-parts"

@@ -18,7 +18,7 @@ export interface ChapterMetadata {
  */
 export const chapterMetadata: Record<string, ChapterMetadata> = {
   'foundation': {
-    number: 0,
+    number: 1,
     title: 'Foundation',
     description: 'Learn the fundamentals of Webiny',
     icon: 'emoji_events' // Trophy/crown icon

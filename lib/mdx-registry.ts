@@ -10,6 +10,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "best-practices/performance": () => import("@/content/lessons/best-practices/performance.mdx"),
   "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
+  "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
@@ -60,7 +61,18 @@ export const mdxRegistry: LessonRegistryItem[] = [
     import: () => import("@/content/lessons/foundation/about.mdx"),
     frontmatter: {
           "title": "About Webiny",
-          "description": "An introduction to Webiny and its core concepts."
+          "description": "An introduction to Webiny and its core concepts.",
+          "order": 1
+    },
+    chapter: "foundation"
+  },
+  {
+    slug: "foundation/webiny-apps",
+    import: () => import("@/content/lessons/foundation/webiny-apps.mdx"),
+    frontmatter: {
+          "title": "Webiny Applications",
+          "description": "An overview of the built-in applications that are included with the Webiny content platform.",
+          "order": 3
     },
     chapter: "foundation"
   },
@@ -69,7 +81,8 @@ export const mdxRegistry: LessonRegistryItem[] = [
     import: () => import("@/content/lessons/foundation/webiny-parts.mdx"),
     frontmatter: {
           "title": "Parts that make Webiny",
-          "description": "An overview of the core components that make the Webiny platform."
+          "description": "An overview of the core components that make the Webiny platform.",
+          "order": 2
     },
     chapter: "foundation"
   },
@@ -170,6 +183,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
 
 /**
  * Get all chapters with their lessons
+ * Lessons are sorted by the 'order' field in frontmatter, or alphabetically by slug if no order is specified
  */
 export function getChaptersWithLessons() {
   const chapters: Record<string, LessonRegistryItem[]> = {}
@@ -177,6 +191,23 @@ export function getChaptersWithLessons() {
     if (!chapters[item.chapter]) chapters[item.chapter] = []
     chapters[item.chapter].push(item)
   })
+  
+  // Sort lessons within each chapter by order field (if present) or by slug
+  Object.keys(chapters).forEach(chapterKey => {
+    chapters[chapterKey].sort((a, b) => {
+      // If both have order, sort by order
+      const orderA = a.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
+      const orderB = b.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
+      
+      if (orderA !== orderB) {
+        return orderA - orderB
+      }
+      
+      // If order is the same (or both missing), sort alphabetically by slug
+      return a.slug.localeCompare(b.slug)
+    })
+  })
+  
   return chapters
 }
 
