@@ -21,7 +21,7 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
     number: 1,
     title: 'Foundation',
     description: 'Learn the fundamentals of Webiny',
-    icon: 'emoji_events' // Trophy/crown icon
+    icon: 'crown' // Trophy/crown icon
   },
   'introduction': {
     number: 1,
