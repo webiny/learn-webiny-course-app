@@ -31,20 +31,30 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
     number: 7,                           // Chapter order
     title: 'Your Chapter Title',         // Display name
     description: 'Brief description',    // Chapter description
-    icon: 'rocket'                       // Icon type (see below)
+    icon: 'rocket_launch'                // Material Icon name (see below)
   }
 }
 ```
 
 #### Available Icons
 
-- `book` - Documentation/reading
-- `rocket` - Getting started/launch
+Chapters use **Google Material Icons**. You can use any icon from [Google Material Icons](https://fonts.google.com/icons).
+
+**Popular Chapter Icons:**
+- `menu_book` - Documentation/reading
+- `rocket_launch` - Getting started/launch
 - `palette` - Design/visual
 - `edit` - Editing/CMS
 - `cloud` - Cloud/serverless
-- `zap` - Performance/speed
-- `criwb` - Foundation
+- `bolt` - Performance/speed
+- `emoji_events` - Foundation/achievement
+- `school` - Learning/education
+- `construction` - Building/setup
+- `api` - APIs/integration
+- `security` - Security/permissions
+- `storage` - Database/storage
+
+**More icons:** Browse the full collection at [Google Material Icons](https://fonts.google.com/icons)
 
 ### 2. Creating Lessons
 

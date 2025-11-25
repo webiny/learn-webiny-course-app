@@ -5,154 +5,30 @@ export interface ChapterIconProps {
   size?: number
 }
 
-// Introduction - Book icon
-export function BookIcon({ className, size = 24 }: ChapterIconProps) {
+// Material Icon component
+const MaterialIcon = ({ name, className, size = 24 }: { name: string; className?: string; size?: number }) => {
   return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <span
+      className={`material-symbols-outlined select-none ${className || ''}`}
+      style={{
+        fontSize: `${size}px`,
+        fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24",
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     >
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-    </svg>
+      {name}
+    </span>
   )
 }
 
-// Getting Started - Rocket icon
-export function RocketIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
-      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-    </svg>
-  )
-}
+// Type for all available Material Icon names
+// You can use any icon from https://fonts.google.com/icons
+export type ChapterIconType = string
 
-// Website Builder - Palette icon
-export function PaletteIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
-      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
-      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
-      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
-      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
-    </svg>
-  )
-}
-
-// Headless CMS - Edit icon
-export function EditIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  )
-}
-
-// Serverless - Cloud icon
-export function CloudIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-    </svg>
-  )
-}
-
-// Best Practices - Zap icon
-export function ZapIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-    <svg
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  )
-}
-
-export function CrownIcon({ className, size = 24 }: ChapterIconProps) {
-  return (
-      <svg className={className}
-           width={size}
-           height={size}
-           viewBox="0 -960 960 960" fill="#fff"><path d="M200-160v-80h560v80H200Zm0-140-51-321q-2 0-4.5.5t-4.5.5q-25 0-42.5-17.5T80-680q0-25 17.5-42.5T140-740q25 0 42.5 17.5T200-680q0 7-1.5 13t-3.5 11l125 56 125-171q-11-8-18-21t-7-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820q0 15-7 28t-18 21l125 171 125-56q-2-5-3.5-11t-1.5-13q0-25 17.5-42.5T820-740q25 0 42.5 17.5T880-680q0 25-17.5 42.5T820-620q-2 0-4.5-.5t-4.5-.5l-51 321H200Zm68-80h424l26-167-105 46-133-183-133 183-105-46 26 167Zm212 0Z"/></svg>
-  )
-}
-
-// Map of icon types to components
-export const ChapterIcons = {
-  book: BookIcon,
-  rocket: RocketIcon,
-  palette: PaletteIcon,
-  edit: EditIcon,
-  cloud: CloudIcon,
-  zap: ZapIcon,
-  crown: CrownIcon,
-} as const
-
-export type ChapterIconType = keyof typeof ChapterIcons
-
-// Generic component to render any chapter icon
+// Generic component to render any Material Icon
 export function ChapterIcon({ type, className, size = 24 }: { type: ChapterIconType } & ChapterIconProps) {
-  const IconComponent = ChapterIcons[type] || BookIcon
-  return <IconComponent className={className} size={size} />
+  return <MaterialIcon name={type} className={className} size={size} />
 }
 

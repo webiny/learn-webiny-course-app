@@ -80,7 +80,7 @@ export function ImageComponent({
       {/* Regular Image */}
       <figure className={cn("my-6", className)}>
         <div
-          className="relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity"
+          className="relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-gray-100"
           onClick={handleClick}
           role="button"
           tabIndex={0}

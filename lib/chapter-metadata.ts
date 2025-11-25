@@ -21,43 +21,49 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
     number: 0,
     title: 'Foundation',
     description: 'Learn the fundamentals of Webiny',
-    icon: 'crown'
+    icon: 'emoji_events' // Trophy/crown icon
   },
   'introduction': {
     number: 1,
     title: 'Introduction',
     description: 'Dive into the course materials',
-    icon: 'book'
+    icon: 'menu_book' // Book icon
   },
   'getting-started': {
     number: 2,
     title: 'Getting Started',
     description: 'Learn how to create a Webiny application and run your local development server.',
-    icon: 'rocket'
+    icon: 'rocket_launch' // Rocket icon
   },
   'website-builder': {
     number: 3,
     title: 'Website Builder',
     description: "Learn how to build pages with Webiny's visual website builder.",
-    icon: 'palette'
+    icon: 'palette' // Palette icon
   },
   'headless-cms': {
     number: 4,
     title: 'Headless CMS',
     description: "Learn how to use Webiny's Headless CMS to manage your content.",
-    icon: 'edit'
+    icon: 'edit' // Edit icon
   },
   'serverless': {
     number: 5,
     title: 'Serverless',
     description: 'Learn about the serverless architecture that powers Webiny.',
-    icon: 'cloud'
+    icon: 'cloud' // Cloud icon
   },
   'best-practices': {
     number: 6,
     title: 'Best Practices',
     description: 'Learn best practices for building production-ready Webiny applications.',
-    icon: 'zap'
+    icon: 'bolt' // Lightning/zap icon
+  },
+  'webiny-foundations': {
+    number: 7,
+    title: 'Webiny Foundations',
+    description: 'Deep dive into Webiny foundations.',
+    icon: 'foundation' // Foundation icon
   }
 }
 
@@ -81,7 +87,7 @@ export function getChapterMetadata(slug: string): ChapterMetadata {
     number: 999,
     title,
     description: `Learn about ${slug.replace(/-/g, ' ')}`,
-    icon: 'book'
+    icon: 'menu_book' // Default book icon
   }
 }
 

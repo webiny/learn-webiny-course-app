@@ -66,7 +66,7 @@ export function ChapterCoverIcon({icon} : {icon?: React.ReactNode}) {
                             className="h-full w-3 rounded-l-md bg-linear-to-r from-[#2e2e2e] via-[#3e3e3e] to-[#2e2e2e]"></div>
                         <div
                             className="flex h-full w-full rounded-r-sm bg-linear-to-br from-gray-50 to-black/10 pb-3 pr-3 dark:from-gray dark:to-black/50">
-                            <div className="absolute bottom-[22px] left-[25px] max-w-[100px]">
+                            <div className="absolute bottom-[22px] left-[25px] max-w-[100px h-[32px]">
                                 {icon}
                             </div>
                         </div>
