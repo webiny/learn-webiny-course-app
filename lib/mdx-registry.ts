@@ -7,8 +7,6 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
-  "best-practices/performance": () => import("@/content/lessons/best-practices/performance.mdx"),
-  "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
   "foundation/infra-and-hosting": () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
   "foundation/multi-tenancy": () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
@@ -18,14 +16,6 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
   "getting-started/using-images": () => import("@/content/lessons/getting-started/using-images.mdx"),
-  "headless-cms/content-models": () => import("@/content/lessons/headless-cms/content-models.mdx"),
-  "headless-cms/graphql-api": () => import("@/content/lessons/headless-cms/graphql-api.mdx"),
-  "introduction": () => import("@/content/lessons/introduction/introduction.mdx"),
-  "serverless/architecture": () => import("@/content/lessons/serverless/architecture.mdx"),
-  "serverless/deployment": () => import("@/content/lessons/serverless/deployment.mdx"),
-  "website-builder/creating-pages": () => import("@/content/lessons/website-builder/creating-pages.mdx"),
-  "website-builder/custom-elements": () => import("@/content/lessons/website-builder/custom-elements.mdx"),
-  "website-builder/test-page": () => import("@/content/lessons/website-builder/test-page.mdx"),
 }
 
 /**
@@ -47,18 +37,6 @@ export interface LessonRegistryItem {
  * Includes frontmatter and chapter info for each lesson
  */
 export const mdxRegistry: LessonRegistryItem[] = [
-  {
-    slug: "best-practices/performance",
-    import: () => import("@/content/lessons/best-practices/performance.mdx"),
-    frontmatter: {},
-    chapter: "best-practices"
-  },
-  {
-    slug: "best-practices/security",
-    import: () => import("@/content/lessons/best-practices/security.mdx"),
-    frontmatter: {},
-    chapter: "best-practices"
-  },
   {
     slug: "foundation/about",
     import: () => import("@/content/lessons/foundation/about.mdx"),
@@ -143,74 +121,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "description": "Learn how to add images to your lesson content"
     },
     chapter: "getting-started"
-  },
-  {
-    slug: "headless-cms/content-models",
-    import: () => import("@/content/lessons/headless-cms/content-models.mdx"),
-    frontmatter: {
-          "title": "Creating Content Models"
-    },
-    chapter: "headless-cms"
-  },
-  {
-    slug: "headless-cms/graphql-api",
-    import: () => import("@/content/lessons/headless-cms/graphql-api.mdx"),
-    frontmatter: {
-          "title": "Using the GraphQL API"
-    },
-    chapter: "headless-cms"
-  },
-  {
-    slug: "introduction",
-    import: () => import("@/content/lessons/introduction/introduction.mdx"),
-    frontmatter: {
-          "title": "Welcome to Learn Webiny"
-    },
-    chapter: "introduction"
-  },
-  {
-    slug: "serverless/architecture",
-    import: () => import("@/content/lessons/serverless/architecture.mdx"),
-    frontmatter: {
-          "title": "Understanding the Architecture"
-    },
-    chapter: "serverless"
-  },
-  {
-    slug: "serverless/deployment",
-    import: () => import("@/content/lessons/serverless/deployment.mdx"),
-    frontmatter: {
-          "title": "Deploying to AWS"
-    },
-    chapter: "serverless"
-  },
-  {
-    slug: "website-builder/creating-pages",
-    import: () => import("@/content/lessons/website-builder/creating-pages.mdx"),
-    frontmatter: {
-          "title": "Creating Pages"
-    },
-    chapter: "website-builder"
-  },
-  {
-    slug: "website-builder/custom-elements",
-    import: () => import("@/content/lessons/website-builder/custom-elements.mdx"),
-    frontmatter: {
-          "title": "Custom Page Elements"
-    },
-    chapter: "website-builder"
-  },
-  {
-    slug: "website-builder/test-page",
-    import: () => import("@/content/lessons/website-builder/test-page.mdx"),
-    frontmatter: {
-          "title": "This is a Test",
-          "description": "A test page for the website builder",
-          "chapterTitle": "Website Builder",
-          "chapterNumber": 3,
-          "chapterIcon": "palette"
-    },
-    chapter: "website-builder"
   }
 ]
 

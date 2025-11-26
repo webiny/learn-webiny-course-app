@@ -35,22 +35,6 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
-        id: "best-practices",
-        ...chapterMetadata["best-practices"],
-        lessons: [
-                  {
-                            "id": "performance",
-                            "title": "Performance",
-                            "slug": "best-practices/performance"
-                  },
-                  {
-                            "id": "security",
-                            "title": "Security",
-                            "slug": "best-practices/security"
-                  }
-        ]
-    },
-    {
         id: "foundation",
         ...chapterMetadata["foundation"],
         lessons: [
@@ -104,75 +88,6 @@ export const courseData: Course = {
                             "id": "using-images",
                             "title": "Using Images in Lessons",
                             "slug": "getting-started/using-images"
-                  }
-        ]
-    },
-    {
-        id: "headless-cms",
-        ...chapterMetadata["headless-cms"],
-        lessons: [
-                  {
-                            "id": "content-models",
-                            "title": "Creating Content Models",
-                            "slug": "headless-cms/content-models"
-                  },
-                  {
-                            "id": "graphql-api",
-                            "title": "Using the GraphQL API",
-                            "slug": "headless-cms/graphql-api"
-                  }
-        ]
-    },
-    {
-        id: "introduction",
-        ...chapterMetadata["introduction"],
-        lessons: [
-                  {
-                            "id": "introduction",
-                            "title": "Welcome to Learn Webiny",
-                            "slug": "introduction"
-                  }
-        ]
-    },
-    {
-        id: "serverless",
-        ...chapterMetadata["serverless"],
-        lessons: [
-                  {
-                            "id": "architecture",
-                            "title": "Understanding the Architecture",
-                            "slug": "serverless/architecture"
-                  },
-                  {
-                            "id": "deployment",
-                            "title": "Deploying to AWS",
-                            "slug": "serverless/deployment"
-                  }
-        ]
-    },
-    {
-        id: "webiny-foundations",
-        ...chapterMetadata["webiny-foundations"],
-        lessons: []
-    },
-    {
-        id: "website-builder",
-        ...chapterMetadata["website-builder"],
-        lessons: [
-                  {
-                            "id": "creating-pages",
-                            "title": "Creating Pages",
-                            "slug": "website-builder/creating-pages"
-                  },
-                  {
-                            "id": "custom-elements",
-                            "title": "Custom Page Elements",
-                            "slug": "website-builder/custom-elements"
-                  },
-                  {
-                            "id": "test-page",
-                            "title": "This is a Test",
-                            "slug": "website-builder/test-page"
                   }
         ]
     }

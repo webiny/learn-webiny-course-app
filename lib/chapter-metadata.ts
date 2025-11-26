@@ -20,51 +20,15 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
   'foundation': {
     number: 1,
     title: 'Foundation',
-    description: 'Learn the fundamentals of Webiny',
+    description: 'Overview of Webiny fundamentals.',
     icon: 'crown' // Trophy/crown icon
-  },
-  'introduction': {
-    number: 1,
-    title: 'Introduction',
-    description: 'Dive into the course materials',
-    icon: 'menu_book' // Book icon
   },
   'getting-started': {
     number: 2,
     title: 'Getting Started',
-    description: 'Learn how to create a Webiny application and run your local development server.',
+    description: 'Learn how to install and deploy Webiny.',
     icon: 'rocket_launch' // Rocket icon
   },
-  'website-builder': {
-    number: 3,
-    title: 'Website Builder',
-    description: "Learn how to build pages with Webiny's visual website builder.",
-    icon: 'palette' // Palette icon
-  },
-  'headless-cms': {
-    number: 4,
-    title: 'Headless CMS',
-    description: "Learn how to use Webiny's Headless CMS to manage your content.",
-    icon: 'edit' // Edit icon
-  },
-  'serverless': {
-    number: 5,
-    title: 'Serverless',
-    description: 'Learn about the serverless architecture that powers Webiny.',
-    icon: 'cloud' // Cloud icon
-  },
-  'best-practices': {
-    number: 6,
-    title: 'Best Practices',
-    description: 'Learn best practices for building production-ready Webiny applications.',
-    icon: 'bolt' // Lightning/zap icon
-  },
-  'webiny-foundations': {
-    number: 7,
-    title: 'Webiny Foundations',
-    description: 'Deep dive into Webiny foundations.',
-    icon: 'foundation' // Foundation icon
-  }
 }
 
 /**
