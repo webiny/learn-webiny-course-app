@@ -7,6 +7,7 @@ import { LessonH1 } from "@/components/lesson-h1"
 import { ImageComponent } from "@/components/image"
 import { ExternalLink } from "@/components/external-link"
 import { IconTitle } from "@/components/icon-title"
+import { PaidFeature } from "@/components/paid-feature"
 
 export const mdxComponents: MDXComponents = {
   // Custom components available in MDX
@@ -15,6 +16,7 @@ export const mdxComponents: MDXComponents = {
   CodeBlock,
   ChapterOverview,
   IconTitle,
+  PaidFeature,
   Image: ImageComponent,
   ExternalLink,
   // Override default HTML elements with custom styling

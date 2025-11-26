@@ -300,9 +300,9 @@ Highlight important information with styled callouts.
 
 **Types:**
 
-**Info (default):**
+**Info:**
 ```mdx
-<Callout>
+<Callout type="info">
 This is an informational callout with useful tips.
 </Callout>
 ```
@@ -314,22 +314,30 @@ This is an informational callout with useful tips.
 </Callout>
 ```
 
-**Tip:**
+**Hint:**
 ```mdx
-<Callout type="tip">
-💡 **Pro Tip:** Use keyboard shortcuts to speed up your workflow.
+<Callout type="hint">
+💡 **Tip:** Use keyboard shortcuts to speed up your workflow.
 </Callout>
 ```
 
-**Error:**
+**Success:**
 ```mdx
-<Callout type="error">
-❌ **Error:** Make sure to install dependencies first.
+<Callout type="success">
+✅ **Success:** Your project is now deployed!
+</Callout>
+```
+
+**Question:**
+```mdx
+<Callout type="question">
+🤔 **Think about it:** How would you structure this for scalability?
 </Callout>
 ```
 
 **Props:**
-- `type` (optional): `info`, `warning`, `tip`, `error` (default: `info`)
+- `type` (optional): `info`, `warning`, `hint`, `success`, `question` (default: `info`)
+- `title` (optional): Custom title to display
 - `children` (required): Content to display
 
 **Features:**
@@ -337,6 +345,52 @@ This is an informational callout with useful tips.
 - ✅ Icon indicators
 - ✅ Markdown support in content
 - ✅ Theme-aware
+- ✅ Custom titles
+
+---
+
+### PaidFeature
+
+Highlight features that are only available in paid Webiny tiers.
+
+**Business Tier (includes Enterprise):**
+```mdx
+<PaidFeature tier="business">
+Advanced multi-tenancy features including custom tenant hierarchies and granular access control are available in Webiny Business and Enterprise tiers.
+</PaidFeature>
+```
+
+**Enterprise Tier Only:**
+```mdx
+<PaidFeature tier="enterprise">
+SSO integration and advanced security features are exclusively available in Webiny Enterprise tier.
+</PaidFeature>
+```
+
+**With Custom Message:**
+```mdx
+<PaidFeature tier="business" message="Custom branding options require a Business or Enterprise license.">
+Learn how to customize your Webiny instance branding.
+</PaidFeature>
+```
+
+**Props:**
+- `tier` (required): `"business"` or `"enterprise"`
+  - `business`: Feature available in Business AND Enterprise tiers
+  - `enterprise`: Feature available ONLY in Enterprise tier
+- `message` (optional): Custom message to display
+- `children` (optional): Custom content (alternative to message)
+
+**Features:**
+- ✅ Visual tier badge (💎 Business or 💎 Enterprise)
+- ✅ Color-coded by tier (blue for business, purple for enterprise)
+- ✅ Clear availability indication
+- ✅ Theme-aware styling
+- ✅ Icon indicators
+
+**Default Messages:**
+- Business: "This feature is available in Webiny Business and Enterprise tiers."
+- Enterprise: "This feature is available exclusively in Webiny Enterprise tier."
 
 ---
 
