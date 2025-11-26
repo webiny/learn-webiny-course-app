@@ -16,6 +16,7 @@ dist
 .DS_Store
 *.pem
 .idea
+.idea/
 .idea/*
 
 # debug

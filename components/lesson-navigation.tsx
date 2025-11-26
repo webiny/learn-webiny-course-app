@@ -23,7 +23,7 @@ export function LessonNavigation({
   const router = useRouter()
 
   const nextUrl = isLastLessonInChapter
-    ? `/course/${currentChapterId}/complete`
+    ? `/course/${currentChapterId}/quiz`
     : nextLesson
       ? `/course/${nextLesson.slug}`
       : null
