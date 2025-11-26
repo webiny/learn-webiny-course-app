@@ -31,7 +31,7 @@ const certificationLevels = [
       "Working with the Admin app",
       "Understanding serverless concepts"
     ],
-    estimatedTime: "15-20 hours of study"
+    estimatedTime: "10-15 hours of study"
   },
   {
     id: "professional",
@@ -57,7 +57,7 @@ const certificationLevels = [
       "AWS deployment and configuration",
       "Performance optimization basics"
     ],
-    estimatedTime: "30-40 hours of study"
+    estimatedTime: "20-30 hours of study"
   },
   {
     id: "expert",
@@ -84,7 +84,7 @@ const certificationLevels = [
       "Multi-tenancy implementations",
       "CI/CD pipeline setup"
     ],
-    estimatedTime: "50-60 hours of study"
+    estimatedTime: "40-50 hours of study"
   }
 ]
 
@@ -133,7 +133,7 @@ export default function CertificationPage() {
         {/* Certification Levels */}
         <div className="space-y-8">
           {certificationLevels.map((cert, index) => (
-            <Card key={cert.id} className={`border-2 ${cert.borderColor} relative overflow-hidden`}>
+            <Card key={cert.id} className={`border-2 rounded-lg ${cert.borderColor} relative overflow-hidden`}>
               {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${cert.color} opacity-50`} />
 

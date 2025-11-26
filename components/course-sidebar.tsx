@@ -148,7 +148,7 @@ export function CourseSidebar() {
                       {chapter.number}. {chapter.title}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      {completedLessons}/{totalLessons} Lessons
+                      {completedLessons}/{totalLessons} Lessons complete
                     </p>
                   </div>
                   {isChapterComplete && (

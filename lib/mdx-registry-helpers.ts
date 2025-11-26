@@ -3,7 +3,7 @@
  * These functions provide navigation and lookup functionality
  */
 
-import { mdxRegistry, getLessonBySlug } from "./mdx-registry"
+import { getLessonBySlug, getChaptersWithLessons } from "./mdx-registry"
 import { getChapterMetadata } from "./chapter-metadata"
 
 /**
@@ -13,7 +13,8 @@ export function getLessonDataBySlug(slug: string) {
   const lesson = getLessonBySlug(slug)
   if (!lesson) return null
 
-  const chapterLessons = mdxRegistry.filter(item => item.chapter === lesson.chapter)
+  const chapters = getChaptersWithLessons()
+  const chapterLessons = chapters[lesson.chapter] || []
 
   // Get chapter metadata for consistent information
   const chapterMeta = getChapterMetadata(lesson.chapter)
@@ -40,33 +41,85 @@ export function getLessonDataBySlug(slug: string) {
 }
 
 /**
- * Get next lesson
+ * Get next lesson (respects order field within chapters)
  */
 export function getNextLesson(currentSlug: string) {
-  const currentIndex = mdxRegistry.findIndex(item => item.slug === currentSlug)
-  if (currentIndex === -1 || currentIndex === mdxRegistry.length - 1) return null
+  const currentLesson = getLessonBySlug(currentSlug)
+  if (!currentLesson) return null
 
-  const nextLesson = mdxRegistry[currentIndex + 1]
-  return {
-    chapterId: nextLesson.chapter,
-    lessonId: nextLesson.slug.split('/').pop() || nextLesson.slug,
-    slug: nextLesson.slug
+  const chapters = getChaptersWithLessons()
+  const currentChapterLessons = chapters[currentLesson.chapter] || []
+  const currentIndexInChapter = currentChapterLessons.findIndex(item => item.slug === currentSlug)
+
+  // Check if there's a next lesson in the same chapter
+  if (currentIndexInChapter !== -1 && currentIndexInChapter < currentChapterLessons.length - 1) {
+    const nextLesson = currentChapterLessons[currentIndexInChapter + 1]
+    return {
+      chapterId: nextLesson.chapter,
+      lessonId: nextLesson.slug.split('/').pop() || nextLesson.slug,
+      slug: nextLesson.slug
+    }
   }
+
+  // If last lesson in chapter, try to get first lesson from next chapter
+  const chapterKeys = Object.keys(chapters).sort()
+  const currentChapterIndex = chapterKeys.indexOf(currentLesson.chapter)
+
+  if (currentChapterIndex !== -1 && currentChapterIndex < chapterKeys.length - 1) {
+    const nextChapterKey = chapterKeys[currentChapterIndex + 1]
+    const nextChapterLessons = chapters[nextChapterKey]
+    if (nextChapterLessons && nextChapterLessons.length > 0) {
+      const nextLesson = nextChapterLessons[0]
+      return {
+        chapterId: nextLesson.chapter,
+        lessonId: nextLesson.slug.split('/').pop() || nextLesson.slug,
+        slug: nextLesson.slug
+      }
+    }
+  }
+
+  return null
 }
 
 /**
- * Get previous lesson
+ * Get previous lesson (respects order field within chapters)
  */
 export function getPreviousLesson(currentSlug: string) {
-  const currentIndex = mdxRegistry.findIndex(item => item.slug === currentSlug)
-  if (currentIndex <= 0) return null
+  const currentLesson = getLessonBySlug(currentSlug)
+  if (!currentLesson) return null
 
-  const prevLesson = mdxRegistry[currentIndex - 1]
-  return {
-    chapterId: prevLesson.chapter,
-    lessonId: prevLesson.slug.split('/').pop() || prevLesson.slug,
-    slug: prevLesson.slug
+  const chapters = getChaptersWithLessons()
+  const currentChapterLessons = chapters[currentLesson.chapter] || []
+  const currentIndexInChapter = currentChapterLessons.findIndex(item => item.slug === currentSlug)
+
+  // Check if there's a previous lesson in the same chapter
+  if (currentIndexInChapter > 0) {
+    const prevLesson = currentChapterLessons[currentIndexInChapter - 1]
+    return {
+      chapterId: prevLesson.chapter,
+      lessonId: prevLesson.slug.split('/').pop() || prevLesson.slug,
+      slug: prevLesson.slug
+    }
   }
+
+  // If first lesson in chapter, try to get last lesson from previous chapter
+  const chapterKeys = Object.keys(chapters).sort()
+  const currentChapterIndex = chapterKeys.indexOf(currentLesson.chapter)
+
+  if (currentChapterIndex > 0) {
+    const prevChapterKey = chapterKeys[currentChapterIndex - 1]
+    const prevChapterLessons = chapters[prevChapterKey]
+    if (prevChapterLessons && prevChapterLessons.length > 0) {
+      const prevLesson = prevChapterLessons[prevChapterLessons.length - 1]
+      return {
+        chapterId: prevLesson.chapter,
+        lessonId: prevLesson.slug.split('/').pop() || prevLesson.slug,
+        slug: prevLesson.slug
+      }
+    }
+  }
+
+  return null
 }
 
 /**
@@ -76,7 +129,8 @@ export function isLastLessonInChapter(slug: string): boolean {
   const lesson = getLessonBySlug(slug)
   if (!lesson) return false
 
-  const chapterLessons = mdxRegistry.filter(item => item.chapter === lesson.chapter)
+  const chapters = getChaptersWithLessons()
+  const chapterLessons = chapters[lesson.chapter] || []
   return chapterLessons[chapterLessons.length - 1]?.slug === slug
 }
 
@@ -87,7 +141,12 @@ export function getLessonNumberInChapter(slug: string): number {
   const lesson = getLessonBySlug(slug)
   if (!lesson) return 0
 
-  const chapterLessons = mdxRegistry.filter(item => item.chapter === lesson.chapter)
+  const chapters = getChaptersWithLessons()
+  const chapterLessons = chapters[lesson.chapter] || []
   return chapterLessons.findIndex(item => item.slug === slug) + 1
 }
+
+
+
+
 

@@ -200,15 +200,15 @@ export default function ExamPage() {
 
         <div className="space-y-6 mb-8">
           {questions.map((q, idx) => (
-            <Card key={q.id} className={answers[q.id] !== undefined ? "border-primary/50" : ""}>
+            <Card key={q.id} className={answers[q.id] !== undefined ? "border-primary/50 rounded-lg" : "rounded-lg hover:bg-muted/20 transition-colors"}>
               <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-sm font-bold">
+                <CardTitle className="text-base flex items-center gap-2 relative pl-16">
+                  <span className="p-6 left-0 top-[4px] absolute flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-sm font-bold">
                     {idx + 1}
                   </span>
                   Question {idx + 1}
                 </CardTitle>
-                <CardDescription className="text-base font-normal text-foreground">
+                <CardDescription className="text-base font-normal text-foreground pl-16">
                   {q.question}
                 </CardDescription>
               </CardHeader>
@@ -218,9 +218,9 @@ export default function ExamPage() {
                   value={answers[q.id]?.toString()}
                 >
                   {q.options.map((option, optIdx) => (
-                    <div key={optIdx} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <RadioGroupItem value={optIdx.toString()} id={`${q.id}-${optIdx}`} className="mt-0.5" />
-                      <Label htmlFor={`${q.id}-${optIdx}`} className="cursor-pointer flex-1 leading-relaxed">
+                    <div key={optIdx} className="flex items-start space-x-3 rounded-lg hover:bg-muted/80 transition-colors">
+                      <RadioGroupItem value={optIdx.toString()} id={`${q.id}-${optIdx}`} className="mt-4 ml-4" />
+                      <Label htmlFor={`${q.id}-${optIdx}`} className="cursor-pointer flex-1 leading-relaxed py-3">
                         {option}
                       </Label>
                     </div>

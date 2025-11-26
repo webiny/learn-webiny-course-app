@@ -99,7 +99,7 @@ export default function ExamStartPage() {
           </Button>
         </div>
 
-        <Card>
+        <Card className={"rounded-lg"}>
           <CardHeader>
             <CardTitle className="text-2xl">
               Webiny Certified {info.title}

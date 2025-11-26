@@ -35,7 +35,7 @@ export function LessonCompleteCard({ lessonSlug }: LessonCompleteCardProps) {
                   Lesson Completed
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Great job! You've completed this lesson."
+                  Great job! You've completed this lesson. You can now move on to the next one.
                 </p>
               </>
               :
