@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight, Play } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import {ChapterCover} from "@/components/chapter-cover";
 import { courseData, getLessonBySlug } from "@/lib/course-data"
 import { getProgress } from "@/lib/progress"
@@ -56,7 +56,7 @@ export default function HomePage() {
           </div>
 
           {/* Main Course Card */}
-          <div className="max-w-2xl mx-auto mb-16">
+          <div className="max-w-2xl mx-auto mb-8">
             <Card className="border-2 shadow-lg">
               <CardHeader className="text-center pb-8">
                 <ChapterCover/>
@@ -107,6 +107,37 @@ export default function HomePage() {
                     }
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Certification Card */}
+          <div className="max-w-2xl mx-auto mb-16">
+            <Card className="border shadow-md hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary text-[28px]">
+                      workspace_premium
+                    </span>
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl">Webiny Certification</CardTitle>
+                    <CardDescription>Validate your expertise and stand out</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Earn official Webiny certifications by completing courses and demonstrating your skills.
+                  Choose from three certification levels to match your expertise.
+                </p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/certification">
+                    View Certification Levels
+                    <ArrowRight className="ml-2 h-4 w-4"/>
+                  </Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
