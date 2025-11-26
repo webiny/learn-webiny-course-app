@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
-import { examQuestions } from "@/lib/exam-questions"
+import { examQuestions, ExamQuestion } from "@/lib/exam-questions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -14,6 +14,46 @@ import { FontSizeControl } from "@/components/font-size-control"
 import { WebinyLogo } from "@/components/webiny-logo"
 import { ArrowLeft } from "lucide-react"
 
+// Utility to shuffle an array using Fisher-Yates algorithm
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  }
+  return shuffled
+}
+
+// Shuffle questions and their answers
+interface ShuffledQuestion extends Omit<ExamQuestion, 'options' | 'correctAnswer'> {
+  options: string[]
+  correctAnswer: number
+  originalCorrectAnswer: number
+  answerMapping: number[] // Maps shuffled index to original index
+}
+
+function prepareShuffledQuestions(questions: ExamQuestion[]): ShuffledQuestion[] {
+  // Shuffle the questions first
+  const shuffledQuestions = shuffleArray(questions)
+
+  // Shuffle answers for each question
+  return shuffledQuestions.map(question => {
+    const indexMapping = question.options.map((_, idx) => idx)
+    const shuffledMapping = shuffleArray(indexMapping)
+
+    const shuffledOptions = shuffledMapping.map(originalIdx => question.options[originalIdx])
+    const newCorrectAnswer = shuffledMapping.indexOf(question.correctAnswer)
+
+    return {
+      ...question,
+      options: shuffledOptions,
+      correctAnswer: newCorrectAnswer,
+      originalCorrectAnswer: question.correctAnswer,
+      answerMapping: shuffledMapping
+    }
+  })
+}
+
 export default function ExamPage() {
   const router = useRouter()
   const params = useParams()
@@ -22,7 +62,13 @@ export default function ExamPage() {
   const [userInfo, setUserInfo] = useState<any>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const questions = examQuestions[level as keyof typeof examQuestions]
+  const originalQuestions = examQuestions[level as keyof typeof examQuestions]
+
+  // Memoize shuffled questions so they don't change on re-render
+  const questions = useMemo(() => {
+    if (!originalQuestions) return []
+    return prepareShuffledQuestions(originalQuestions)
+  }, [originalQuestions])
 
   useEffect(() => {
     const stored = sessionStorage.getItem('certUserInfo')
@@ -39,7 +85,39 @@ export default function ExamPage() {
     const correctAnswers = questions.filter(q => answers[q.id] === q.correctAnswer).length
     const score = Math.round((correctAnswers / questions.length) * 100)
 
-    // Send to Slack
+    // Generate certificate ID (same format as on certificate)
+    const certificateId = Date.now().toString().slice(-8)
+
+    // Generate a one-time token for result page validation
+    const resultToken = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+    const resultData = {
+      token: resultToken,
+      level,
+      score,
+      name: userInfo.name,
+      certificateId,
+      timestamp: Date.now(),
+      expiresAt: Date.now() + (5 * 60 * 1000) // 5 minutes
+    }
+    sessionStorage.setItem('examResult', JSON.stringify(resultData))
+
+    // Register token with API for server-side validation
+    try {
+      await fetch('/api/certification/result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: resultToken,
+          level,
+          score,
+          name: userInfo.name
+        })
+      })
+    } catch (error) {
+      console.error('Failed to register result token:', error)
+    }
+
+    // Send to Slack with certificate ID
     try {
       await fetch('/api/certification/submit', {
         method: 'POST',
@@ -51,7 +129,8 @@ export default function ExamPage() {
           level: level,
           score,
           totalQuestions: questions.length,
-          correctAnswers
+          correctAnswers,
+          certificateId
         })
       })
     } catch (error) {
@@ -61,8 +140,8 @@ export default function ExamPage() {
     // Clear user info
     sessionStorage.removeItem('certUserInfo')
 
-    // Navigate to results
-    router.push(`/certification/${level}/result?score=${score}&name=${encodeURIComponent(userInfo.name)}`)
+    // Navigate to results with token
+    router.push(`/certification/${level}/result?token=${resultToken}`)
   }
 
   if (!userInfo) {

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, company, email, level, score, totalQuestions, correctAnswers } = body
+    const { name, company, email, level, score, totalQuestions, correctAnswers, certificateId } = body
 
     const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL
 
@@ -56,6 +56,15 @@ export async function POST(request: Request) {
             }
           ]
         },
+        ...(passed && certificateId ? [{
+          type: "section",
+          fields: [
+            {
+              type: "mrkdwn",
+              text: `*Certificate ID:*\n\`${certificateId}\``
+            }
+          ]
+        }] : []),
         {
           type: "context",
           elements: [
