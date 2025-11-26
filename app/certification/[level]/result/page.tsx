@@ -291,7 +291,7 @@ export default function ResultPage() {
     // LinkedIn sharing with certification details
     const shareText = `I'm excited to share that I've earned the Webiny Certified ${levelTitle} certification with a score of ${score}%! 🎉
 
-This certification validates my expertise in building serverless applications with Webiny - a modern content platform built on AWS.
+This certification validates my expertise in building serverless applications with @Webiny - a modern content platform built on AWS.
 
 View my certification: ${imageUrl}
 
