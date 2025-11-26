@@ -11,6 +11,7 @@ import { getProgress } from "@/lib/progress"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { FontSizeControl } from "@/components/font-size-control"
 import { WebinyLogo } from "@/components/webiny-logo"
+import {CourseLessonList} from "@/components/CourseLessonList";
 
 export default function HomePage() {
   const [lastVisited, setLastVisited] = useState<string | null>(null)
@@ -84,7 +85,7 @@ export default function HomePage() {
                           <span className="text-sm font-medium">1</span>
                         </div>
                         <div>
-                          <h3 className="font-medium mb-1">Chapter 1: Introduction</h3>
+                          <h3 className="font-medium mb-1">Chapter 1: Foundation</h3>
                           <p className="text-sm text-muted-foreground">Dive into the course materials</p>
                         </div>
                       </div>
@@ -110,57 +111,12 @@ export default function HomePage() {
             </Card>
           </div>
 
-          {/* Additional Courses */}
-          <div className="max-w-2xl mx-auto space-y-4">
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#FF5A00]/10 flex items-center justify-center">
-                      <span className="text-2xl">📝</span>
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Headless CMS Foundations</CardTitle>
-                      <CardDescription>
-                        New to headless CMS? Learn the foundational concepts of content modeling and API-first
-                        architecture.
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/course">
-                      Start
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-            </Card>
-
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#FF5A00]/10 flex items-center justify-center">
-                      <span className="text-2xl">☁️</span>
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">Serverless Architecture</CardTitle>
-                      <CardDescription>
-                        Learn how to build and deploy serverless applications with Webiny on AWS.
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/course">
-                      Start
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardHeader>
-            </Card>
+          {/* Courses List */}
+          <div className="container mx-auto px-4 py-8 max-w-2xl">
+            <CourseLessonList/>
           </div>
+
+
         </main>
       </div>
   )
