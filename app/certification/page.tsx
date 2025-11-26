@@ -213,7 +213,7 @@ export default function CertificationPage() {
         </div>
 
         {/* How to Get Certified */}
-        <Card className="mt-12">
+        <Card className="mt-12 rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[24px]">
@@ -254,15 +254,6 @@ export default function CertificationPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* CTA */}
-        <div className="text-center mt-12">
-          <Button asChild size="lg">
-            <Link href="/course">
-              Begin Your Certification Journey
-            </Link>
-          </Button>
-        </div>
       </main>
     </div>
   )

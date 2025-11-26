@@ -57,7 +57,7 @@ export default function HomePage() {
 
           {/* Main Course Card */}
           <div className="max-w-2xl mx-auto mb-8">
-            <Card className="border-2 shadow-lg">
+            <Card className="border-2 shadow-lg rounded-lg">
               <CardHeader className="text-center pb-8">
                 <ChapterCover/>
                 <CardTitle className="text-2xl mb-2">Learn Webiny</CardTitle>
@@ -113,7 +113,7 @@ export default function HomePage() {
 
           {/* Certification Card */}
           <div className="max-w-2xl mx-auto mb-16">
-            <Card className="border shadow-md hover:shadow-lg transition-shadow">
+            <Card className="border rounded-lg shadow-md hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
