@@ -1,0 +1,49 @@
+---
+title: "Infrastructure and Hosting"
+description: "An overview of the infrastructure and hosting options for deploying Webiny applications."
+order: 5
+---
+
+# Infrastructure and Hosting
+
+Webiny is designed to be deployed on cloud infrastructure, leveraging modern cloud services to provide scalability, reliability, and performance. In this lesson, we will provide an overview of the infrastructure and hosting options for deploying Webiny applications.
+
+<ChapterOverview
+    items={[
+        { icon: "cloud", text: "Infrastructure requirements to host Webiny." },
+        { icon: "bolt", text: "Why we choose serverless infrastructure." },
+    ]}
+/>
+
+## Infrastructure Requirements
+
+The only infrastructure requirement for hosting Webiny is an AWS account. Webiny is built to run on AWS serverless services, which provide a scalable and cost-effective way to deploy applications.
+
+### What about other cloud providers?
+
+At this point, other cloud providers are not supported.
+
+## Why Serverless, why AWS-only?
+
+Our goal was to create a **self-hosted** content platform, one that feels like a SaaS solution, but without the vendor lock-in, high-costs and limitations on shared resources.
+
+With Webiny you get the infrastructure as code (IaC) setup that automatically provisions all the necessary cloud resources for you within your own AWS account.
+
+This IaC setup has been tweaked, tested and optimized in high-load production environments to ensure that you get the best performance at the lowest cost. The templates have been reviewed by AWS solutions architects to ensure they follow best practices, and by security teams from many different organisations to ensure your data is safe.
+
+The built-in template also ensure many additional best practices, such as setting up automated backups, setting up CI/CD pipelines for easy deployments, multi-AZ deployments for high availability, auto-scaling to handle traffic spikes, and much more.
+
+<Callout type="question" title="Won't that be expensive for development and testing?">
+    Not at all. Firstly Webiny has a `prod` and a `dev` deployment template, so you can have a smaller and cheaper setup for your development and testing environments. Secondly, Webiny is built to be extremely cost-effective. In fact, for most small to medium projects, the monthly cost of running Webiny is often less than a cup of coffee and many stay within the AWS free tier and don't pay anything. This is because serverless infrastructure allows you to pay only for what you use, and Webiny has been optimized to minimize resource consumption during low-traffic periods.
+</Callout>
+
+The templates are open-source, so you can always inspect them, modify them or extend them as needed.
+
+### Why self-hosted?
+
+There are many benefits to self-hosting your content platform:
+- **Data ownership and control**: You have full control over your data and infrastructure, allowing you to comply with data privacy regulations and maintain ownership of your content. In addition, nobody can train AI models on your data without your explicit permission.
+- **Cost-effectiveness**: By self-hosting, you can optimize costs based on your specific usage patterns and avoid vendor lock-in.
+- **Customization**: You can customize and extend every part of the platform to meet your specific project requirements, both on the UI and API side.
+- **Security**: You can implement your own security measures and policies to protect your data and infrastructure.
+

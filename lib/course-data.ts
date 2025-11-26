@@ -32,7 +32,7 @@ export const courseData: Course = {
   id: "learn-webiny",
   title: "Learn Webiny",
   description:
-    "Go from beginner to expert learning the foundations of Webiny by building a fully functional application that uses all the latest features.",
+    "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
         id: "best-practices",
@@ -60,9 +60,24 @@ export const courseData: Course = {
                             "slug": "foundation/about"
                   },
                   {
+                            "id": "infra-and-hosting",
+                            "title": "Infrastructure and Hosting",
+                            "slug": "foundation/infra-and-hosting"
+                  },
+                  {
+                            "id": "multi-tenancy",
+                            "title": "Multi-Tenancy",
+                            "slug": "foundation/multi-tenancy"
+                  },
+                  {
                             "id": "webiny-apps",
                             "title": "Webiny Applications",
                             "slug": "foundation/webiny-apps"
+                  },
+                  {
+                            "id": "webiny-framework",
+                            "title": "Webiny Framework",
+                            "slug": "foundation/webiny-framework"
                   },
                   {
                             "id": "webiny-parts",

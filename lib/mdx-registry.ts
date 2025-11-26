@@ -10,7 +10,10 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "best-practices/performance": () => import("@/content/lessons/best-practices/performance.mdx"),
   "best-practices/security": () => import("@/content/lessons/best-practices/security.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
+  "foundation/infra-and-hosting": () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
+  "foundation/multi-tenancy": () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
   "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
+  "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
   "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
   "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
@@ -67,12 +70,42 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "foundation"
   },
   {
+    slug: "foundation/infra-and-hosting",
+    import: () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
+    frontmatter: {
+          "title": "Infrastructure and Hosting",
+          "description": "An overview of the infrastructure and hosting options for deploying Webiny applications.",
+          "order": 5
+    },
+    chapter: "foundation"
+  },
+  {
+    slug: "foundation/multi-tenancy",
+    import: () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
+    frontmatter: {
+          "title": "Multi-Tenancy",
+          "description": "Understanding multi-tenancy in Webiny and how it enables managing multiple projects from a single instance.",
+          "order": 6
+    },
+    chapter: "foundation"
+  },
+  {
     slug: "foundation/webiny-apps",
     import: () => import("@/content/lessons/foundation/webiny-apps.mdx"),
     frontmatter: {
           "title": "Webiny Applications",
           "description": "An overview of the built-in applications that are included with the Webiny content platform.",
           "order": 3
+    },
+    chapter: "foundation"
+  },
+  {
+    slug: "foundation/webiny-framework",
+    import: () => import("@/content/lessons/foundation/webiny-framework.mdx"),
+    frontmatter: {
+          "title": "Webiny Framework",
+          "description": "An overview of the Webiny Framework, the underlying framework that powers the Webiny content platform.",
+          "order": 4
     },
     chapter: "foundation"
   },
