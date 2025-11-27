@@ -284,7 +284,8 @@ Add interactive quizzes to test knowledge.
 - `question` (required): The question text
 - `options` (required): Array of answer options
 - `correctAnswer` (required): Index of correct answer (0-based)
-- `explanation` (optional): Explanation shown after answering
+- `explanation` (optional): Explanation shown after answering correctly
+- `hint` Hint shown after answering incorrectly
 
 **Features:**
 - ✅ Interactive selection

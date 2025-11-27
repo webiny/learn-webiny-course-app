@@ -13,9 +13,9 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
   "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
-  "getting-started/project-structure": () => import("@/content/lessons/getting-started/project-structure.mdx"),
-  "getting-started/setup": () => import("@/content/lessons/getting-started/setup.mdx"),
-  "getting-started/using-images": () => import("@/content/lessons/getting-started/using-images.mdx"),
+  "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
+  "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
+  "getting-started/webiny-deployments": () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
 }
 
 /**
@@ -98,27 +98,32 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "foundation"
   },
   {
-    slug: "getting-started/project-structure",
-    import: () => import("@/content/lessons/getting-started/project-structure.mdx"),
+    slug: "getting-started/installing-webiny",
+    import: () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
     frontmatter: {
-          "title": "Project Structure"
+          "title": "Installing Webiny",
+          "description": "Step-by-step guide to installing Webiny on your local machine.",
+          "order": 1
     },
     chapter: "getting-started"
   },
   {
-    slug: "getting-started/setup",
-    import: () => import("@/content/lessons/getting-started/setup.mdx"),
+    slug: "getting-started/webiny-cli-overview",
+    import: () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
     frontmatter: {
-          "title": "Setting Up Your Webiny Project"
+          "title": "Webiny CLI Overview",
+          "description": "An introduction to the Webiny Command Line Interface (CLI) and its functionalities.",
+          "order": 2
     },
     chapter: "getting-started"
   },
   {
-    slug: "getting-started/using-images",
-    import: () => import("@/content/lessons/getting-started/using-images.mdx"),
+    slug: "getting-started/webiny-deployments",
+    import: () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
     frontmatter: {
-          "title": "Using Images in Lessons",
-          "description": "Learn how to add images to your lesson content"
+          "title": "Deployment Environments",
+          "description": "Understanding Webiny environments and deployments.",
+          "order": 3
     },
     chapter: "getting-started"
   }

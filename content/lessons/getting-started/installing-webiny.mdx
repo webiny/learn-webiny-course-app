@@ -1,0 +1,74 @@
+---
+title: "Installing Webiny"
+description: "Step-by-step guide to installing Webiny on your local machine."
+order: 1
+---
+
+# Installing Webiny
+
+In this lesson, we will guide you through the process of installing Webiny on your local machine. By the end of this lesson you'll have a Webiny instance, but we won't be able to access it just yet. In the next lesson, we will cover how to deploy Webiny to AWS and access the admin panel.
+
+<ChapterOverview
+  items={[
+    { icon: "info", text: "Prerequisites for installing Webiny." },
+    { icon: "download", text: "Step-by-step installation guide." },
+    { icon: "settings", text: "Configuring your Webiny instance." },
+  ]}
+/>
+
+## Prerequisites
+
+Before we begin the installation process, ensure that you have the following prerequisites in place:
+- **Node.js**: Make sure you have Node.js (version 20 or higher) installed on your machine.
+If you don't have it installed, we recommend using <ExternalLink href="https://github.com/nvm-sh/nvm">Node Version Manager</ExternalLink> (nvm) to install and manage your Node.js versions.
+- **Yarn**: Yarn package manager installed globally. You can install it by following the instructions on the <ExternalLink href="https://yarnpkg.com/getting-started/install">official Yarn website</ExternalLink>.
+- **AWS Account with programmatic access**: An active AWS account is required to deploy Webiny. If you don't have one, you can create it for free at <ExternalLink href="https://aws.amazon.com/">aws.amazon.com</ExternalLink>.
+
+<Callout type="info" title="AWS Free Tier">
+  For the purposes of this course, you can use the AWS Free Tier, which provides limited access to AWS services at no cost for the first 12 months. This will be more than sufficient for learning and experimenting with Webiny.
+</Callout>
+
+<Callout type="info" title="Don't have an AWS account or need steps to configure programmatic access?">
+    If you don't have an AWS account or need help setting up programmatic access, refer to this page on Webiny Docs portal: <ExternalLink href="https://www.webiny.com/docs/infrastructure/aws/configure-aws-credentials">AWS Account Setup</ExternalLink>
+</Callout>
+
+## Installation Steps
+
+Once you have all the prerequisites in place, we recommend creating a new Webiny project using `create-webiny-project` - a tool that sets everything up automatically for you. So, in your terminal of choice, run the following command:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx create-webiny-project learn-webiny-course`} />
+
+From there, follow the on-screen setup instructions, which includes answering a couple of project-related questions - please see the details in the next section.
+
+## Configuring Your Webiny Instance
+
+During the installation process, you will be prompted to configure your Webiny instance. This includes setting up your AWS credentials, choosing a project name, and selecting the desired region for deployment.
+
+One of the prompts will ask you to choose a database for your Webiny instance. You can choose between two options:
+- **Amazon DynamoDB** - for small and medium sized projects)
+- **Amazon DynamoDB + Amazon OpenSearch** - for large / enterprise-level projects
+
+For the purposes of this course, we recommend selecting **Amazon DynamoDB**. This is a fully serverless cost-per usage database with a generous free tier, making it ideal for learning and experimentation without incurring any cost.
+
+<Callout type="warning" title="Choose wisely">
+  In case of a production project, make sure you pick the appropriate database option based on your project's needs.
+
+    **YOU CANNOT CHANGE THE DATABASE TYPE LATER.**
+
+    If you're unsure if you project will grow to a large scale, it's safer to pick the DynamoDB + OpenSearch option right away and start with a smaller OpenSearch instance, which you can later scale up as needed without any downtime.
+</Callout>
+
+At this point you should have a folder called `learn-webiny-course` which contains your Webiny project. In the next lesson, we will cover how to deploy Webiny to AWS and access the admin panel for the first time.
+
+<Quiz
+    question="What's the best database option to choose when installing Webiny for learning and experimentation purposes?"
+    options={[
+        "Amazon DynamoDB",
+        "Amazon RDS",
+        "Amazon DynamoDB + Amazon OpenSearch",
+        "Amazon Aurora",
+    ]}
+    correctAnswer={1}
+    explanation="Correct! Amazon DynamoDB is a fully serverless, cost-per-usage database with a generous free tier, making it ideal for learning and experimentation without incurring any cost."
+    hint="You want a serverless database with a free tier and cost per usage which is perfect for learning purposes."
+/>

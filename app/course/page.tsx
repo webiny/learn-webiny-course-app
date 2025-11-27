@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import {CourseLessonList} from "@/components/CourseLessonList";
+import {CourseLessonList} from "@/components/course-lesson-list";
 import { Check, ChevronRight } from "lucide-react"
 import { courseData } from "@/lib/course-data"
 import { useProgress } from "@/hooks/use-progress"

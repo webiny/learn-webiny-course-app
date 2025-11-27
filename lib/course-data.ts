@@ -75,19 +75,19 @@ export const courseData: Course = {
         ...chapterMetadata["getting-started"],
         lessons: [
                   {
-                            "id": "project-structure",
-                            "title": "Project Structure",
-                            "slug": "getting-started/project-structure"
+                            "id": "installing-webiny",
+                            "title": "Installing Webiny",
+                            "slug": "getting-started/installing-webiny"
                   },
                   {
-                            "id": "setup",
-                            "title": "Setting Up Your Webiny Project",
-                            "slug": "getting-started/setup"
+                            "id": "webiny-cli-overview",
+                            "title": "Webiny CLI Overview",
+                            "slug": "getting-started/webiny-cli-overview"
                   },
                   {
-                            "id": "using-images",
-                            "title": "Using Images in Lessons",
-                            "slug": "getting-started/using-images"
+                            "id": "webiny-deployments",
+                            "title": "Deployment Environments",
+                            "slug": "getting-started/webiny-deployments"
                   }
         ]
     }

@@ -5,15 +5,10 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export interface QuizOption {
-  id: string
-  text: string
-}
-
 export interface QuizData {
   question: string
-  options: QuizOption[]
-  correctAnswer: string
+  options: string[]
+  correctAnswer: number
   hint?: string
   explanation?: string
 }
@@ -21,8 +16,8 @@ export interface QuizData {
 interface QuizProps {
   quiz?: QuizData
   question?: string
-  options?: QuizOption[]
-  correctAnswer?: string
+  options?: string[]
+  correctAnswer?: number
   hint?: string
   explanation?: string
 }
@@ -31,19 +26,19 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
   const quizData = quiz || {
     question: question || "",
     options: options || [],
-    correctAnswer: correctAnswer || "",
+    correctAnswer: correctAnswer || 0,
     hint,
     explanation,
   }
 
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [showResult, setShowResult] = useState(false)
   const [hasAnswered, setHasAnswered] = useState(false)
 
-  const isCorrect = selectedAnswer === quizData.correctAnswer
+  const isCorrect = selectedAnswer === (quizData.correctAnswer-1)
 
   const handleCheckAnswer = () => {
-    if (selectedAnswer) {
+    if (selectedAnswer!==null) {
       setShowResult(true)
       setHasAnswered(true)
     }
@@ -55,14 +50,14 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
     setHasAnswered(false)
   }
 
-  const handleSelectOption = (optionId: string) => {
+  const handleSelectOption = (optionId: number) => {
     if (!hasAnswered) {
       setSelectedAnswer(optionId)
     }
   }
 
   return (
-    <Card className="p-8 my-8 bg-muted/30 rounded-lg">
+    <Card className="p-8 my-8 bg-muted/30 rounded-lg mx-[-75px] px-[75px] pt-[75px] pb-[50px] mb-16">
       {/* Quiz Header */}
       <div className="flex flex-col items-center mb-8">
         <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4">
@@ -78,15 +73,15 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
 
         {/* Options */}
         <div className="space-y-3 mb-6">
-          {quizData.options.map((option) => {
-            const isSelected = selectedAnswer === option.id
+          {quizData.options.map((option, index) => {
+            const isSelected = selectedAnswer === index
             const showCorrect = showResult && isSelected && isCorrect
             const showIncorrect = showResult && isSelected && !isCorrect
 
             return (
               <button
-                key={option.id}
-                onClick={() => handleSelectOption(option.id)}
+                key={index}
+                onClick={() => handleSelectOption(index)}
                 disabled={hasAnswered}
                 className={cn(
                   "w-full cursor-pointer p-4 rounded-lg border-1 transition-all text-left flex items-start gap-3",
@@ -106,9 +101,9 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
                     !isSelected && !showCorrect && !showIncorrect && "bg-muted text-muted-foreground",
                   )}
                 >
-                  {option.id}
+                  {index+1}
                 </div>
-                <span className="flex-1 pt-1">{option.text}</span>
+                <span className="flex-1 pt-1">{option}</span>
               </button>
             )
           })}
@@ -154,12 +149,11 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
         {/* Action Buttons */}
         <div className="flex justify-end">
           {!showResult ? (
-            <Button onClick={handleCheckAnswer} disabled={!selectedAnswer} size="lg" className="cursor-pointer min-w-[140px]">
+            <Button onClick={handleCheckAnswer} disabled={selectedAnswer===null} size="lg" className="cursor-pointer min-w-[140px]">
               Check Answer
             </Button>
           ) : !isCorrect ? (
             <Button onClick={handleTryAgain} variant="outline" size="lg" className="cursor-pointer min-w-[140px] bg-transparent">
-              <span className="mr-2">↻</span>
               Try Again
             </Button>
           ) : null}

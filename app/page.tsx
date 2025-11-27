@@ -11,7 +11,7 @@ import { getProgress } from "@/lib/progress"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { FontSizeControl } from "@/components/font-size-control"
 import { WebinyLogo } from "@/components/webiny-logo"
-import {CourseLessonList} from "@/components/CourseLessonList";
+import {CourseLessonList} from "@/components/course-lesson-list";
 
 export default function HomePage() {
   const [lastVisited, setLastVisited] = useState<string | null>(null)

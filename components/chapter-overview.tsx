@@ -31,7 +31,7 @@ export function ChapterOverview({ topics, items }: ChapterOverviewProps) {
 
   return (
     <div className="my-8 rounded-lg bg-muted/50 mx-[-75px] px-[75px] py-[75px] mb-16">
-      <h2 className="text-2xl font-bold mb-2">In this chapter...</h2>
+      <h2 className="text-2xl font-bold mb-2">In this lesson...</h2>
       <p className="text-muted-foreground mb-6">Here are the topics we'll cover</p>
 
       <div className="bg-background rounded-lg border divide-y">
