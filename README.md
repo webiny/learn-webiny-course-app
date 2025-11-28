@@ -395,6 +395,59 @@ Learn how to customize your Webiny instance branding.
 
 ---
 
+### TodoPointer
+
+Mark sections that need completion or review. **Only visible in development** - automatically hidden in production builds.
+
+**Basic Usage:**
+```mdx
+<TodoPointer 
+  title="Add Production Deployment Examples" 
+  message="Need to add concrete examples of production deployment configurations and best practices. Include screenshots of the deployment process and common pitfalls to avoid."
+/>
+```
+
+**Another Example:**
+```mdx
+<TodoPointer 
+  title="Review Technical Accuracy" 
+  message="This section needs to be reviewed by a technical expert to ensure all code examples are correct and follow current best practices."
+/>
+```
+
+**Props:**
+- `title` (required): Short title describing what needs to be done
+- `message` (required): Detailed description of the task or issue
+
+**Features:**
+- ✅ **Development only** - Hidden in production builds
+- ✅ **Highly visible** - Red border and warning styling
+- ✅ **Automatic detection** - Build process flags files containing TodoPointer
+- ✅ **Watch mode** - Real-time detection during development
+- ✅ **CI/CD friendly** - Build fails if TodoPointers found in production
+
+**Checking for TODOs:**
+
+During development:
+```bash
+npm run check-todos
+```
+
+This will scan all MDX files and list any TodoPointer components found.
+
+**Automatic Checks:**
+
+- **Development**: `npm run dev` watches for TodoPointers and alerts you
+- **Build**: `npm run build` fails if TodoPointers are present (production safety)
+
+**Best Practices:**
+- Use for incomplete sections during content creation
+- Include specific details about what needs to be done
+- Review and remove before marking lesson as complete
+- Great for collaborative content development
+
+---
+
 ### ChapterOverview
 
 Display a list of chapter topics at the beginning of a lesson.
