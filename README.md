@@ -551,6 +551,83 @@ Use **any icon** from [Google Material Icons](https://fonts.google.com/icons). P
 
 ---
 
+### FAQ
+
+Create an interactive accordion-style FAQ section.
+
+**Basic Usage:**
+```mdx
+<FAQ 
+  items={[
+    { 
+      question: "What is Webiny?", 
+      answer: "Webiny is a serverless CMS platform built with Node.js and React." 
+    },
+    { 
+      question: "How do I deploy my project?", 
+      answer: "You can deploy using the Webiny CLI with the command: webiny deploy" 
+    },
+    { 
+      question: "Is Webiny open source?", 
+      answer: "Yes! Webiny is open source and available on GitHub under the MIT license." 
+    }
+  ]}
+/>
+```
+
+**With Default Open Item:**
+```mdx
+<FAQ 
+  items={[
+    { question: "First question?", answer: "First answer" },
+    { question: "Second question?", answer: "Second answer" },
+    { question: "Third question?", answer: "Third answer" }
+  ]}
+  defaultOpen={0}
+/>
+```
+
+**Complex FAQ:**
+```mdx
+<FAQ 
+  items={[
+    { 
+      question: "What are the system requirements?", 
+      answer: "Webiny requires Node.js 18+ and AWS account credentials for deployment. You'll also need at least 8GB of RAM for local development." 
+    },
+    { 
+      question: "Can I use Webiny with existing infrastructure?", 
+      answer: "Yes! Webiny can be deployed to your existing AWS account and can integrate with your current infrastructure." 
+    },
+    { 
+      question: "What databases does Webiny support?", 
+      answer: "Webiny uses DynamoDB for data storage by default, which is fully managed and scales automatically." 
+    }
+  ]}
+/>
+```
+
+**Props:**
+- `items` (required): Array of `{ question: string, answer: string }` objects
+- `defaultOpen` (optional): Index of item to open by default (0-based), or `null` for all closed (default: `null`)
+
+**Features:**
+- ✅ Accordion-style interaction (one item open at a time)
+- ✅ Smooth animations
+- ✅ Theme-aware styling
+- ✅ Click to expand/collapse
+- ✅ Chevron icon indicates state
+- ✅ Keyboard accessible
+- ✅ Mobile-friendly
+
+**Best Practices:**
+- Keep answers concise but informative
+- Use consistent question format (e.g., all ending with "?")
+- Order questions from most common to least common
+- Group related questions together
+
+---
+
 ## 📝 Complete Lesson Example
 
 Here's a full example showing multiple components:

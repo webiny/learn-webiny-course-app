@@ -13,7 +13,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
   "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
-  "getting-started/application-stacks": () => import("@/content/lessons/getting-started/application-stacks.mdx"),
+  "getting-started/application-deployment-stacks": () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
   "getting-started/webiny-deployments": () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
@@ -99,9 +99,13 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "foundation"
   },
   {
-    slug: "getting-started/application-stacks",
-    import: () => import("@/content/lessons/getting-started/application-stacks.mdx"),
-    frontmatter: {},
+    slug: "getting-started/application-deployment-stacks",
+    import: () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
+    frontmatter: {
+          "title": "Application Deployment Stacks",
+          "description": "Understanding Webiny application deployment stacks and their components.",
+          "order": 4
+    },
     chapter: "getting-started"
   },
   {

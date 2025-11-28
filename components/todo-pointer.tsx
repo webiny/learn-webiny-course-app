@@ -29,7 +29,7 @@ export function TodoPointer({ title, message }: TodoPointerProps) {
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold text-white bg-red-600 uppercase tracking-wider">
-              🚨 TODO
+              TODO
             </span>
             <span className="text-xs font-medium text-red-700 dark:text-red-400 uppercase tracking-wider">
               Development Mode Only

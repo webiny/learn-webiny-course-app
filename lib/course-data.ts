@@ -75,9 +75,9 @@ export const courseData: Course = {
         ...chapterMetadata["getting-started"],
         lessons: [
                   {
-                            "id": "application-stacks",
-                            "title": "Application Stacks",
-                            "slug": "getting-started/application-stacks"
+                            "id": "application-deployment-stacks",
+                            "title": "Application Deployment Stacks",
+                            "slug": "getting-started/application-deployment-stacks"
                   },
                   {
                             "id": "installing-webiny",
