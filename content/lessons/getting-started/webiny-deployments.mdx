@@ -13,7 +13,8 @@ In this lesson, we will explore the concept of deployment environments in Webiny
     items={[
         { icon: "desktop_cloud_stack", text: "What are environments." },
         { icon: "deployed_code", text: "What are state files." },
-        { icon: "deployed_code", text: "How to manage different environments" },
+        { icon: "deployed_code", text: "How to manage different environments." },
+        { icon: "draw_abstract", text: "What are deployment types." },
     ]}
 />
 
@@ -50,6 +51,13 @@ State files are JSON files that store the current state of your Webiny deploymen
     State files are crucial for managing your Webiny environments. Losing them can lead to inconsistencies and potential issues during deployments or completely losing access to a deployment. Always ensure that you back up your state files and keep them in a safe location.
 </Callout>
 
+### Storing State Files
+
+By default, Webiny stores state files locally within your project directory (inside the `.pulumi` folder in your project). However, for better management and collaboration, especially in team environments, it's recommended to store state files in a remote storage solution, such as an S3 bucket for which Webiny provides an out-of-the-box adapter. This allows multiple team members to access and manage the same environment without conflicts.
+
+For the purposes of this course, we will continue to use local state files to keep things simple.
+
+
 <Quiz
     question="What's the best way to share state files among team members working on the same Webiny project?"
     options={[
@@ -63,11 +71,6 @@ State files are JSON files that store the current state of your Webiny deploymen
     hint="State files should be stored in a location that is accessible to all team members, a shared remote storage solution is the best option."
 />
 
-### Storing State Files
-
-By default, Webiny stores state files locally within your project directory. However, for better management and collaboration, especially in team environments, it's recommended to store state files in a remote storage solution, such as an S3 bucket for which Webiny provides an out-of-the-box adapter. This allows multiple team members to access and manage the same environment without conflicts.
-
-For the purposes of this course, we will continue to use local state files to keep things simple.
 
 ## How to Manage Different Environments
 
@@ -89,3 +92,19 @@ Managing different environments in Webiny is straightforward. You can create, de
     explanation="That's right, this command will provide you with all the necessary information about the `production` environment, including the admin url and it follows the yarn webiny [command] --env [environment-name] pattern."
     hint="All webiny CLI commands follow the pattern: yarn webiny [command] --env [environment-name] and by providing the env name, that command takes that environment into account when providing the info."
 />
+
+## What are Deployment Types
+
+To create the required infrastructure resources for your project, Webiny provides ready-made infrastructure as code templates. These templates define the cloud resources needed to run your Webiny applications and can be customized to fit your specific requirements.
+
+There are two infrastructure as code templates that are available out of the box:
+- **Development Deployment**: This template is optimized for local development and testing. It provisions a minimal set of resources to keep costs low while providing the necessary functionality for development purposes.
+- **Production Deployment**: This template is designed for production environments. It provisions a more robust set of resources to ensure high availability, scalability, and performance for your Webiny applications.
+
+Each template has been optimized for its specific use case, and you can choose the appropriate template when deploying your Webiny project based on your needs. Webiny also exposes these templates as open-source, allowing you to inspect, modify, or extend them as needed.
+
+
+
+<Callout type="info" title="Choosing the right deployment type">
+    When creating a new environment, make sure to choose the appropriate deployment type based on your use case. For development and testing, use the Development Deployment template. For production environments, use the Production Deployment template to ensure optimal performance and reliability.
+</Callout>

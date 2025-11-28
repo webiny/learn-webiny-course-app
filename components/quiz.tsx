@@ -57,10 +57,10 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
   }
 
   return (
-    <Card className="p-8 my-8 bg-muted/30 rounded-lg mx-[-75px] px-[75px] pt-[75px] pb-[50px] mb-16">
+    <Card className="p-8 my-8 bg-muted/30 rounded-lg mx-[-75px] px-[125px] pt-[75px] pb-[100px] mb-16">
       {/* Quiz Header */}
       <div className="flex flex-col items-center mb-8">
-        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4">
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4 ">
           <span className="text-3xl text-primary-foreground">?</span>
         </div>
         <h3 className="text-2xl font-bold mb-2">It's time to take a quiz!</h3>
@@ -68,8 +68,8 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
       </div>
 
       {/* Quiz Content */}
-      <Card className="p-6 bg-background">
-        <h4 className="text-lg font-semibold mb-6 text-center">{quizData.question}</h4>
+      <Card className="p-6 bg-background rounded-lg">
+        <h4 className="text-lg font-semibold my-6 text-center">{quizData.question}</h4>
 
         {/* Options */}
         <div className="space-y-3 mb-6">

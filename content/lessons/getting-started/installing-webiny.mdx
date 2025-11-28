@@ -51,14 +51,15 @@ One of the prompts will ask you to choose a database for your Webiny instance. Y
 For the purposes of this course, we recommend selecting **Amazon DynamoDB**. This is a fully serverless cost-per usage database with a generous free tier, making it ideal for learning and experimentation without incurring any cost.
 
 <Callout type="warning" title="Choose wisely">
-  In case of a production project, make sure you pick the appropriate database option based on your project's needs.
+    In case of a production project, make sure you pick the appropriate database option based on your project's needs.
 
     **YOU CANNOT CHANGE THE DATABASE TYPE LATER.**
 
     If you're unsure if you project will grow to a large scale, it's safer to pick the DynamoDB + OpenSearch option right away and start with a smaller OpenSearch instance, which you can later scale up as needed without any downtime.
 </Callout>
 
-At this point you should have a folder called `learn-webiny-course` which contains your Webiny project. In the next lesson, we will cover how to deploy Webiny to AWS and access the admin panel for the first time.
+It's also important to note that Webiny, by default installs all it's applications (like Headless CMS, Website Builder, File Manager, etc) during the initial setup. This is the recommended approach for most users, especially when starting out. Down the line, you can always add or remove applications as needed. Depending on your license type, some applications may not be available.
+
 
 <Quiz
     question="What's the best database option to choose when installing Webiny for learning and experimentation purposes?"
