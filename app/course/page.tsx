@@ -14,6 +14,7 @@ import { FontSizeControl } from "@/components/font-size-control"
 import {WebinyLogo} from "@/components/webiny-logo";
 import {ChapterCoverIcon} from "@/components/chapter-cover";
 import { ChapterIcon } from "@/lib/chapter-icons"
+import { getFirstLessonInChapter } from "@/lib/mdx-registry-helpers"
 
 export default function CoursePage() {
   const { progress, mounted } = useProgress()
@@ -87,7 +88,7 @@ export default function CoursePage() {
                     <Progress value={progressPercent} className="h-2" />
                     {chapter.lessons.length > 0 ? (
                       <Button asChild variant={progressPercent > 0 ? "default" : "outline"} className="w-full">
-                        <Link href={`/course/${chapter.lessons[0].slug}`}>
+                        <Link href={`/course/${getFirstLessonInChapter(chapter.id) || chapter.lessons[0].slug}`}>
                           {progressPercent > 0 ? "Continue" : "Start Chapter"}
                           <ChevronRight className="ml-2 h-4 w-4" />
                         </Link>

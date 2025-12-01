@@ -146,6 +146,21 @@ export function getLessonNumberInChapter(slug: string): number {
   return chapterLessons.findIndex(item => item.slug === slug) + 1
 }
 
+/**
+ * Get the first lesson of a chapter (respects order field)
+ */
+export function getFirstLessonInChapter(chapterId: string): string | null {
+  const chapters = getChaptersWithLessons()
+  const chapterLessons = chapters[chapterId]
+
+  if (!chapterLessons || chapterLessons.length === 0) {
+    return null
+  }
+
+  // Lessons are already sorted by order in getChaptersWithLessons()
+  return chapterLessons[0].slug
+}
+
 
 
 

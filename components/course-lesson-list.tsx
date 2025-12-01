@@ -5,12 +5,29 @@ import { Check, ChevronRight } from "lucide-react"
 import { courseData } from "@/lib/course-data"
 import { useProgress } from "@/hooks/use-progress"
 import { ChapterIcon } from "@/lib/chapter-icons"
+import { getChaptersWithLessons } from "@/lib/mdx-registry"
 
 export function CourseLessonList() {
     const { progress, mounted } = useProgress()
 
+    // Get chapters with lessons sorted by order field
+    const chaptersMap = getChaptersWithLessons()
+
     // Sort chapters by number to ensure correct order
-    const sortedChapters = [...courseData.chapters].sort((a, b) => a.number - b.number)
+    const sortedChapters = [...courseData.chapters]
+        .sort((a, b) => a.number - b.number)
+        .map(chapter => {
+            // Get sorted lessons from mdx-registry
+            const sortedLessons = chaptersMap[chapter.id] || []
+            return {
+                ...chapter,
+                lessons: sortedLessons.map(lesson => ({
+                    id: lesson.slug.split('/').pop() || lesson.slug,
+                    title: lesson.frontmatter.title || lesson.slug,
+                    slug: lesson.slug
+                }))
+            }
+        })
 
     return (
             <div>
