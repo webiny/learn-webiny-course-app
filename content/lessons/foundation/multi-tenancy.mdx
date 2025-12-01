@@ -9,10 +9,10 @@ order: 6
 <Image src="/images/lessons/foundation/multi-tenancy.png" alt="Webiny Multi Tenancy" />
 
 <PaidFeature tier="business">
-    Advanced multi-tenancy features including custom tenant hierarchies, granular access control, and automated tenant provisioning are available in Webiny Business and Enterprise tiers.
+    Multi-tenancy features including custom tenant hierarchies, granular access control, and automated tenant provisioning are available in Webiny Business and Enterprise tiers.
 </PaidFeature>
 
-Webiny is built with multi-tenancy in mind, allowing you to manage multiple projects from a single instance. In this lesson, we will explore the concept of multi-tenancy in Webiny and how it can benefit your content management needs.
+Since Webiny has all this power and scalability we didn't want to restrict one instance to a single project. Instead, we built Webiny with multi-tenancy in mind, allowing you to manage multiple projects from a single instance. In this lesson, we will explore the concept of multi-tenancy in Webiny and how it can benefit your content management needs.
 
 <ChapterOverview
     items={[
@@ -27,7 +27,7 @@ Webiny is built with multi-tenancy in mind, allowing you to manage multiple proj
 
 Multi-tenancy is a software architecture pattern where a single instance of an application serves multiple tenants (or clients). Each tenant has its own isolated data and configuration, allowing them to operate independently while sharing the same underlying infrastructure.
 This approach offers several benefits:
-- **Cost Efficiency**: By sharing resources, multi-tenancy reduces infrastructure costs, making it more affordable to manage multiple projects.
+- **Cost Efficiency**: By sharing infrastructure resources, multi-tenancy reduces cloud costs, making it more affordable to manage multiple projects.
 - **Simplified Management**: With a single instance, updates and maintenance tasks can be performed centrally, reducing administrative overhead.
 - **Scalability**: Multi-tenant architectures can easily scale to accommodate additional tenants without changes to the underlying infrastructure.
 - **Reusability**: Common features and functionalities can be reused across tenants, reducing development time and effort.
@@ -44,7 +44,7 @@ By default Webiny has a simple 2-layer tenant hierarchy:
 - **Root Tenant**: The top-level tenant that can manage and oversee all other tenants.
 - **Child Tenants**: Individual tenants that operate independently under the root tenant.
 
-A user created under the root tenant can access manage the content of child tenants, while users created under a child tenant can only access and manage their own tenant's data. The root-level users can be also restricted so they can only access specific child tenants.
+A user account created under the root tenant can access manage the content of child tenants, while users created under a child tenant can only access and manage their own tenant's data. The root-level users can be also restricted so they can only access specific child tenants or none at all.
 
 This is the default setup, but Webiny's architecture is flexible and can be extended to support more complex multi-tenant hierarchies if needed. For example, you can implement additional layers of tenants (Root > Brand > Website, Root > Region > Website, ... ) or create custom access control rules to meet specific requirements.
 

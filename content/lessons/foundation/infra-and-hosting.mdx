@@ -29,7 +29,7 @@ Our goal was to create a **self-hosted** content platform, one that feels like a
 
 With Webiny you get the infrastructure as code (IaC) setup that automatically provisions all the necessary cloud resources for you within your own AWS account.
 
-This IaC setup has been tweaked, tested and optimized in high-load production environments to ensure that you get the best performance at the lowest cost. The templates have been reviewed by AWS solutions architects to ensure they follow best practices, and by security teams from many different organisations to ensure your data is safe.
+This IaC setup has been tweaked, tested and optimized in high-load production environments to ensure that you get the best performance and reliability at the lowest cost. The templates have been reviewed by AWS solutions architects to ensure they follow best practices, and by security teams from many different organisations to ensure your data is safe and managed correctly.
 
 The built-in template also ensure many additional best practices, such as setting up automated backups, setting up CI/CD pipelines for easy deployments, multi-AZ deployments for high availability, auto-scaling to handle traffic spikes, and much more.
 
@@ -37,7 +37,7 @@ The built-in template also ensure many additional best practices, such as settin
     Not at all. Firstly Webiny has a `prod` and a `dev` deployment template, so you can have a smaller and cheaper setup for your development and testing environments. Secondly, Webiny is built to be extremely cost-effective. In fact, for most small to medium projects, the monthly cost of running Webiny is often less than a cup of coffee and many stay within the AWS free tier and don't pay anything. This is because serverless infrastructure allows you to pay only for what you use, and Webiny has been optimized to minimize resource consumption during low-traffic periods.
 </Callout>
 
-The templates are open-source, so you can always inspect them, modify them or extend them as needed.
+In case you need to additionally tweak the infrastructure setup, the IaC templates are open-source, so you can always inspect them, modify them or extend them as needed.
 
 ### Why self-hosted?
 
@@ -45,5 +45,5 @@ There are many benefits to self-hosting your content platform:
 - **Data ownership and control**: You have full control over your data and infrastructure, allowing you to comply with data privacy regulations and maintain ownership of your content. In addition, nobody can train AI models on your data without your explicit permission.
 - **Cost-effectiveness**: By self-hosting, you can optimize costs based on your specific usage patterns and avoid vendor lock-in.
 - **Customization**: You can customize and extend every part of the platform to meet your specific project requirements, both on the UI and API side.
-- **Security**: You can implement your own security measures and policies to protect your data and infrastructure.
+- **Security**: On top of the provided security configurations you can also implement your own security measures and policies to protect your data and infrastructure in line with the requirements of your organization.
 

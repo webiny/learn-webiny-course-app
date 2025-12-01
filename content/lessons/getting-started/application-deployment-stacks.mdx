@@ -6,6 +6,8 @@ order: 4
 
 # Application Deployment Stacks
 
+<Image src="/images/lessons/getting-started/application-deployment-stacks.svg" alt="Application Deployment Stacks"/>
+
 In this lesson, we will explore the concept of application deployment stacks in Webiny. By the end of this lesson, you will understand how application deployment stacks are structured and how they can be utilized in your Webiny projects.
 
 <ChapterOverview
@@ -24,19 +26,19 @@ In this lesson, we will explore the concept of application deployment stacks in 
 
 ## What are Application Deployment Stacks
 
-In Webiny, an application deployment stack represents a specific configuration of resources and services that make up a Webiny application. Each stack is designed to handle different aspects of the application, such as content management, API services, and front-end delivery. This modular approach allows for better organization, scalability, and management of your Webiny applications.
+Application deployment stacks in Webiny refer to the collection of infrastructure components and services that are required to run specific parts of the Webiny platform. Each stack is designed to handle a particular aspect, such as the Admin interface, API services, or core functionalities.
 
 ## Application Deployment Stacks in Webiny
 
-Webiny consists of several predefined application deployment stacks, each serving a specific purpose. The main application deployment stacks in Webiny are:
-- **Core Stack**: This stack includes essential services that are required for the Webiny platform to function, such as authentication, persistent storage, and user management.
-- **Admin Stack**: This stack is responsible for the Webiny Admin application, which provides the user interface for managing content, settings, and other administrative tasks.
-- **API Stack**: This stack handles the GraphQL API services that power the Webiny applications, allowing for data retrieval and manipulation.
+Webiny consists of three application deployment stacks, and they are:
+- **Core Stack**: This stack includes essential services that are required for the Webiny platform to function, such as persistent storage, and user management.
+- **API Stack**: This stack handles the GraphQL API services that power the Webiny applications, allowing for data retrieval and manipulation, or any other service that runs on the backend side.
+- **Admin Stack**: This stack is responsible for the client-side Webiny Admin application, which provides the user interface for managing content, settings, and other administrative tasks.
 
 ### Application Deployment Stacks vs Environments vs Applications
 
 It's important to distinguish between application deployment stacks, environments, and applications in Webiny:
-- **Application Deployment Stacks**: These are the infrastructure components that are required to run specific parts of a Webiny application, such as the Admin interface or API services.
+- **Application Deployment Stacks**: These are the infrastructure components such as Lambda, DynamoDB and similar, that are required to run specific parts of a Webiny application, such as the Admin interface or API services.
 - **Environments**: These represent different deployments of your Webiny project, such as development, staging, and production.
 - **Applications**: These are applications such as the Headless CMS, Website Builder, File Manager, ect. that run on top of the application deployment stacks.
 
@@ -46,6 +48,10 @@ It's important to distinguish between application deployment stacks, environment
       question: "What is the difference between a stack and an environment?",
       answer: "A stack is a collection of infrastructure resources (like APIs, databases, etc.), while an environment is a complete deployment of your entire Webiny project. You can have multiple environments (dev, staging, prod) each with their own set of stacks."
     },
+      {
+          question: "Why doesn't every app have it's own stack?",
+          answer: "It's a good question - Webiny apps like Headless CMS and Website Builder run on top of existing stacks (Core, Admin, API) instead of each app having their own stack. This design simplifies deployment and management, as multiple apps can share the same underlying infrastructure resources provided by these stacks. When creating a new app, or API, you don't usually need to create new infrastructure resources, you can use the one from the existing stack. In addition it reduces cost, complexity and maintenance. There are also performance benefits, as having fewer stacks means less overhead and faster response times."
+      },
     {
       question: "Can I deploy stacks independently?",
       answer: "Yes! Each stack can be deployed independently using the Webiny CLI. This allows you to update specific parts of your application without redeploying everything."
@@ -53,10 +59,43 @@ It's important to distinguish between application deployment stacks, environment
     {
       question: "How many stacks does a typical Webiny project have?",
       answer: "A typical Webiny project includes the Core Stack, Admin Stack, and API Stack. Additional custom stacks can be added based on your specific requirements."
-    },
-    {
-      question: "What happens if a stack deployment fails?",
-      answer: "If a stack deployment fails, Webiny will automatically rollback to the previous working version. You can review the error logs in the AWS CloudFormation console to diagnose the issue."
     }
   ]}
 />
+
+## Deploying and Managing Application Deployment Stacks
+
+<Callout type="warning" title="Don't run the commands just yet!">
+    In this lesson, we are only providing an overview of the Webiny CLI commands. Please wait until the next lesson before running any of these commands, as we will guide you through the deployment process step-by-step.
+</Callout>
+
+
+To deploy and manage application deployment stacks in Webiny, you can use the Webiny CLI. The CLI provides commands to deploy, update, and manage each stack individually. For example, to deploy the Admin Stack into the `dev` environment, you would use the following command:
+
+<CodeBlock language="shell" filename="Terminal" code={`yarn webiny deploy admin --env dev`} />
+
+### Stack order
+
+When deploying stacks, it's important to follow the correct order to ensure that dependencies are met as certain stacks rely on resources from others. The recommended deployment order is:
+1. Core Stack
+2. API Stack
+3. Admin Stack
+
+When you initially create your project it's best to run `yarn webiny deploy` without any stack specified, which will deploy all stacks in the correct order automatically. Once you have the initial deployment done, you can then deploy individual stacks as needed.
+
+### Destroying stacks
+
+The same way how you can deploy individual stacks, you can also destroy them using the Webiny CLI. For example, to delete the API Stack from the `dev` environment, you would use the following command:
+
+<CodeBlock language="shell" filename="Terminal" code={`yarn webiny destroy api --env dev`} />
+
+In terms of the order of deletion, it's best to destroy stacks in the reverse order of deployment to avoid dependency issues:
+1. Admin Stack
+2. API Stack
+3. Core Stack
+
+### Core stack
+
+The core stack is the only stack with persistent storage (like DynamoDB tables, S3, Cognito). Because of that, when deleting the core stack, all the data in your Webiny instance will be lost (for that environment). So please be careful when deleting the core stack, especially in production environments.
+
+On the other hand that means you can safely delete and redeploy the Admin and API stacks without losing any data, as all the persistent data is stored in the core stack.

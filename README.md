@@ -422,9 +422,9 @@ Mark sections that need completion or review. **Only visible in development** - 
 **Features:**
 - ✅ **Development only** - Hidden in production builds
 - ✅ **Highly visible** - Red border and warning styling
-- ✅ **Automatic detection** - Build process flags files containing TodoPointer
+- ✅ **Automatic detection** - Build process scans and warns about TodoPointers
 - ✅ **Watch mode** - Real-time detection during development
-- ✅ **CI/CD friendly** - Build fails if TodoPointers found in production
+- ✅ **CI/CD friendly** - Shows warnings but doesn't block builds
 
 **Checking for TODOs:**
 
@@ -437,8 +437,9 @@ This will scan all MDX files and list any TodoPointer components found.
 
 **Automatic Checks:**
 
-- **Development**: `npm run dev` watches for TodoPointers and alerts you
-- **Build**: `npm run build` fails if TodoPointers are present (production safety)
+- **Development**: `npm run dev` watches for TodoPointers and alerts you in real-time
+- **Build**: `npm run build` displays warnings but allows the build to complete
+- **Production**: TodoPointers are hidden from users but warnings are shown in build logs
 
 **Best Practices:**
 - Use for incomplete sections during content creation
