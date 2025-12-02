@@ -30,7 +30,7 @@ export function ExternalLink({
       rel="noopener noreferrer"
       className={cn(
         "inline-flex items-center gap-1 text-accent hover:underline transition-colors",
-        "hover:text-primary/80",
+        "hover:text-primary/80 dark:text-primary dark:underline",
         className
       )}
     >

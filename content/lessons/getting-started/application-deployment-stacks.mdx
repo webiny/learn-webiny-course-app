@@ -48,17 +48,21 @@ It's important to distinguish between application deployment stacks, environment
       question: "What is the difference between a stack and an environment?",
       answer: "A stack is a collection of infrastructure resources (like APIs, databases, etc.), while an environment is a complete deployment of your entire Webiny project. You can have multiple environments (dev, staging, prod) each with their own set of stacks."
     },
-      {
+    {
           question: "Why doesn't every app have it's own stack?",
           answer: "It's a good question - Webiny apps like Headless CMS and Website Builder run on top of existing stacks (Core, Admin, API) instead of each app having their own stack. This design simplifies deployment and management, as multiple apps can share the same underlying infrastructure resources provided by these stacks. When creating a new app, or API, you don't usually need to create new infrastructure resources, you can use the one from the existing stack. In addition it reduces cost, complexity and maintenance. There are also performance benefits, as having fewer stacks means less overhead and faster response times."
-      },
-    {
-      question: "Can I deploy stacks independently?",
-      answer: "Yes! Each stack can be deployed independently using the Webiny CLI. This allows you to update specific parts of your application without redeploying everything."
     },
     {
       question: "How many stacks does a typical Webiny project have?",
       answer: "A typical Webiny project includes the Core Stack, Admin Stack, and API Stack. Additional custom stacks can be added based on your specific requirements."
+    },
+    {
+          question: "Can I deploy stacks independently?",
+          answer: "Yes! Each stack can be deployed independently using the Webiny CLI. This allows you to update specific parts of your application without redeploying everything."
+    },
+    {
+          question: "Can I deploy environments independently?",
+          answer: "Yes! Each environment can be deployed independently. This allows you to have separate setups for development, staging, and production, each with its own configurations and resources."
     }
   ]}
 />

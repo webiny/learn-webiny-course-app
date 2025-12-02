@@ -88,7 +88,7 @@ export function ImageComponent({
       {/* Regular Image */}
       <figure className={cn("my-6", className)}>
         <div
-          className={"relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-muted/50 group mx-[-75px] px-[75px] pt-[75px] pb-[50px] mb-16"+(withBg && '  bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-black)]/5 dark:[--pattern-fg:var(--color-white)]/10')}
+          className={"relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-muted/50 group mx-[-75px] px-[75px] py-[50px] mb-16"+(withBg && '  bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-black)]/5 dark:[--pattern-fg:var(--color-white)]/10')}
           onClick={handleClick}
           role="button"
           tabIndex={0}
