@@ -1,0 +1,40 @@
+---
+title: "Deploy Webiny"
+description: "Guide to deploying Webiny to AWS and accessing the admin panel."
+order: 5
+---
+
+# Deploy Webiny
+
+<Image src="/images/lessons/getting-started/webiny-deploy.svg" alt="Webiny Deploy"/>
+
+In this lesson, we will guide you through the process of deploying your Webiny instance to AWS and accessing the admin panel for the first time. By the end of this lesson, you'll have a fully functional Webiny instance running in the cloud, ready for you to start building and managing content.
+
+<ChapterOverview
+  items={[
+    { icon: "cloud_upload", text: "Steps to deploy Webiny to AWS." },
+    { icon: "login", text: "Accessing the Webiny admin panel." },
+    { icon: "settings", text: "Initial configuration of your Webiny instance." },
+  ]}
+/>
+
+## Deploying Webiny to AWS
+
+Now that you have your Webiny project set up locally, it's time to deploy it to AWS. To do this, navigate to your project directory in the terminal and run the following command:
+
+<CodeBlock language="shell" filename="Terminal" code={`cd learn-webiny-course
+yarn webiny deploy --env dev`} />
+
+This command will deploy your Webiny instance to AWS in the `dev` environment. The deployment process may take a few minutes, as it involves setting up various AWS services and resources. Once the deployment is complete, you will see a success message in the terminal along with the URL to access your Webiny admin panel and finalize the setup in your browser.
+
+<Callout type="info" title="Deployment Time">
+    The deployment time can vary depending on your internet connection and AWS service availability. Typically, it takes around 5-15 minutes.
+    Please be patient and avoid interrupting the process.
+    Deploying for the first time may take longer as AWS provisions all necessary resources. Subsequent deployments will be much faster.
+</Callout>
+
+## Accessing the Webiny Admin Panel
+
+Once the deployment is complete, you can access the Webiny admin panel using the URL provided in the terminal output. Open your web browser and navigate to that URL. You should see the Webiny admin login page. Since this is your first time accessing the admin panel, you will need to create an admin user account.
+
+<Image src="/images/lessons/getting-started/installation-wizard.png" title="Webiny Admin - Installation wizard"/>

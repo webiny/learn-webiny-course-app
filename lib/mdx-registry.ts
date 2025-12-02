@@ -14,6 +14,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
   "getting-started/application-deployment-stacks": () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
+  "getting-started/deploy-webiny": () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
   "getting-started/webiny-deployments": () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
@@ -105,6 +106,16 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "title": "Application Deployment Stacks",
           "description": "Understanding Webiny application deployment stacks and their components.",
           "order": 4
+    },
+    chapter: "getting-started"
+  },
+  {
+    slug: "getting-started/deploy-webiny",
+    import: () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
+    frontmatter: {
+          "title": "Deploy Webiny",
+          "description": "Guide to deploying Webiny to AWS and accessing the admin panel.",
+          "order": 5
     },
     chapter: "getting-started"
   },

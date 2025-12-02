@@ -80,6 +80,11 @@ export const courseData: Course = {
                             "slug": "getting-started/application-deployment-stacks"
                   },
                   {
+                            "id": "deploy-webiny",
+                            "title": "Deploy Webiny",
+                            "slug": "getting-started/deploy-webiny"
+                  },
+                  {
                             "id": "installing-webiny",
                             "title": "Installing Webiny",
                             "slug": "getting-started/installing-webiny"
