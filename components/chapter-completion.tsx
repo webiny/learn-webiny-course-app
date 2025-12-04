@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Check, ArrowRight, Trophy } from "lucide-react"
 import type { Chapter } from "@/lib/course-data"
+import { getFirstLessonInChapter } from "@/lib/mdx-registry-helpers"
 
 interface ChapterCompletionProps {
   completedChapter: Chapter
@@ -42,7 +43,7 @@ export function ChapterCompletion({ completedChapter, nextChapter }: ChapterComp
 
           <div className="flex justify-center">
             <Button asChild size="lg" className="gap-2">
-              <Link href={`/course/${nextChapter.lessons[0].slug}`}>
+              <Link href={`/course/${getFirstLessonInChapter(nextChapter.id) || nextChapter.lessons[0]?.slug || ''}`}>
                 Start Chapter {nextChapter.number}
                 <ArrowRight className="w-4 h-4" />
               </Link>

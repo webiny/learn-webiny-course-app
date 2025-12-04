@@ -26,63 +26,63 @@ export const chapterQuizzes: Record<string, ChapterQuiz> = {
     questions: [
       {
         id: "foundation-1",
-        question: "What is Webiny primarily built on?",
+        question: "What license model does Webiny offer?",
         options: [
-          "AWS serverless infrastructure",
-          "Traditional server infrastructure",
-          "Google Cloud Platform",
-          "Microsoft Azure"
+          "Only commercial license",
+          "Dual-license: MIT open-source Community Edition and commercial Enterprise Edition",
+          "Only open-source under GPL",
+          "Freemium with paid plugins"
         ],
-        correctAnswer: 0,
-        explanation: "Webiny is built on AWS serverless infrastructure, utilizing services like Lambda, DynamoDB, and S3 for a scalable and cost-effective solution."
+        correctAnswer: 1,
+        explanation: "Webiny offers a dual-license model with an MIT open-source Community Edition and a commercial Enterprise Edition that includes advanced features and priority support for enterprise applications."
       },
       {
         id: "foundation-2",
-        question: "Which of the following is NOT a core Webiny application?",
+        question: "What are the three core components that make up Webiny?",
         options: [
-          "Headless CMS",
-          "Page Builder",
-          "File Manager",
-          "Email Marketing"
+          "Frontend, Backend, and Database",
+          "Applications, Developer toolkit (Webiny Framework), and Infrastructure",
+          "CMS, API, and Admin Panel",
+          "Client, Server, and Storage"
         ],
-        correctAnswer: 3,
-        explanation: "Webiny includes Headless CMS, Page Builder, and File Manager as core applications. Email marketing is not a built-in application."
+        correctAnswer: 1,
+        explanation: "Webiny consists of three core components: Applications (like Headless CMS and Website Builder), Developer toolkit (Webiny Framework), and Infrastructure (Infrastructure as Code for AWS deployment)."
       },
       {
         id: "foundation-3",
-        question: "What architecture pattern does Webiny follow?",
+        question: "Which application serves as the core data storage layer for Webiny?",
         options: [
-          "Monolithic architecture",
-          "Microservices architecture",
-          "Serverless architecture",
-          "Layered architecture"
+          "File Manager",
+          "Website Builder",
+          "Headless CMS",
+          "Publishing Workflows"
         ],
         correctAnswer: 2,
-        explanation: "Webiny follows a serverless architecture pattern, which provides automatic scaling, reduced operational overhead, and pay-per-use pricing."
+        explanation: "The Headless CMS serves as the core data storage layer for Webiny. Other applications, such as the Website Builder, rely on the Headless CMS to store and manage their content."
       },
       {
         id: "foundation-4",
-        question: "What is the primary benefit of Webiny's multi-tenancy support?",
+        question: "Why does Webiny only support AWS and not other cloud providers?",
         options: [
-          "Faster performance",
-          "Managing multiple projects from a single installation",
-          "Better SEO rankings",
-          "Reduced development time"
+          "AWS is cheaper than other providers",
+          "To provide optimized Infrastructure as Code templates tested in production with best practices",
+          "Because Webiny is owned by AWS",
+          "Other cloud providers don't support serverless"
         ],
         correctAnswer: 1,
-        explanation: "Multi-tenancy allows you to manage multiple projects, clients, or environments from a single Webiny installation, improving efficiency and reducing infrastructure costs."
+        explanation: "Webiny focuses on AWS to provide highly optimized Infrastructure as Code templates that have been tested in production, reviewed by AWS solutions architects, and validated by security teams to ensure best practices, performance, and reliability."
       },
       {
         id: "foundation-5",
-        question: "Which framework is Webiny's admin interface built with?",
+        question: "In Webiny's default multi-tenancy hierarchy, what are the two layers?",
         options: [
-          "Vue.js",
-          "Angular",
-          "React",
-          "Svelte"
+          "Admin and User tenants",
+          "Root Tenant and Child Tenants",
+          "Master and Slave tenants",
+          "Parent and Sibling tenants"
         ],
-        correctAnswer: 2,
-        explanation: "Webiny's admin interface is built with React, providing a modern, component-based architecture for building user interfaces."
+        correctAnswer: 1,
+        explanation: "Webiny's default multi-tenancy uses a 2-layer hierarchy: Root Tenant (top-level that can manage all other tenants) and Child Tenants (individual tenants that operate independently). This hierarchy can be extended for more complex use cases."
       }
     ]
   },
@@ -93,39 +93,63 @@ export const chapterQuizzes: Record<string, ChapterQuiz> = {
     questions: [
       {
         id: "getting-started-1",
-        question: "What is the recommended way to create a new Webiny project?",
+        question: "What is the recommended database option for learning and experimentation with Webiny?",
         options: [
-          "Git clone from repository",
-          "Using the Webiny CLI with npx create-webiny-project",
-          "Manual installation",
-          "Docker container"
+          "Amazon DynamoDB + Amazon OpenSearch",
+          "Amazon DynamoDB",
+          "Amazon RDS",
+          "Amazon Aurora"
         ],
         correctAnswer: 1,
-        explanation: "The recommended way is using the Webiny CLI: npx create-webiny-project my-project. This sets up everything you need with best practices."
+        explanation: "Amazon DynamoDB is a fully serverless, cost-per-usage database with a generous free tier, making it ideal for learning and experimentation without incurring costs. However, note that you cannot change the database type later, so for production projects that may scale, consider DynamoDB + OpenSearch."
       },
       {
         id: "getting-started-2",
-        question: "What are the main folders in a Webiny project?",
+        question: "What are the three application deployment stacks in Webiny?",
         options: [
-          "src, public, components",
-          "apps, api, infrastructure",
-          "admin, website, backend",
-          "client, server, database"
+          "Frontend, Backend, Database",
+          "Core Stack, API Stack, Admin Stack",
+          "Development, Staging, Production",
+          "CMS, Builder, Manager"
         ],
         correctAnswer: 1,
-        explanation: "A Webiny project contains apps/ (React applications), api/ (backend code), and infrastructure/ (AWS CDK definitions) as its main folders."
+        explanation: "Webiny consists of three application deployment stacks: Core Stack (essential services and storage), API Stack (GraphQL API and backend services), and Admin Stack (client-side admin application)."
       },
       {
         id: "getting-started-3",
-        question: "Where should you place images to use them in lessons?",
+        question: "In what order should you deploy Webiny stacks?",
         options: [
-          "src/images/",
-          "assets/images/",
-          "public/images/",
-          "content/images/"
+          "Admin Stack → API Stack → Core Stack",
+          "Core Stack → API Stack → Admin Stack",
+          "API Stack → Core Stack → Admin Stack",
+          "Any order is fine"
+        ],
+        correctAnswer: 1,
+        explanation: "The correct deployment order is Core Stack first (provides essential resources), then API Stack (depends on Core), and finally Admin Stack (depends on API). This ensures all dependencies are met."
+      },
+      {
+        id: "getting-started-4",
+        question: "What type of environment should you use for testing a new feature temporarily?",
+        options: [
+          "Production environment",
+          "Long lived environment",
+          "Ephemeral environment",
+          "Development environment"
         ],
         correctAnswer: 2,
-        explanation: "Images should be placed in the public/images/ folder, making them publicly accessible and optimized by Next.js."
+        explanation: "Ephemeral environments are temporary environments perfect for testing and developing new features as they can be easily created and destroyed without affecting your main environments."
+      },
+      {
+        id: "getting-started-5",
+        question: "What is the Webiny Control Panel (WCP) primarily used for?",
+        options: [
+          "Deploying Webiny to AWS",
+          "Managing content and pages",
+          "Managing projects and upgrading to paid licenses",
+          "Writing code and debugging"
+        ],
+        correctAnswer: 2,
+        explanation: "Webiny Control Panel (WCP) is used for managing Webiny projects and their associated licenses. It's the central hub for upgrading projects to paid licenses and unlocking premium features. You only need WCP for projects where you want to enable paid features."
       }
     ]
   },

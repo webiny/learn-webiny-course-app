@@ -29,6 +29,12 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
     description: 'Learn how to install and deploy Webiny.',
     icon: 'rocket_launch' // Rocket icon
   },
+  'webiny-control-panel': {
+        number: 3,
+        title: 'Webiny Control Panel',
+        description: 'Learn how to manage and upgrade your project\'s license.',
+        icon: 'license' // Rocket icon
+   },
 }
 
 /**

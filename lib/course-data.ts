@@ -90,6 +90,11 @@ export const courseData: Course = {
                             "slug": "getting-started/installing-webiny"
                   },
                   {
+                            "id": "upgrade-project",
+                            "title": "Upgrade Project",
+                            "slug": "getting-started/upgrade-project"
+                  },
+                  {
                             "id": "webiny-cli-overview",
                             "title": "Webiny CLI Overview",
                             "slug": "getting-started/webiny-cli-overview"
@@ -98,6 +103,32 @@ export const courseData: Course = {
                             "id": "webiny-deployments",
                             "title": "Deployment Environments",
                             "slug": "getting-started/webiny-deployments"
+                  }
+        ]
+    },
+    {
+        id: "webiny-control-panel",
+        ...chapterMetadata["webiny-control-panel"],
+        lessons: [
+                  {
+                            "id": "assigning-licenses",
+                            "title": "Assigning Licenses",
+                            "slug": "webiny-control-panel/assigning-licenses"
+                  },
+                  {
+                            "id": "structure-and-organization",
+                            "title": "Structure and Organization",
+                            "slug": "webiny-control-panel/structure-and-organization"
+                  },
+                  {
+                            "id": "usage-tracking",
+                            "title": "Usage tracking",
+                            "slug": "webiny-control-panel/usage-tracking"
+                  },
+                  {
+                            "id": "webiny-control-panel",
+                            "title": "Webiny Control Panel",
+                            "slug": "webiny-control-panel"
                   }
         ]
     }

@@ -16,8 +16,13 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "getting-started/application-deployment-stacks": () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
   "getting-started/deploy-webiny": () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
+  "getting-started/upgrade-project": () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
   "getting-started/webiny-deployments": () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
+  "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
+  "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
+  "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
+  "webiny-control-panel": () => import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
 }
 
 /**
@@ -130,6 +135,16 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "getting-started"
   },
   {
+    slug: "getting-started/upgrade-project",
+    import: () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
+    frontmatter: {
+          "title": "Upgrade Project",
+          "description": "How to upgrade your Webiny project to a paid license using the Webiny Control Panel.",
+          "order": 6
+    },
+    chapter: "getting-started"
+  },
+  {
     slug: "getting-started/webiny-cli-overview",
     import: () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
     frontmatter: {
@@ -148,6 +163,46 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "order": 3
     },
     chapter: "getting-started"
+  },
+  {
+    slug: "webiny-control-panel/assigning-licenses",
+    import: () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
+    frontmatter: {
+          "title": "Assigning Licenses",
+          "description": "How to assign licenses to your Webiny projects using the Webiny Control Panel.",
+          "order": 4
+    },
+    chapter: "webiny-control-panel"
+  },
+  {
+    slug: "webiny-control-panel/structure-and-organization",
+    import: () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
+    frontmatter: {
+          "title": "Structure and Organization",
+          "description": "Understanding the structure and organization of the Webiny Control Panel.",
+          "order": 2
+    },
+    chapter: "webiny-control-panel"
+  },
+  {
+    slug: "webiny-control-panel/usage-tracking",
+    import: () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
+    frontmatter: {
+          "title": "Usage tracking",
+          "description": "Understanding usage tracking in the Webiny Control Panel.",
+          "order": 3
+    },
+    chapter: "webiny-control-panel"
+  },
+  {
+    slug: "webiny-control-panel",
+    import: () => import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
+    frontmatter: {
+          "title": "Webiny Control Panel",
+          "description": "An introduction to the Webiny Control Panel and its features.",
+          "order": 1
+    },
+    chapter: "webiny-control-panel"
   }
 ]
 
