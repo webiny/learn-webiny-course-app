@@ -89,7 +89,7 @@ export function Quiz({ quiz, question, options, correctAnswer, hint, explanation
                   isSelected && !showResult && "border-primary bg-primary/5",
                   showCorrect && "border-green-500 bg-green-50 dark:bg-green-950/20",
                   showIncorrect && "border-red-500 bg-red-50 dark:bg-red-950/20",
-                  !isSelected && !showCorrect && !showIncorrect && "border-border hover:bg-gray-50",
+                  !isSelected && !showCorrect && !showIncorrect && "border-border hover:bg-gray-50 dark:hover:bg-gray-900",
                 )}
               >
                 <div

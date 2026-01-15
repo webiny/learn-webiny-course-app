@@ -7,18 +7,18 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
+  "devops-best-practices/application-deployment-stacks": () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
+  "devops-best-practices/webiny-deployments": () => import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
   "foundation/infra-and-hosting": () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
   "foundation/multi-tenancy": () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
   "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
   "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
   "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
-  "getting-started/application-deployment-stacks": () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
   "getting-started/deploy-webiny": () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
   "getting-started/upgrade-project": () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
-  "getting-started/webiny-deployments": () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
   "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
   "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
   "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
@@ -44,6 +44,26 @@ export interface LessonRegistryItem {
  * Includes frontmatter and chapter info for each lesson
  */
 export const mdxRegistry: LessonRegistryItem[] = [
+  {
+    slug: "devops-best-practices/application-deployment-stacks",
+    import: () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
+    frontmatter: {
+          "title": "Application Deployment Stacks",
+          "description": "Understanding Webiny application deployment stacks and their components.",
+          "order": 4
+    },
+    chapter: "devops-best-practices"
+  },
+  {
+    slug: "devops-best-practices/webiny-deployments",
+    import: () => import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
+    frontmatter: {
+          "title": "Deployment Environments",
+          "description": "Understanding Webiny environments and deployments.",
+          "order": 3
+    },
+    chapter: "devops-best-practices"
+  },
   {
     slug: "foundation/about",
     import: () => import("@/content/lessons/foundation/about.mdx"),
@@ -105,16 +125,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "foundation"
   },
   {
-    slug: "getting-started/application-deployment-stacks",
-    import: () => import("@/content/lessons/getting-started/application-deployment-stacks.mdx"),
-    frontmatter: {
-          "title": "Application Deployment Stacks",
-          "description": "Understanding Webiny application deployment stacks and their components.",
-          "order": 4
-    },
-    chapter: "getting-started"
-  },
-  {
     slug: "getting-started/deploy-webiny",
     import: () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
     frontmatter: {
@@ -151,16 +161,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "title": "Webiny CLI Overview",
           "description": "An introduction to the Webiny Command Line Interface (CLI) and its functionalities.",
           "order": 2
-    },
-    chapter: "getting-started"
-  },
-  {
-    slug: "getting-started/webiny-deployments",
-    import: () => import("@/content/lessons/getting-started/webiny-deployments.mdx"),
-    frontmatter: {
-          "title": "Deployment Environments",
-          "description": "Understanding Webiny environments and deployments.",
-          "order": 3
     },
     chapter: "getting-started"
   },

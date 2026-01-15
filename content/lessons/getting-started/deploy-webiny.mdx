@@ -22,8 +22,7 @@ In this lesson, we will guide you through the process of deploying your Webiny i
 
 Now that you have your Webiny project set up locally, it's time to deploy it to AWS. To do this, navigate to your project directory in the terminal and run the following command:
 
-<CodeBlock language="shell" filename="Terminal" code={`cd learn-webiny-course
-yarn webiny deploy --env dev`} />
+<CodeBlock language="shell" filename="Terminal" code={`yarn webiny deploy`} />
 
 This command will deploy your Webiny instance to AWS in the `dev` environment. The deployment process may take a few minutes, as it involves setting up various AWS services and resources. Once the deployment is complete, you will see a success message in the terminal along with the URL to access your Webiny admin panel and finalize the setup in your browser.
 
@@ -39,7 +38,7 @@ Once the deployment is complete, you can access the Webiny admin panel using the
 
 <Callout type="info" title="Admin Panel URL">
     If you missed the URL in the terminal output, you can find it by running the following command in your project directory:
-    `yarn webiny info --env [environment name]`
+    `yarn webiny info`
 </Callout>
 
 <Image src="/images/lessons/getting-started/installation-wizard.png" title="Webiny Admin - Installation wizard"/>
@@ -50,4 +49,6 @@ Once the installation wizard is complete, you will be redirected to the Webiny a
 
 <Image src="/images/lessons/getting-started/webiny-admin-dashboard.png" title="Webiny Admin - Dashboard"/>
 
-At this point we have a Webiny Community edition instance deployed and ready to use. In the next lesson, we will upgrade our Webiny instance to the Business tier and unlock additional features and capabilities.
+At this point we have a Webiny Community edition instance deployed and ready to use.
+
+The next lesson is an optional one - in case you wish to upgrade your Webiny instance to the Business tier and unlock additional features and capabilities, you can follow along. If you wish to continue using the Community edition, you can skip the next lesson and proceed to exploring Webiny's features in the subsequent lessons.

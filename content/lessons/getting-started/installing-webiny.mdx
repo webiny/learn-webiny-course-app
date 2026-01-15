@@ -21,7 +21,7 @@ In this lesson, we will guide you through the process of installing Webiny on yo
 ## Prerequisites
 
 Before we begin the installation process, ensure that you have the following prerequisites in place:
-- **Node.js**: Make sure you have Node.js (version 20 or higher) installed on your machine.
+- **Node.js**: Make sure you have Node.js (version 22 or higher) installed on your machine.
 If you don't have it installed, we recommend using <ExternalLink href="https://github.com/nvm-sh/nvm">Node Version Manager</ExternalLink> (nvm) to install and manage your Node.js versions.
 - **Yarn**: Yarn package manager installed globally. You can install it by following the instructions on the <ExternalLink href="https://yarnpkg.com/getting-started/install">official Yarn website</ExternalLink>.
 - **AWS Account with programmatic access**: An active AWS account is required to deploy Webiny. If you don't have one, you can create it for free at <ExternalLink href="https://aws.amazon.com/">aws.amazon.com</ExternalLink>.
@@ -53,11 +53,13 @@ One of the prompts will ask you to choose a database for your Webiny instance. Y
 For the purposes of this course, we recommend selecting **Amazon DynamoDB**. This is a fully serverless cost-per usage database with a generous free tier, making it ideal for learning and experimentation without incurring any cost.
 
 <Callout type="warning" title="Choose wisely">
-    In case of a production project, make sure you pick the appropriate database option based on your project's needs.
+    In case of a production environment, make sure you pick the appropriate database option based on your project's needs.
 
     **YOU CANNOT CHANGE THE DATABASE TYPE LATER.**
 
     If you're unsure if you project will grow to a large scale, it's safer to pick the DynamoDB + OpenSearch option right away and start with a smaller OpenSearch instance, which you can later scale up as needed without any downtime.
+
+    The database type is linked to the environment. You can have one project with DynamoDB-only for `dev` environment and DynamoDB + OpenSearch for `prod` environment, if needed.
 </Callout>
 
 It's also important to note that Webiny, by default installs all its applications (like Headless CMS, Website Builder, File Manager, etc) during the initial setup. This is the recommended approach for most users, especially when starting out. Down the line, you can always add or remove applications as needed. Depending on your license type, some applications may not be available.

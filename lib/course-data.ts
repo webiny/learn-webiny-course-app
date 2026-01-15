@@ -35,6 +35,27 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
+        id: "developing",
+        ...chapterMetadata["developing"],
+        lessons: []
+    },
+    {
+        id: "devops-best-practices",
+        ...chapterMetadata["devops-best-practices"],
+        lessons: [
+                  {
+                            "id": "application-deployment-stacks",
+                            "title": "Application Deployment Stacks",
+                            "slug": "devops-best-practices/application-deployment-stacks"
+                  },
+                  {
+                            "id": "webiny-deployments",
+                            "title": "Deployment Environments",
+                            "slug": "devops-best-practices/webiny-deployments"
+                  }
+        ]
+    },
+    {
         id: "foundation",
         ...chapterMetadata["foundation"],
         lessons: [
@@ -75,11 +96,6 @@ export const courseData: Course = {
         ...chapterMetadata["getting-started"],
         lessons: [
                   {
-                            "id": "application-deployment-stacks",
-                            "title": "Application Deployment Stacks",
-                            "slug": "getting-started/application-deployment-stacks"
-                  },
-                  {
                             "id": "deploy-webiny",
                             "title": "Deploy Webiny",
                             "slug": "getting-started/deploy-webiny"
@@ -98,13 +114,18 @@ export const courseData: Course = {
                             "id": "webiny-cli-overview",
                             "title": "Webiny CLI Overview",
                             "slug": "getting-started/webiny-cli-overview"
-                  },
-                  {
-                            "id": "webiny-deployments",
-                            "title": "Deployment Environments",
-                            "slug": "getting-started/webiny-deployments"
                   }
         ]
+    },
+    {
+        id: "headless-cms",
+        ...chapterMetadata["headless-cms"],
+        lessons: []
+    },
+    {
+        id: "multi-tenancy",
+        ...chapterMetadata["multi-tenancy"],
+        lessons: []
     },
     {
         id: "webiny-control-panel",
@@ -131,6 +152,11 @@ export const courseData: Course = {
                             "slug": "webiny-control-panel"
                   }
         ]
+    },
+    {
+        id: "website-builder",
+        ...chapterMetadata["website-builder"],
+        lessons: []
     }
 ],
 }
