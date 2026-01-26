@@ -1,0 +1,372 @@
+---
+title: "White-Label Extension"
+description: "Creating a white-label Admin extension to customize branding."
+order: 4
+---
+
+# White-Label Extension
+
+<Image
+  src="/images/lessons/developing-with-webiny/whitelabel-extension.svg"
+  alt="White-Label Extension"
+/>
+
+In this lesson, we'll create a practical example of an Admin extension: white-labeling the Webiny Admin application. You'll learn how to customize logos, colors, and branding to match your organization's identity.
+
+<ChapterOverview
+  items={[
+    { icon: "palette", text: "What is white-labeling and why it matters." },
+    { icon: "code", text: "Creating an Admin branding extension." },
+    { icon: "settings", text: "Customizing logos, colors, and themes." },
+  ]}
+/>
+
+## What Is White-Labeling?
+
+White-labeling is the process of customizing the Admin application with your own branding - logos, colors, fonts, and overall theme. This is especially important when:
+
+- Building a SaaS product that embeds Webiny
+- Creating a custom CMS for clients
+- Meeting corporate branding guidelines
+- Supporting multi-tenant setups with different branding per tenant
+
+<Callout type="info" title="Tenant-Level Theming">
+  With Webiny, tenant-level theming is straightforward. Branding and theme
+  customizations live in a clear, explicit extension using real React
+  components. Different tenants can have completely different branding, all
+  managed cleanly through extensions.
+</Callout>
+
+## Creating an Admin Branding Extension
+
+Let's create a white-label extension step by step. We'll customize:
+
+1. The Admin application logo
+2. Color scheme
+3. Favicon
+
+### Step 1: Create the Extension File
+
+First, create a new file in your `extensions/` folder:
+
+```
+extensions/
+└── AdminBranding/
+    ├── AdminBranding.tsx
+    ├── logo.svg
+    └── favicon.ico
+```
+
+### Step 2: Implement the Extension
+
+Create `extensions/AdminBranding/AdminBranding.tsx`:
+
+```tsx
+import React from "react";
+import { Admin } from "webiny/extensions/admin";
+import logoSrc from "./logo.svg";
+
+export default () => {
+  return (
+    <>
+      {/* Customize the logo */}
+      <Admin.Logo src={logoSrc} />
+
+      {/* Customize the app title */}
+      <Admin.AppTitle>My Company CMS</Admin.AppTitle>
+
+      {/* Customize colors */}
+      <Admin.Theme
+        colors={{
+          primary: "#1976d2",
+          secondary: "#424242",
+          background: "#ffffff",
+          surface: "#f5f5f5",
+          error: "#f44336",
+          success: "#4caf50",
+        }}
+      />
+
+      {/* Customize favicon */}
+      <Admin.Favicon src={"./favicon.ico"} />
+    </>
+  );
+};
+```
+
+<Callout type="hint" title="React Components for Configuration">
+  Notice how we're using React components (`<Admin.Logo>`, `<Admin.Theme>`) to configure branding. This provides type safety, auto-completion, and makes it easy to understand what options are available.
+</Callout>
+
+### Step 3: Register the Extension
+
+Add the extension to your `webiny.config.tsx`:
+
+```tsx
+import React from "react";
+import { Admin } from "webiny/extensions";
+
+export const Extensions = () => {
+  return (
+    <>
+      {/* White-label branding */}
+      <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
+
+      {/* Other extensions... */}
+    </>
+  );
+};
+```
+
+### Step 4: Test Locally
+
+Start the Admin development server:
+
+```bash
+yarn webiny watch admin --env dev
+```
+
+Open http://localhost:3001 in your browser and you'll see your custom branding applied.
+
+## Advanced Customization Options
+
+Let's explore more customization options available in white-label extensions.
+
+### Custom Typography
+
+You can customize fonts and typography:
+
+```tsx
+<Admin.Theme
+  typography={{
+    fontFamily:
+      "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontSize: {
+      base: 14,
+      small: 12,
+      large: 16,
+    },
+    fontWeight: {
+      regular: 400,
+      medium: 500,
+      bold: 700,
+    },
+  }}
+/>
+```
+
+### Login Screen Customization
+
+Customize the login page:
+
+```tsx
+<Admin.Login
+  logo={logoSrc}
+  backgroundColor="#1976d2"
+  backgroundImage="url('/images/login-bg.jpg')"
+  cardBackgroundColor="#ffffff"
+/>
+```
+
+### Navigation Customization
+
+Modify the Admin navigation:
+
+```tsx
+<Admin.Navigation>
+  <Admin.Navigation.Item label="Dashboard" path="/dashboard" icon="dashboard" />
+  <Admin.Navigation.Item label="Content" path="/cms" icon="article" />
+  {/* Add custom navigation items */}
+</Admin.Navigation>
+```
+
+### Loading Screen
+
+Customize the loading screen that appears while the app initializes:
+
+```tsx
+<Admin.LoadingScreen
+  logo={logoSrc}
+  backgroundColor="#1976d2"
+  spinnerColor="#ffffff"
+/>
+```
+
+## Tenant-Specific Branding
+
+For multi-tenant setups, you can apply different branding per tenant. The extension can read the current tenant and return different configurations:
+
+```tsx
+import React from "react";
+import { Admin } from "webiny/extensions/admin";
+import { useTenant } from "webiny/admin";
+
+export default () => {
+  const tenant = useTenant();
+
+  // Different branding per tenant
+  const branding = {
+    "tenant-a": {
+      logo: "/logos/tenant-a.svg",
+      colors: { primary: "#1976d2" },
+    },
+    "tenant-b": {
+      logo: "/logos/tenant-b.svg",
+      colors: { primary: "#4caf50" },
+    },
+  };
+
+  const config = branding[tenant.id] || branding["tenant-a"];
+
+  return (
+    <>
+      <Admin.Logo src={config.logo} />
+      <Admin.Theme colors={config.colors} />
+    </>
+  );
+};
+```
+
+This approach gives each tenant completely independent branding while maintaining a single codebase.
+
+## Using External Design Systems
+
+You can integrate external design systems and component libraries:
+
+```tsx
+import React from "react";
+import { Admin } from "webiny/extensions/admin";
+import { ThemeProvider } from "@mui/material";
+import { myCustomTheme } from "./theme";
+
+export default () => {
+  return (
+    <>
+      {/* Wrap Admin with external theme provider */}
+      <Admin.Provider>
+        <ThemeProvider theme={myCustomTheme}>
+          <Admin.Content />
+        </ThemeProvider>
+      </Admin.Provider>
+
+      {/* Webiny-specific branding */}
+      <Admin.Logo src="./logo.svg" />
+    </>
+  );
+};
+```
+
+This allows you to use familiar tools like Material-UI, Ant Design, or your own design system.
+
+## Best Practices
+
+When creating white-label extensions:
+
+1. **Keep assets organized** - Store logos, images, and assets in the extension folder
+2. **Use SVG for logos** - Vector graphics scale better across devices
+3. **Test on multiple screens** - Ensure branding looks good on desktop, tablet, and mobile
+4. **Maintain brand consistency** - Use a consistent color palette and typography
+5. **Document customizations** - Add comments explaining branding decisions
+6. **Version control assets** - Commit all branding assets to git
+
+<Callout type="warning" title="File Paths">
+  When referencing assets in extensions, use relative paths from the extension
+  file. Webiny's build system will handle bundling and optimization
+  automatically.
+</Callout>
+
+## Real-World Example
+
+Here's a complete real-world example with all common customizations:
+
+```tsx
+import React from "react";
+import { Admin } from "webiny/extensions/admin";
+import logoLight from "./assets/logo-light.svg";
+import logoDark from "./assets/logo-dark.svg";
+import favicon from "./assets/favicon.ico";
+
+export default () => {
+  return (
+    <>
+      {/* Logos for light and dark mode */}
+      <Admin.Logo light={logoLight} dark={logoDark} alt="My Company" />
+
+      {/* App title */}
+      <Admin.AppTitle>My Company CMS</Admin.AppTitle>
+
+      {/* Color theme */}
+      <Admin.Theme
+        colors={{
+          primary: "#1976d2",
+          secondary: "#424242",
+          background: "#fafafa",
+          surface: "#ffffff",
+          error: "#d32f2f",
+          warning: "#ffa726",
+          info: "#29b6f6",
+          success: "#66bb6a",
+          text: {
+            primary: "#212121",
+            secondary: "#757575",
+            disabled: "#bdbdbd",
+          },
+        }}
+        typography={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: { base: 14, small: 12, large: 16 },
+        }}
+      />
+
+      {/* Login screen */}
+      <Admin.Login
+        logo={logoLight}
+        backgroundColor="#1976d2"
+        cardBackgroundColor="#ffffff"
+        welcomeMessage="Welcome to My Company CMS"
+      />
+
+      {/* Favicon */}
+      <Admin.Favicon src={favicon} />
+
+      {/* Footer customization */}
+      <Admin.Footer>
+        <Admin.Footer.Copyright>
+          © 2026 My Company. All rights reserved.
+        </Admin.Footer.Copyright>
+        <Admin.Footer.Links>
+          <Admin.Footer.Link href="/privacy">Privacy Policy</Admin.Footer.Link>
+          <Admin.Footer.Link href="/terms">Terms of Service</Admin.Footer.Link>
+        </Admin.Footer.Links>
+      </Admin.Footer>
+    </>
+  );
+};
+```
+
+<Quiz
+  question="What makes white-labeling straightforward in Webiny?"
+  options={[
+    "It's completely automated",
+    "It uses React components with clear, explicit APIs",
+    "It doesn't require any code",
+    "It only works with CSS files",
+  ]}
+  correctAnswer={2}
+  explanation="Correct! In Webiny, white-labeling uses clear, explicit extensions with React components. This approach is type-safe, well-documented, and easy to maintain."
+  hint="Think about how the extension system uses React components."
+/>
+
+## Summary
+
+White-labeling in Webiny is straightforward and powerful:
+
+- **Simple extensions** using React components
+- **Type-safe configuration** with auto-completion
+- **Tenant-specific branding** for multi-tenant setups
+- **Explicit and well-documented** - no hacks required
+- **Full customization** of logos, colors, typography, and more
+
+The extension system makes it easy to create professional, branded Admin applications that match your organization's identity. Combined with Webiny's multi-tenant capabilities, you can support different branding for different clients or business units, all from a single codebase.
+
+In future lessons, we'll explore more advanced extension types and real-world customization scenarios.

@@ -1,0 +1,240 @@
+---
+title: "Project Folder Structure"
+description: "Understanding the Webiny project folder structure and key files."
+order: 1
+---
+
+# Project Folder Structure
+
+<Image
+  src="/images/lessons/developing-with-webiny/project-folder-structure.svg"
+  alt="Project Folder Structure"
+/>
+
+In this lesson, we'll explore the folder structure of a Webiny project. Understanding the organization of files and folders will help you navigate the codebase efficiently and know where to place your custom code and extensions.
+
+<ChapterOverview
+  items={[
+    { icon: "info", text: "Overview of the Webiny project structure." },
+    {
+      icon: "settings",
+      text: "Understanding webiny.config.tsx - the entry point.",
+    },
+    { icon: "folder", text: "Key folders and their purposes." },
+  ]}
+/>
+
+## The Webiny Project Structure
+
+Webiny projects have a clean and simple structure that's easy to navigate and understand.
+
+A typical Webiny project structure looks like this:
+
+```
+my-webiny-project/
+├── extensions/          # Your custom extensions and code
+│   └── README.md
+├── node_modules/        # Dependencies
+├── public/              # Public assets for Admin app
+│   ├── favicon.ico
+│   ├── global.css
+│   ├── index.html
+│   └── robots.txt
+├── eslint.config.js     # ESLint configuration
+├── package.json         # Project dependencies
+├── tsconfig.json        # TypeScript configuration
+├── webiny.config.tsx    # Main configuration file
+├── webiny-env.d.ts      # TypeScript environment types
+└── yarn.lock            # Locked dependencies
+```
+
+<Callout type="info" title="Clean and Simple">
+  Webiny projects use a straightforward structure with a single `package.json`,
+  one `tsconfig.json`, and centralized configuration in `webiny.config.tsx`.
+</Callout>
+
+## webiny.config.tsx - The Starting Point
+
+The `webiny.config.tsx` file is the heart of your Webiny project configuration. This is where you declare all your extensions, customize infrastructure settings, and configure the behavior of your Webiny instance.
+
+### Default Configuration (DynamoDB Only)
+
+When you create a new Webiny project with DynamoDB as the database, your `webiny.config.tsx` starts minimal:
+
+```tsx
+import React from "react";
+import { Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Cognito />
+    </>
+  );
+};
+```
+
+### DynamoDB + OpenSearch Configuration
+
+If you selected DynamoDB + OpenSearch during installation, you'll also have OpenSearch enabled:
+
+```tsx
+import React from "react";
+import { Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.OpenSearch enabled={true} />
+      <Cognito />
+    </>
+  );
+};
+```
+
+### Extended Configuration
+
+As you add customizations, your configuration grows:
+
+```tsx
+import React from "react";
+import { Api, Infra, Project } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      {/* Infrastructure configuration */}
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.OpenSearch enabled={true} />
+      <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+
+      {/* Security & Identity */}
+      <Cognito />
+
+      {/* Custom API extension */}
+      <Api.Extension src={"/extensions/MyApiKey.ts"} />
+    </>
+  );
+};
+```
+
+<Callout type="hint" title="React Components for Configuration">
+  Notice how configuration uses React components? This provides type safety,
+  auto-completion in your IDE, and makes the configuration easy to understand
+  and maintain. It's declarative and explicit.
+</Callout>
+
+### Key Configuration Areas
+
+The `webiny.config.tsx` file typically includes:
+
+1. **Infrastructure configuration** - AWS region, tags, resource prefixes, VPC settings, OpenSearch options
+2. **Project settings** - Telemetry, auto-install configurations for CI/CD
+3. **Identity providers** - Cognito, Auth0, Okta, or custom authentication
+4. **Extensions** - References to your custom code (API extensions, CLI commands, Admin UI customizations)
+5. **Environment-specific settings** - Different configurations for dev, staging, and production
+
+## The `extensions/` Folder
+
+The `extensions/` folder is where all your custom code lives. This is where you'll spend most of your development time. Extensions can modify and extend any part of Webiny - the API, Admin UI, CLI, or infrastructure.
+
+When you reference an extension in `webiny.config.tsx`, you point to a file in this folder:
+
+```tsx
+// In webiny.config.tsx
+<Api.Extension src={"/extensions/MyApiKey.ts"} />
+
+// The actual implementation lives at:
+// extensions/MyApiKey.ts
+```
+
+Common types of extensions you'll create:
+
+- **API Extensions** - Add GraphQL schemas, custom business logic, lifecycle hooks
+- **Admin Extensions** - Customize the Admin UI with themes, white-label branding, custom views
+- **CLI Commands** - Create custom CLI commands for your workflows
+- **Infrastructure Extensions** - Modify Pulumi infrastructure code
+
+<Callout type="info" title="Extensions are Opt-In">
+  Webiny follows the philosophy of "here's what you need, extend when you want."
+  You only create extensions for the specific customizations you need - the
+  platform handles everything else.
+</Callout>
+
+## Other Important Files
+
+### `package.json`
+
+Your root `package.json` file contains all project dependencies. Here are the key Webiny-related packages:
+
+```json
+{
+  "type": "module",
+  "dependencies": {
+    "@webiny/cognito": "^6.0.0",
+    "webiny": "^6.0.0"
+  },
+  "devDependencies": {
+    "@webiny/cli": "^6.0.0",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": "^22.0.0"
+  }
+}
+```
+
+The `webiny` package is the unified API that provides all the building blocks for extensions, `@webiny/cognito` provides the default identity provider, and `@webiny/cli` provides the command-line tools for development and deployment.
+
+### `tsconfig.json`
+
+The TypeScript configuration file for the entire project. This file controls how TypeScript compiles your code and provides type checking across all extensions.
+
+### `public/` Folder
+
+Contains public assets for the Admin application:
+
+- `favicon.ico` - Browser favicon
+- `global.css` - Global CSS styles
+- `index.html` - HTML entry point for the Admin app
+- `robots.txt` - Search engine crawling rules
+
+### `webiny-env.d.ts`
+
+TypeScript type definitions for environment-specific types used throughout your project.
+
+## Quick Onboarding
+
+The simple project structure makes onboarding new developers straightforward:
+
+```bash
+git clone <repository>
+yarn
+# You're ready to start developing!
+```
+
+The clean structure means less configuration, fewer commands, and faster time to productivity.
+
+<Quiz
+  question="Where do you declare and configure extensions in a Webiny project?"
+  options={["package.json", "webiny.config.tsx", "tsconfig.json", ".env file"]}
+  correctAnswer={2}
+  explanation="Correct! The webiny.config.tsx file is the main configuration entry point where you declare all your extensions using React components. This provides type safety and a clear, declarative way to configure your project."
+  hint="Think about the file that uses React components for configuration."
+/>
+
+## Summary
+
+The Webiny project structure is designed to be simple, clear, and maintainable:
+
+- **`webiny.config.tsx`** is your configuration entry point
+- **`extensions/`** contains all your custom code
+- **`public/`** holds Admin app assets
+- Everything is declarative and type-safe
+
+This clean structure makes it easier to understand, maintain, and upgrade your projects. In the next lesson, we'll explore how local development works with this structure.

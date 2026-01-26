@@ -1,0 +1,202 @@
+---
+title: "Local Development"
+description: "How local development with Webiny works and best practices."
+order: 2
+---
+
+# Local Development
+
+<Image
+  src="/images/lessons/developing-with-webiny/local-development.svg"
+  alt="Local Development"
+/>
+
+In this lesson, we'll explore how local development works with Webiny. You'll learn about the development workflow, watch commands, and best practices for efficient development.
+
+<ChapterOverview
+  items={[
+    { icon: "code", text: "Understanding the local development workflow." },
+    { icon: "speed", text: "Developing Admin and API applications." },
+    { icon: "settings", text: "Environment variables and type safety." },
+  ]}
+/>
+
+## How Local Development Works
+
+Webiny is a serverless platform that runs on AWS. Before you can start local development, you need to deploy your project to AWS. However, you don't need to deploy everything - Webiny projects consist of three main applications (Core, API, and Admin), and you only need Core and API for local development.
+
+### Initial Setup
+
+1. **Deploy Core and API** - Run `yarn webiny deploy core api` to create the necessary AWS infrastructure
+2. **Start developing** - Use watch commands to develop locally
+3. **Deploy changes** - Deploy only when you need to update infrastructure or test in the cloud
+
+<Callout type="info" title="Cloud Infrastructure Required">
+  Local development requires deployed Core and API applications in AWS. The
+  watch commands connect to this infrastructure while running your code locally.
+</Callout>
+
+<Callout type="hint" title="Admin Deployment Optional">
+  You don't need to deploy the Admin app for local development. Only deploy it
+  with `yarn webiny deploy admin` when you need a CloudFront URL to share with
+  others or test in production-like conditions.
+</Callout>
+
+## Watch Commands
+
+Webiny provides watch commands for different parts of your application. These commands monitor your code for changes and automatically rebuild when needed.
+
+## Admin Application Development
+
+Developing the Admin application is just like any other React app development. You have a local development server, make your changes, and see them reflected instantly in your browser.
+
+### Starting the Admin Dev Server
+
+```bash
+yarn webiny watch admin
+```
+
+This command:
+
+- Starts a local development server on http://localhost:3001
+- Watches for changes in Admin extensions
+- Provides hot module replacement for instant feedback
+
+<Callout type="info" title="Standard React Workflow">
+  The Admin development workflow is familiar to any React developer - edit code,
+  save, and see changes in your browser immediately. No special setup required.
+</Callout>
+
+### What You Can Develop Locally
+
+- Custom Admin UI extensions
+- White-label branding and themes
+- Custom navigation items
+- New Admin pages and views
+
+## API Development - Local AWS Lambda Development
+
+API development uses what we call **Local AWS Lambda Development**. This approach allows you to run your AWS Lambda code locally, without the need to continuously deploy changes to AWS.
+
+### Starting API Development
+
+```bash
+yarn webiny watch api
+```
+
+This command:
+
+- Runs Lambda functions locally on your machine
+- Connects to deployed AWS infrastructure (DynamoDB, S3, OpenSearch, etc.)
+- Watches for code changes and hot-reloads instantly
+- Eliminates the need to redeploy after every change
+
+### How It Works
+
+When you run `yarn webiny watch api`, here's what happens behind the scenes:
+
+1. **Lambda stubs are deployed** - Your deployed Lambda functions are replaced with stub code that forwards events to your local machine
+2. **Local execution environment** - Your code runs locally with the full AWS Lambda environment (environment variables, context, etc.)
+3. **Event forwarding** - When a request comes to AWS, it gets forwarded to your local machine
+4. **Response routing** - After your local code executes, the response is sent back through the Lambda stub to the user
+
+**The key benefit:** You can immediately see the results of your backend code changes without waiting for deployments. You can also debug your code since it's running in your local environment.
+
+<Callout type="warning" title="Important: Redeploy After Watch">
+  When you stop the watch command, your Lambda functions still contain stub
+  code. You must redeploy your API with `yarn webiny deploy api` to restore the
+  actual Lambda code and make your API functional again in the cloud.
+</Callout>
+
+<Callout type="info" title="Local AWS Lambda Development">
+  This isn't just a local Express server - it's the complete Lambda execution
+  environment transferred to your machine. Your code runs with real AWS
+  environment variables and context, while the deployed Lambda stubs forward
+  requests to your local environment.
+</Callout>
+
+### What You Can Develop Locally
+
+- Custom GraphQL schemas and resolvers
+- API lifecycle hooks
+- Business logic and data transformations
+- Security extensions
+- Custom API endpoints
+
+## Type Safety and Build Validation
+
+Webiny enforces TypeScript type checking during builds. Build fails if types don't match - errors are caught before deployment.
+
+This compile-time validation saves you from runtime errors in production. Your IDE will show type errors as you code, and the build process ensures nothing slips through.
+
+## Environment Variables
+
+Webiny makes environment variables optional for most development scenarios. The `.env` file is not required for local development in most cases.
+
+When you do need to set environment variables, use prefixes to target specific applications:
+
+- **`WEBINY_ADMIN_`** - Variables with this prefix are only applied in the Admin application
+- **`WEBINY_API_`** - Variables with this prefix are only applied in the API application
+
+Example `.env` file:
+
+```bash
+# Admin-specific variables
+WEBINY_ADMIN_MY_CUSTOM_VAR=value
+
+# API-specific variables
+WEBINY_API_MY_SERVICE_KEY=secret_key
+```
+
+<Callout type="info" title="Application-Specific Variables">
+  Environment variable prefixes ensure variables are only loaded in the
+  appropriate application. This prevents accidental variable leakage between
+  Admin and API applications.
+</Callout>
+
+## Website Development
+
+If you're developing with Website Builder, you'll need to run your Website application locally (e.g., a Next.js app) in addition to the watch commands.
+
+<Callout type="info" title="Website Builder Development">
+  Website development workflow and setup will be covered in detail in the
+  Website Builder lessons.
+</Callout>
+
+## Development Best Practices
+
+1. **Deploy Core and API first** - Run `yarn webiny deploy core api` before starting local development
+
+2. **Use watch commands** - Use `yarn webiny watch` during development rather than redeploying repeatedly
+
+3. **Test locally first** - Make and test changes locally before deploying to AWS
+
+4. **Keep extensions focused** - Create small, focused extensions rather than large monolithic files
+
+5. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
+
+<Quiz
+  question="What applications do you need to deploy before you can start local development with Webiny?"
+  options={[
+    "Only Core",
+    "Core and API",
+    "Core, API, and Admin",
+    "All applications including Website",
+  ]}
+  correctAnswer={2}
+  explanation="Correct! You only need to deploy Core and API applications to start local development. The Admin app doesn't need to be deployed unless you need a CloudFront URL to share with others."
+  hint="Think about the minimum infrastructure needed for the watch commands to connect to."
+/>
+
+## Summary
+
+Webiny's local development experience is designed for productivity:
+
+- **Admin development** - Standard React workflow with instant hot-reload
+- **API development** - Local AWS Lambda Development with full execution environment
+- **Debugging tools** - Browser DevTools, console logs, and Logger for production
+- **Cloud infrastructure** - Connects to deployed AWS resources for realistic testing
+
+The watch commands and Local AWS Lambda Development make developing with Webiny efficient and productive.
+
+In the next lesson, we'll dive deeper into the extension system and learn how to create your own extensions.
