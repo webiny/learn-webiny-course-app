@@ -24,9 +24,6 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
   "getting-started/upgrade-project": () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
-  "headless-cms/content-models-and-entries": () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
-  "headless-cms/content-versioning": () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
-  "headless-cms/creating-content-model-via-ui": () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
   "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
   "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
   "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
@@ -221,36 +218,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "order": 2
     },
     chapter: "getting-started"
-  },
-  {
-    slug: "headless-cms/content-models-and-entries",
-    import: () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
-    frontmatter: {
-          "title": "Content Models and Content Entries",
-          "description": "Understanding the foundation of Webiny Headless CMS - content models and entries.",
-          "order": 1
-    },
-    chapter: "headless-cms"
-  },
-  {
-    slug: "headless-cms/content-versioning",
-    import: () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
-    frontmatter: {
-          "title": "Content Versioning",
-          "description": "Understanding how content versioning works in Webiny Headless CMS.",
-          "order": 2
-    },
-    chapter: "headless-cms"
-  },
-  {
-    slug: "headless-cms/creating-content-model-via-ui",
-    import: () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
-    frontmatter: {
-          "title": "Creating a Content Model via UI",
-          "description": "Learn how to create a Product content model through the Webiny Admin UI.",
-          "order": 3
-    },
-    chapter: "headless-cms"
   },
   {
     slug: "webiny-control-panel/assigning-licenses",

@@ -144,27 +144,6 @@ export const courseData: Course = {
         ]
     },
     {
-        id: "headless-cms",
-        ...chapterMetadata["headless-cms"],
-        lessons: [
-                  {
-                            "id": "content-models-and-entries",
-                            "title": "Content Models and Content Entries",
-                            "slug": "headless-cms/content-models-and-entries"
-                  },
-                  {
-                            "id": "content-versioning",
-                            "title": "Content Versioning",
-                            "slug": "headless-cms/content-versioning"
-                  },
-                  {
-                            "id": "creating-content-model-via-ui",
-                            "title": "Creating a Content Model via UI",
-                            "slug": "headless-cms/creating-content-model-via-ui"
-                  }
-        ]
-    },
-    {
         id: "webiny-control-panel",
         ...chapterMetadata["webiny-control-panel"],
         lessons: [
