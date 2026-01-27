@@ -52,9 +52,11 @@ Developing the Admin application is just like any other React app development. Y
 
 ### Starting the Admin Dev Server
 
-```bash
-yarn webiny watch admin
-```
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`yarn webiny watch admin`}
+/>
 
 This command:
 
@@ -80,9 +82,7 @@ API development uses what we call **Local AWS Lambda Development**. This approac
 
 ### Starting API Development
 
-```bash
-yarn webiny watch api
-```
+<CodeBlock language="bash" filename="Terminal" code={`yarn webiny watch api`} />
 
 This command:
 
@@ -145,13 +145,12 @@ When you do need to set environment variables, use prefixes to target specific a
 
 Example `.env` file:
 
-```bash
-# Admin-specific variables
+<CodeBlock language="bash" filename=".env" code={`# Admin-specific variables
 WEBINY_ADMIN_MY_CUSTOM_VAR=value
 
 # API-specific variables
-WEBINY_API_MY_SERVICE_KEY=secret_key
-```
+
+WEBINY_API_MY_SERVICE_KEY=secret_key`} />
 
 <Callout type="info" title="Application-Specific Variables">
   Environment variable prefixes ensure variables are only loaded in the
@@ -174,11 +173,13 @@ What about new developers joining an existing Webiny project? Unlike starting a 
 
 When a developer joins your team, they don't need to run any project scaffolding commands. They simply clone the repository and install dependencies:
 
-```bash
-git clone <repository>
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`git clone <repository>
 yarn
-# You're ready to start developing!
-```
+# You're ready to start developing!`}
+/>
 
 That's it. No complex setup, no configuration files to create, no additional installation steps. The clean project structure means less configuration, fewer commands, and faster time to productivity.
 

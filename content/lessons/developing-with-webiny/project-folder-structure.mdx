@@ -27,8 +27,9 @@ Webiny projects have a clean and simple structure that's easy to navigate and un
 
 A typical Webiny project structure looks like this:
 
-```
-my-webiny-project/
+<CodeBlock
+  language="text"
+  code={`my-webiny-project/
 ├── extensions/          # Your custom extensions and code
 │   └── README.md
 ├── node_modules/        # Dependencies
@@ -42,8 +43,8 @@ my-webiny-project/
 ├── tsconfig.json        # TypeScript configuration
 ├── webiny.config.tsx    # Main configuration file
 ├── webiny-env.d.ts      # TypeScript environment types
-└── yarn.lock            # Locked dependencies
-```
+└── yarn.lock            # Locked dependencies`}
+/>
 
 <Callout type="info" title="Clean and Simple">
   Webiny projects use a straightforward structure with a single `package.json`,
@@ -56,8 +57,7 @@ The `webiny.config.tsx` file is where you configure your Webiny project. This is
 
 Here's what a basic configuration looks like:
 
-```tsx
-import React from "react";
+<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
@@ -68,8 +68,7 @@ export const Extensions = () => {
       <Cognito />
     </>
   );
-};
-```
+};`} />
 
 This minimal configuration:
 
@@ -87,13 +86,11 @@ The `extensions/` folder is where all your custom code lives. This is where you'
 
 When you reference an extension in `webiny.config.tsx`, you point to a file in this folder:
 
-```tsx
-// In webiny.config.tsx
+<CodeBlock language="tsx" filename="webiny.config.tsx" code={`// In webiny.config.tsx
 <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
 
 // The actual implementation lives at:
-// extensions/AdminBranding/AdminBranding.tsx
-```
+// extensions/AdminBranding/AdminBranding.tsx`} />
 
 Common types of extensions you'll create:
 
@@ -114,8 +111,10 @@ Common types of extensions you'll create:
 
 Your root `package.json` file contains all project dependencies. Here are the key Webiny-related packages:
 
-```json
-{
+<CodeBlock
+  language="json"
+  filename="package.json"
+  code={`{
   "type": "module",
   "dependencies": {
     "@webiny/cognito": "^6.0.0",
@@ -128,8 +127,8 @@ Your root `package.json` file contains all project dependencies. Here are the ke
   "engines": {
     "node": "^22.0.0"
   }
-}
-```
+}`}
+/>
 
 The `webiny` package is the unified API that provides all the building blocks for extensions, `@webiny/cognito` provides the default identity provider, and `@webiny/cli` provides the command-line tools for development and deployment.
 

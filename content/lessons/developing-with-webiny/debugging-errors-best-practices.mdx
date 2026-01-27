@@ -51,50 +51,6 @@ When developing Admin extensions, use your browser's DevTools:
   working with unfamiliar code.
 </Callout>
 
-### Common Admin Debugging Scenarios
-
-**Scenario: Component doesn't render**
-
-1. Check browser console for errors
-2. Use React DevTools to verify component is mounted
-3. Inspect props - are they what you expect?
-4. Check conditional rendering logic
-
-**Scenario: GraphQL query fails**
-
-1. Open GraphQL Network Inspector
-2. Find the failed query
-3. Check the error message and response
-4. Verify query syntax and variables
-5. Check if user has proper permissions
-
-**Scenario: State not updating**
-
-1. Use React DevTools to inspect state values
-2. Verify setState calls are being triggered
-3. Check if state updates are asynchronous
-4. Look for stale closures in useEffect
-
-**Scenario: "Cannot read property of undefined" error**
-
-This usually means you're accessing a property on an object that doesn't exist:
-
-```typescript
-// Problem: data might not be loaded yet
-const name = user.firstName;
-
-// Solution: check if data exists first
-const name = user?.firstName || "N/A";
-```
-
-**Scenario: "Invalid hook call" error**
-
-You're using React hooks incorrectly:
-
-- Hooks must be called at the top level (not inside conditionals or loops)
-- Hooks can only be used in React components or custom hooks
-- Hook order must stay consistent between renders
-
 ## Debugging API Application Errors
 
 API errors occur in AWS Lambda functions. During local development with `yarn webiny watch api`, debugging is straightforward because your code runs locally.
@@ -105,11 +61,12 @@ API errors occur in AWS Lambda functions. During local development with `yarn we
 
 When developing API extensions, console logs are your primary debugging tool:
 
-```typescript
-// In your API extension
+<CodeBlock
+  language="typescript"
+  code={`// In your API extension
 console.log("Processing entry:", entry.id);
-console.log("Entry data:", entry);
-```
+console.log("Entry data:", entry);`}
+/>
 
 Your console logs will appear directly in the terminal where you ran `yarn webiny watch api`. You don't need to check CloudWatch or the browser - the watch command outputs all logs immediately in your terminal.
 
@@ -123,19 +80,17 @@ Your console logs will appear directly in the terminal where you ran `yarn webin
 
 For logs you want to persist and use in production, use Webiny's Logger:
 
-```typescript
-// In your API extension
+<CodeBlock language="typescript" code={`// In your API extension
 import { Logger } from "webiny/api/features/Logger";
 
 class MyExtension {
-  constructor(private logger: Logger.Interface) {}
+constructor(private logger: Logger.Interface) {}
 
-  async handle() {
-    this.logger.info("Processing completed");
-    this.logger.warn("Something needs attention");
-  }
+async handle() {
+this.logger.info("Processing completed");
+this.logger.warn("Something needs attention");
 }
-```
+}`} />
 
 **When to use Logger vs console.log:**
 
@@ -146,9 +101,7 @@ class MyExtension {
 
 **Error: Cannot find module**
 
-```
-Error: Cannot find module './MyModule'
-```
+<CodeBlock language="text" code={`Error: Cannot find module './MyModule'`} />
 
 You have an incorrect import path. Check:
 
@@ -158,25 +111,25 @@ You have an incorrect import path. Check:
 
 **Error: Type mismatch**
 
-```
-Type 'string' is not assignable to type 'number'
-```
+<CodeBlock
+  language="text"
+  code={`Type 'string' is not assignable to type 'number'`}
+/>
 
 TypeScript caught a type error. Fix the type or update your type definitions. The build will fail until types are correct.
 
 **Error: DynamoDB access denied**
 
-```
-User is not authorized to perform: dynamodb:GetItem
-```
+<CodeBlock
+  language="text"
+  code={`User is not authorized to perform: dynamodb:GetItem`}
+/>
 
 Your Lambda function doesn't have permission to access DynamoDB. Check your infrastructure extensions and IAM policies.
 
 **Error: Timeout**
 
-```
-Task timed out after 10.00 seconds
-```
+<CodeBlock language="text" code={`Task timed out after 10.00 seconds`} />
 
 Your Lambda function exceeded its timeout. Either:
 
@@ -186,9 +139,7 @@ Your Lambda function exceeded its timeout. Either:
 
 **Error: GraphQL authorization**
 
-```
-Not authorized to access this resource
-```
+<CodeBlock language="text" code={`Not authorized to access this resource`} />
 
 The current user lacks permission. Check:
 
@@ -204,8 +155,9 @@ GraphQL errors can be tricky because they might occur at different layers.
 
 GraphQL can return partial data with errors:
 
-```json
-{
+<CodeBlock
+  language="json"
+  code={`{
   "data": {
     "listArticles": null
   },
@@ -218,8 +170,8 @@ GraphQL can return partial data with errors:
       }
     }
   ]
-}
-```
+}`}
+/>
 
 **Read GraphQL errors carefully:**
 
@@ -231,9 +183,7 @@ GraphQL can return partial data with errors:
 
 **Syntax errors**
 
-```
-Syntax Error: Expected Name, found }
-```
+<CodeBlock language="text" code={`Syntax Error: Expected Name, found }`} />
 
 Your GraphQL query has invalid syntax. Check for:
 
@@ -243,9 +193,10 @@ Your GraphQL query has invalid syntax. Check for:
 
 **Validation errors**
 
-```
-Cannot query field "userName" on type "User"
-```
+<CodeBlock
+  language="text"
+  code={`Cannot query field "userName" on type "User"`}
+/>
 
 You're querying a field that doesn't exist in the schema. Check:
 
@@ -261,9 +212,10 @@ Webiny enforces TypeScript type checking during builds. This catches errors befo
 
 **Property doesn't exist**
 
-```
-Property 'firstName' does not exist on type 'User'
-```
+<CodeBlock
+  language="text"
+  code={`Property 'firstName' does not exist on type 'User'`}
+/>
 
 You're accessing a property that TypeScript doesn't know about. Either:
 
@@ -273,27 +225,27 @@ You're accessing a property that TypeScript doesn't know about. Either:
 
 **Type mismatch in function call**
 
-```
-Argument of type 'string' is not assignable to parameter of type 'number'
-```
+<CodeBlock
+  language="text"
+  code={`Argument of type 'string' is not assignable to parameter of type 'number'`}
+/>
 
 You're passing the wrong type to a function. Convert the value or fix the function signature.
 
 **Missing type annotations**
 
-```
-Parameter 'user' implicitly has an 'any' type
-```
+<CodeBlock
+  language="text"
+  code={`Parameter 'user' implicitly has an 'any' type`}
+/>
 
 Add explicit type annotations to your parameters:
 
-```typescript
-// Before
+<CodeBlock language="typescript" code={`// Before
 function greet(user) { ... }
 
 // After
-function greet(user: User) { ... }
-```
+function greet(user: User) { ... }`} />
 
 <Callout type="info" title="Build-Time Safety">
   Type errors prevent your build from succeeding. This is a good thing - it
@@ -309,9 +261,10 @@ Deployment errors occur when you run `yarn webiny deploy`. These are typically i
 
 **Stack update failed**
 
-```
-Stack update failed: Resource handler returned message: "Resource limit exceeded"
-```
+<CodeBlock
+  language="text"
+  code={`Stack update failed: Resource handler returned message: "Resource limit exceeded"`}
+/>
 
 You've hit an AWS service limit. Common limits:
 
@@ -323,9 +276,10 @@ You've hit an AWS service limit. Common limits:
 
 **Invalid CloudFormation template**
 
-```
-Template error: instance of Fn::GetAtt references undefined resource
-```
+<CodeBlock
+  language="text"
+  code={`Template error: instance of Fn::GetAtt references undefined resource`}
+/>
 
 Your infrastructure extension has an error. Check your Pulumi/CloudFormation code for:
 
@@ -335,9 +289,10 @@ Your infrastructure extension has an error. Check your Pulumi/CloudFormation cod
 
 **Insufficient permissions**
 
-```
-User is not authorized to perform: iam:CreateRole
-```
+<CodeBlock
+  language="text"
+  code={`User is not authorized to perform: iam:CreateRole`}
+/>
 
 Your AWS credentials lack the necessary permissions. Ensure your user has:
 
@@ -352,37 +307,37 @@ Following these practices will help you avoid common errors:
 
 Don't use `any` types. Let TypeScript help you catch errors:
 
-```typescript
-// Bad
+<CodeBlock language="typescript" code={`// Bad
 function processData(data: any) { ... }
 
 // Good
-function processData(data: Article[]) { ... }
-```
+function processData(data: Article[]) { ... }`} />
 
 ### 2. Handle Errors Gracefully
 
 Always handle potential errors in async operations:
 
-```typescript
-try {
+<CodeBlock
+  language="typescript"
+  code={`try {
   const data = await fetchData();
   return processData(data);
 } catch (error) {
   logger.error("Failed to process data", { error });
   throw new Error("Data processing failed");
-}
-```
+}`}
+/>
 
 ### 3. Validate Input Data
 
 Don't assume data is in the expected format:
 
-```typescript
-if (!entry || !entry.id) {
+<CodeBlock
+  language="typescript"
+  code={`if (!entry || !entry.id) {
   throw new Error("Invalid entry: missing id");
-}
-```
+}`}
+/>
 
 ### 4. Test Locally Before Deploying
 
@@ -397,30 +352,32 @@ Always test changes with watch commands before deploying:
 
 Help your future self with descriptive errors:
 
-```typescript
-// Bad
+<CodeBlock language="typescript" code={`// Bad
 throw new Error("Error");
 
 // Good
-throw new Error(`Failed to update article ${articleId}: Article not found`);
-```
+throw new Error(\`Failed to update article \${articleId}: Article not found\`);`} />
 
 ### 6. Check the Build Output
 
 Watch for warnings during builds. They often indicate potential issues:
 
-```bash
-yarn webiny watch api
-# Watch the console output for warnings
-```
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`yarn webiny watch api
+# Watch the console output for warnings`}
+/>
 
 ### 7. Keep Dependencies Updated
 
 Regularly update Webiny and dependencies to get bug fixes:
 
-```bash
-yarn upgrade-interactive --latest
-```
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`yarn upgrade-interactive --latest`}
+/>
 
 <Callout type="warning" title="Test After Updates">
   After updating dependencies, test your application thoroughly. Breaking
