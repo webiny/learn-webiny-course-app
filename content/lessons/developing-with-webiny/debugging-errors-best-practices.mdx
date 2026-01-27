@@ -42,13 +42,13 @@ When developing API extensions, console logs are a quick and solid choice for de
     code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-async handle() {
-console.log("An API key was updated!");
-}
+    async handle() {
+        console.log("An API key was updated!");
+    }
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-implementation: MyApiKeyAfterUpdateImpl
+    implementation: MyApiKeyAfterUpdateImpl
 });
 
 export default MyApiKeyAfterUpdate;`}
@@ -67,17 +67,16 @@ For a more robust logging solution, especially for production use, use Webiny's 
 import { Logger } from "webiny/api/logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-constructor(private logger: Logger.Interface) {}
+    constructor(private logger: Logger.Interface) {}
 
     async handle() {
         this.logger.warn("An API key was updated!");
     }
-
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-implementation: MyApiKeyAfterUpdateImpl,
-dependencies: [Logger]
+    implementation: MyApiKeyAfterUpdateImpl,
+    dependencies: [Logger]
 });
 
 export default MyApiKeyAfterUpdate;`}

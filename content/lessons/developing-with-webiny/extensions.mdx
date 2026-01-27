@@ -50,41 +50,51 @@ Now that you understand what extensions are, let's look at where you configure t
 
 When you create a new Webiny project, your `webiny.config.tsx` starts minimal:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-  return (
-    <>
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Cognito />
-    </>
-  );
-};`} />
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Cognito />
+        </>
+    );
+};`}
+/>
 
 This minimal configuration:
 
 - Sets the AWS region to `us-east-1`
 - Enables Cognito for authentication
 
-### With OpenSearch
+### Configuring Cloud Infrastructure
 
-If you selected DynamoDB + OpenSearch during installation, you'll see:
+If you selected DynamoDB + OpenSearch during installation, you'll see an example of cloud infrastructure configuration:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-  return (
-    <>
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Infra.OpenSearch enabled={true} />
-      <Cognito />
-    </>
-  );
-};`} />
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Infra.OpenSearch enabled={true} />
+            <Cognito />
+        </>
+    );
+};`}
+/>
+
+The `<Infra.OpenSearch enabled={true} />` component configures OpenSearch in your AWS infrastructure. This is a declarative way to manage cloud resources - you simply declare what you need, and Webiny handles the deployment.
 
 ### Extended Configuration
 
@@ -148,9 +158,9 @@ API extensions allow you to customize the backend GraphQL API. Common use cases:
 Example from `webiny.config.tsx`:
 
 <CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Api.Extension src={"/extensions/MyApiExtension.ts"} />
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`<Api.Extension src={"/extensions/MyApiExtension.ts"} />
 <Api.Extension src={"/extensions/AnotherApiExtension.ts"} />`}
 />
 
@@ -166,9 +176,9 @@ Admin extensions customize the Admin application UI. Common use cases:
 Example:
 
 <CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`<Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
 <Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />`}
 />
 
@@ -189,9 +199,9 @@ Infrastructure extensions modify your AWS infrastructure using Pulumi. Common us
 Example:
 
 <CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />`}
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />`}
 />
 
 ### 4. CLI Extensions
@@ -206,9 +216,9 @@ CLI extensions add custom commands to the Webiny CLI. Common use cases:
 Example:
 
 <CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Cli.Command src={"/extensions/MyCustomCommand.ts"} />`}
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`<Cli.Command src={"/extensions/MyCustomCommand.ts"} />`}
 />
 
 ## How Extensions Work
@@ -226,7 +236,7 @@ For example, `extensions/MyGraphQLSchema.ts` might look like:
 import { IdentityContext } from "webiny/api/security";
 
 class Schema implements GraphQLSchemaFactory.Interface {
-constructor(private identityContext: IdentityContext.Interface) {}
+    constructor(private identityContext: IdentityContext.Interface) {}
 
     execute(): GraphQLSchemaFactory.Return {
         return [
@@ -247,7 +257,6 @@ constructor(private identityContext: IdentityContext.Interface) {}
             }
         ];
     }
-
 }
 
 export default GraphQLSchemaFactory.createImplementation({
@@ -277,15 +286,15 @@ import logo from "./logo.png";
 const { Logo } = AdminConfig;
 
 const AdminLogo = () => {
-return (
-
-<AdminConfig.Public>
-  <Logo
-    squareLogo={<img src={logo} alt={"My Company"} />}
-    horizontalLogo={<img src={logo} alt={"My Company"} />}
-  />
-</AdminConfig.Public>
-); };
+    return (
+        <AdminConfig.Public>
+            <Logo
+                squareLogo={<img src={logo} alt={"My Company"} />}
+                horizontalLogo={<img src={logo} alt={"My Company"} />}
+            />
+        </AdminConfig.Public>
+    );
+};
 
 export default AdminLogo;`}
 />
@@ -310,10 +319,10 @@ You can load extensions conditionally based on environment:
 </Infra.Env.Is>
 
 <Infra.Env.Is env={["dev", "staging"]}>
-  <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-  <Infra.OpenSearch enabled={false} />
-</Infra.Env.Is>
-`} />
+    <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+    <Infra.OpenSearch enabled={false} />
+</Infra.Env.Is>`}
+/>
 
 This is useful for:
 
@@ -328,9 +337,9 @@ Webiny provides pre-built extensions that you can install with a single command.
 To install an extension:
 
 <CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn webiny extension <extension-name>`}
+    language="bash"
+    filename="Terminal"
+    code={`yarn webiny extension <extension-name>`}
 />
 
 This command:
