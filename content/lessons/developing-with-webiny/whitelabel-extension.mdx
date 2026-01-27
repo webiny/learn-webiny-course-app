@@ -6,11 +6,6 @@ order: 4
 
 # White-Label Extension
 
-<Image
-  src="/images/lessons/developing-with-webiny/whitelabel-extension.svg"
-  alt="White-Label Extension"
-/>
-
 In this lesson, we'll create a practical Admin extension to white-label the Webiny Admin application. You'll learn how to customize the logo, title, and theme colors to match your organization's branding.
 
 <ChapterOverview
@@ -67,12 +62,12 @@ import { AdminConfig } from "webiny/admin/configs";
 const { Theme } = AdminConfig;
 
 const AdminTheme = () => {
-    return (
-        <AdminConfig.Public>
-            <Theme.Color palette={"primary"} color={"purple"} />
-            <Theme.Color palette={"secondary"} color={"green"} />
-        </AdminConfig.Public>
-    );
+return (
+<AdminConfig.Public>
+<Theme.Color palette={"primary"} color={"purple"} />
+<Theme.Color palette={"secondary"} color={"green"} />
+</AdminConfig.Public>
+);
 };
 
 export default AdminTheme;`}
@@ -104,15 +99,15 @@ import horizontalLogo from "./logo.png";
 const { Title, Logo } = AdminConfig;
 
 const AdminTitleLogo = () => {
-    return (
-        <AdminConfig.Public>
-            <Title value={"ACME Corp"} />
-            <Logo
-                squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
-                horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
-            />
-        </AdminConfig.Public>
-    );
+return (
+<AdminConfig.Public>
+<Title value={"ACME Corp"} />
+<Logo
+squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
+horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
+/>
+</AdminConfig.Public>
+);
 };
 
 export default AdminTitleLogo;`}
@@ -152,6 +147,7 @@ export const Extensions = () => {
             <Admin.Extension src={"/extensions/AdminBranding/AdminTheme.tsx"} />
         </>
     );
+
 };`}
 />
 
@@ -188,10 +184,10 @@ import horizontalLogo from "./logo.png";
 const { Title, Logo, Theme } = AdminConfig;
 
 const AdminBranding = () => {
-    return (
-        <AdminConfig.Public>
-            {/* Title */}
-            <Title value={"ACME Corp"} />
+return (
+<AdminConfig.Public>
+{/* Title */}
+<Title value={"ACME Corp"} />
 
             {/* Logo */}
             <Logo
@@ -204,6 +200,7 @@ const AdminBranding = () => {
             <Theme.Color palette={"secondary"} color={"green"} />
         </AdminConfig.Public>
     );
+
 };
 
 export default AdminBranding;`}

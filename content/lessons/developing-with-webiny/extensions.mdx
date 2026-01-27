@@ -6,11 +6,6 @@ order: 3
 
 # Extensions
 
-<Image
-  src="/images/lessons/developing-with-webiny/extensions.svg"
-  alt="Extensions"
-/>
-
 In this lesson, we'll explore the extension system in Webiny. Extensions are the primary way you customize and extend Webiny to meet your specific needs. Understanding how extensions work is fundamental to building with Webiny.
 
 <ChapterOverview
@@ -118,6 +113,7 @@ export const Extensions = () => {
             <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
         </>
     );
+
 };`}
 />
 
@@ -230,7 +226,7 @@ For example, `extensions/MyGraphQLSchema.ts` might look like:
 import { IdentityContext } from "webiny/api/security";
 
 class Schema implements GraphQLSchemaFactory.Interface {
-    constructor(private identityContext: IdentityContext.Interface) {}
+constructor(private identityContext: IdentityContext.Interface) {}
 
     execute(): GraphQLSchemaFactory.Return {
         return [
@@ -251,6 +247,7 @@ class Schema implements GraphQLSchemaFactory.Interface {
             }
         ];
     }
+
 }
 
 export default GraphQLSchemaFactory.createImplementation({
@@ -280,14 +277,14 @@ import logo from "./logo.png";
 const { Logo } = AdminConfig;
 
 const AdminLogo = () => {
-    return (
-        <AdminConfig.Public>
-            <Logo
-                squareLogo={<img src={logo} alt={"My Company"} />}
-                horizontalLogo={<img src={logo} alt={"My Company"} />}
-            />
-        </AdminConfig.Public>
-    );
+return (
+<AdminConfig.Public>
+<Logo
+squareLogo={<img src={logo} alt={"My Company"} />}
+horizontalLogo={<img src={logo} alt={"My Company"} />}
+/>
+</AdminConfig.Public>
+);
 };
 
 export default AdminLogo;`}
@@ -313,10 +310,10 @@ You can load extensions conditionally based on environment:
 </Infra.Env.Is>
 
 <Infra.Env.Is env={["dev", "staging"]}>
-    <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-    <Infra.OpenSearch enabled={false} />
-</Infra.Env.Is>`}
-/>
+  <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+  <Infra.OpenSearch enabled={false} />
+</Infra.Env.Is>
+`} />
 
 This is useful for:
 
