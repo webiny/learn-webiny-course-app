@@ -1,0 +1,343 @@
+---
+title: "Creating a Content Model via UI"
+description: "Learn how to create a Product content model through the Webiny Admin UI."
+order: 3
+---
+
+# Creating a Content Model via UI
+
+In this lesson, we'll create a real content model using the Webiny Admin UI. We'll build a **Product** model for an e-commerce scenario, giving you hands-on experience with Webiny's visual content modeling tools.
+
+<ChapterOverview
+  items={[
+    { icon: "mouse", text: "Using the content model builder interface." },
+    { icon: "build", text: "Creating a Product content model." },
+    { icon: "settings", text: "Configuring fields and validation rules." },
+  ]}
+/>
+
+## Accessing the Content Model Builder
+
+First, let's navigate to the content model builder in the Webiny Admin:
+
+1. Open your Webiny Admin application
+2. Navigate to **Headless CMS** in the main menu
+3. Click on **Models** in the sidebar
+4. Click the **+ New Model** button
+
+You'll see the content model builder interface, which provides a visual, drag-and-drop experience for creating models.
+
+<Callout type="info" title="Visual Content Modeling">
+  Webiny's content model builder is designed for non-technical users. You can
+  create complex content structures without writing any code, and the system
+  automatically generates the GraphQL APIs.
+</Callout>
+
+## Creating the Product Model
+
+Let's create a **Product** content model with all the fields an e-commerce product needs.
+
+### Step 1: Basic Model Information
+
+When creating a new model, you'll need to provide:
+
+- **Name**: Product
+- **Model ID**: product (auto-generated from the name, used in the API)
+- **Description**: E-commerce product information
+- **Group**: Select or create a group (e.g., "E-commerce")
+
+The **Model ID** is important - it's used in your GraphQL queries. For example, `product` will generate queries like `getProduct` and `listProducts`.
+
+<Callout type="hint" title="Model Groups">
+  Groups help organize your content models in the Admin UI. For an e-commerce
+  site, you might have groups like "E-commerce", "Content", and "Settings".
+</Callout>
+
+### Step 2: Adding Fields
+
+Now let's add fields to our Product model. Click the **+ Add Field** button or drag fields from the field palette.
+
+#### 1. Product Name (Text Field)
+
+- **Field Type**: Text
+- **Label**: Product Name
+- **Field ID**: productName
+- **Validation**:
+  - Required: Yes
+  - Min length: 3
+  - Max length: 100
+
+This is the main product title that will be displayed to customers.
+
+#### 2. SKU (Text Field)
+
+- **Field Type**: Text
+- **Label**: SKU
+- **Field ID**: sku
+- **Help Text**: Stock Keeping Unit - unique product identifier
+- **Validation**:
+  - Required: Yes
+  - Unique: Yes (ensures no duplicate SKUs)
+  - Pattern: `^[A-Z0-9-]+$` (uppercase letters, numbers, and hyphens only)
+
+The SKU is a unique identifier for inventory management.
+
+<Callout type="success" title="Built-in Validation">
+  Webiny provides rich validation options including required fields, unique
+  values, min/max length, regex patterns, and more. These rules are enforced
+  both in the Admin UI and via the API.
+</Callout>
+
+#### 3. Description (Long Text Field)
+
+- **Field Type**: Long Text
+- **Label**: Description
+- **Field ID**: description
+- **Validation**:
+  - Required: Yes
+  - Min length: 10
+
+Long text fields support multi-line content, perfect for product descriptions.
+
+#### 4. Full Description (Rich Text Field)
+
+- **Field Type**: Rich Text
+- **Label**: Full Description
+- **Field ID**: fullDescription
+- **Help Text**: Detailed product information with formatting
+- **Validation**:
+  - Required: No
+
+Rich text allows formatting like headings, bold, italic, lists, and links.
+
+#### 5. Price (Number Field)
+
+- **Field Type**: Number
+- **Label**: Price
+- **Field ID**: price
+- **Validation**:
+  - Required: Yes
+  - Min value: 0
+
+Store the price as a number for calculations and filtering.
+
+<Callout type="hint" title="Currency Handling">
+  For production applications, consider storing prices in cents (e.g., $19.99 =
+  1999) to avoid floating-point precision issues. You can also add a separate
+  currency field if you support multiple currencies.
+</Callout>
+
+#### 6. Featured Image (File Field)
+
+- **Field Type**: File
+- **Label**: Featured Image
+- **Field ID**: featuredImage
+- **Allowed file types**: Images only
+- **Validation**:
+  - Required: Yes
+
+The file field integrates with Webiny's File Manager, allowing users to upload or select existing images.
+
+#### 7. Gallery (File Field - Multiple)
+
+- **Field Type**: File
+- **Label**: Image Gallery
+- **Field ID**: gallery
+- **Multiple values**: Yes (enable this option)
+- **Allowed file types**: Images only
+- **Validation**:
+  - Required: No
+  - Max items: 10
+
+This creates a list field that can hold multiple images.
+
+#### 8. In Stock (Boolean Field)
+
+- **Field Type**: Boolean
+- **Label**: In Stock
+- **Field ID**: inStock
+- **Default value**: true
+- **Validation**:
+  - Required: No
+
+Boolean fields are perfect for yes/no flags.
+
+#### 9. Stock Quantity (Number Field)
+
+- **Field Type**: Number
+- **Label**: Stock Quantity
+- **Field ID**: stockQuantity
+- **Validation**:
+  - Required: No
+  - Min value: 0
+
+Track available inventory with a number field.
+
+#### 10. Published Date (DateTime Field)
+
+- **Field Type**: DateTime
+- **Label**: Published Date
+- **Field ID**: publishedDate
+- **Type**: Date and Time
+- **Validation**:
+  - Required: No
+
+DateTime fields support both date-only and date-time values.
+
+### Step 3: Field Settings
+
+Each field has additional settings you can configure:
+
+- **Renderer** - How the field appears in the Admin UI (input, select, etc.)
+- **Predefined Values** - Dropdown options for select fields
+- **Default Value** - Auto-populate new entries
+- **Help Text** - Guidance for content editors
+- **Placeholder** - Placeholder text for input fields
+
+### Step 4: Configure Title Field
+
+Every content model needs a **title field** - this is what's displayed in lists and used as the entry identifier.
+
+1. Go to the model settings (usually a gear icon or settings tab)
+2. Select **Product Name** as the title field
+
+Now when you view a list of products, the product name will be displayed as the entry title.
+
+### Step 5: Configure Layout
+
+You can organize fields into groups and tabs for better UX:
+
+1. **Add a tab or group** (if the builder supports it)
+2. **Drag fields** to reorder them
+3. **Group related fields** (e.g., all pricing fields together)
+
+For our Product model, you might organize it as:
+
+- **Basic Info**: Product Name, SKU, Description
+- **Details**: Full Description, Published Date
+- **Pricing**: Price, In Stock, Stock Quantity
+- **Media**: Featured Image, Gallery
+
+<Callout type="hint" title="Editor Experience Matters">
+  A well-organized content model makes content editing faster and reduces
+  errors. Group related fields together and order them logically.
+</Callout>
+
+### Step 6: Save the Model
+
+Once you've added all fields and configured the settings:
+
+1. Click **Save** to create the model
+2. Review the field list to ensure everything is correct
+3. You can always edit the model later to add or modify fields
+
+<Callout type="success" title="GraphQL API Generated">
+  As soon as you save the model, Webiny automatically generates a complete
+  GraphQL API with queries and mutations for creating, reading, updating, and
+  deleting products. No backend code required!
+</Callout>
+
+## What Just Happened?
+
+By creating this content model through the UI, Webiny automatically:
+
+1. **Created database schema** - The structure to store your products
+2. **Generated GraphQL API** - Queries and mutations for CRUD operations
+3. **Created Admin UI** - A form for creating and editing products
+4. **Set up validation** - Rules are enforced on both frontend and backend
+5. **Enabled versioning** - Every product entry will have full version history
+
+## Testing Your Model
+
+Now that your Product model is created, let's test it:
+
+1. Navigate to **Content** in the Headless CMS menu
+2. Select **Products** (your new model)
+3. Click **+ New Entry**
+4. Fill out the form with sample product data:
+   - Product Name: "Wireless Headphones"
+   - SKU: "WH-001"
+   - Description: "Premium wireless headphones with noise cancellation"
+   - Price: 199.99
+   - In Stock: Yes
+   - Stock Quantity: 50
+5. Upload a featured image
+6. Click **Save**
+
+You've just created your first product entry!
+
+<Callout type="info" title="Remember Versioning">
+  This entry is created as revision 1 in an unpublished state. You'll need to
+  publish it before it appears in the public Read API.
+</Callout>
+
+## Field Types Recap
+
+Here are the field types we used for our Product model:
+
+| Field Type | Use Case                | Example               |
+| ---------- | ----------------------- | --------------------- |
+| Text       | Short, single-line text | Product Name, SKU     |
+| Long Text  | Multi-line text         | Description           |
+| Rich Text  | Formatted content       | Full Description      |
+| Number     | Numeric values          | Price, Stock Quantity |
+| Boolean    | Yes/no flags            | In Stock              |
+| File       | Images and documents    | Featured Image        |
+| DateTime   | Dates and times         | Published Date        |
+
+Webiny also supports:
+
+- **Reference fields** - Link to other content models (we'll use this in the next lesson)
+- **Object fields** - Nested field groups
+- **Dynamic zones** - Flexible content blocks
+
+## Modifying the Model
+
+Need to add or change fields? You can modify the model anytime:
+
+1. Go to **Models** in the Headless CMS
+2. Find your Product model
+3. Click the edit icon
+4. Add, remove, or modify fields
+5. Save your changes
+
+<Callout type="warning" title="Model Changes and Existing Data">
+  When you modify a model, existing entries aren't automatically updated. If you
+  add a new required field, you'll need to edit existing entries to provide
+  values. Removing a field doesn't delete the data - it just hides it.
+</Callout>
+
+## Next Steps
+
+Now that you've created a Product model through the UI, you're ready to:
+
+1. **Create a Product Category model** - In the next lesson, we'll create this via code and link it to products using reference fields
+2. **Explore the GraphQL API** - See the auto-generated queries and mutations
+3. **Create more product entries** - Build out your product catalog
+4. **Query products from your frontend** - Connect your Next.js app to retrieve products
+
+<Quiz
+  question="What happens immediately after you save a new content model in Webiny?"
+  options={[
+    "Nothing - you need to manually create the GraphQL schema",
+    "Webiny automatically generates GraphQL APIs and an Admin UI form",
+    "You need to deploy your application for the model to work",
+    "The model is created but you need to write code to use it",
+  ]}
+  correctAnswer={2}
+  explanation="Correct! When you save a content model, Webiny automatically generates a complete GraphQL API (queries and mutations) and creates an Admin UI form for managing entries. No manual coding or deployment is required - it's immediately ready to use."
+  hint="Think about Webiny's philosophy of automatic code generation."
+/>
+
+## Summary
+
+Creating content models through the Webiny UI is intuitive and powerful:
+
+- **Visual builder** - Drag-and-drop interface for creating models
+- **Rich field types** - Text, numbers, files, dates, and more
+- **Validation rules** - Ensure data quality and consistency
+- **Automatic API generation** - GraphQL endpoints created instantly
+- **Admin forms** - Content editing interface generated automatically
+- **Easy to modify** - Change models anytime without breaking existing data
+
+You've successfully created a Product content model with multiple field types and validation rules. In the next lesson, we'll create a Product Category model via code and learn how to link models together using reference fields.

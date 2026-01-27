@@ -24,7 +24,7 @@ Webiny is a serverless platform that runs on AWS. Before you can start local dev
 
 1. **Deploy Core and API** - Run `yarn webiny deploy core api` to create the necessary AWS infrastructure
 2. **Start developing** - Use watch commands to develop locally
-3. **Deploy changes** - Deploy only when you need to update infrastructure or test in the cloud
+3. **Deploy changes** - Deploy when you need to update cloud infrastructure or share your progress (deploying creates a CloudFront URL that your teammates can access)
 
 <Callout type="info" title="Cloud Infrastructure Required">
   Local development requires deployed Core and API applications in AWS. The
@@ -58,11 +58,6 @@ This command:
 - Starts a local development server on http://localhost:3001
 - Watches for changes in Admin extensions
 - Provides hot module replacement for instant feedback
-
-<Callout type="info" title="Standard React Workflow">
-  The Admin development workflow is familiar to any React developer - edit code,
-  save, and see changes in your browser immediately. No special setup required.
-</Callout>
 
 ### What You Can Develop Locally
 
@@ -115,6 +110,32 @@ When you run `yarn webiny watch api`, here's what happens behind the scenes:
 - Security extensions
 - Custom API endpoints
 - Background tasks (workflows)
+
+## Infrastructure Development
+
+When you need to modify your AWS infrastructure - such as adding CloudWatch alarms, custom S3 buckets, or changing Lambda configurations - you'll use Pulumi-based infrastructure extensions.
+
+Infrastructure changes are made through dedicated extensions that can target Core, API, or Admin applications:
+
+<CodeBlock
+  language="tsx"
+  filename="webiny.config.tsx"
+  code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+<Infra.Api.Pulumi src={"/extensions/MyApiPulumiHandler.ts"} />
+<Infra.Admin.Pulumi src={"/extensions/MyAdminPulumiHandler.ts"} />`}
+/>
+
+**Key points about infrastructure development:**
+
+- Infrastructure changes require redeploying the affected application (Core, API, or Admin)
+- Changes happen at the cloud level, so you can't test them locally with watch commands
+- Use `yarn webiny deploy <app>` to apply infrastructure changes
+
+<Callout type="info" title="Infrastructure Extensions">
+  Infrastructure extensions will be covered in detail in later lessons. For now,
+  just know that any changes to cloud resources require a deployment to take
+  effect.
+</Callout>
 
 ## Type Safety and Build Validation
 
@@ -189,7 +210,7 @@ If you're joining a project and see a `.env.example` file, check with your team 
 
 2. **Use watch commands** - Use `yarn webiny watch` during development rather than redeploying repeatedly
 
-3. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
+3. **Deploy when sharing** - Deploy the Admin app when you need to share your work via CloudFront URL or update cloud infrastructure
 
 <Quiz
   question="What applications do you need to deploy before you can start local development with Webiny?"

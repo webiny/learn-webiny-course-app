@@ -22,10 +22,10 @@ Extensions are modular pieces of code that customize, enhance, or modify Webiny'
 
 - Add custom GraphQL schemas and resolvers
 - Customize the Admin UI with themes and branding
-- Create custom CLI commands
-- Modify infrastructure configuration
-- Hook into lifecycle events
+- Modify cloud infrastructure configuration
+- Hook into lifecycle events (like after page update, before content entry publish, after file upload)
 - Add custom business logic
+- Create custom CLI commands
 
 <Callout type="info" title="Everything is an Extension">
   In Webiny, even core features like identity providers (Cognito, Auth0, Okta)
@@ -278,14 +278,14 @@ const { Logo } = AdminConfig;
 
 const AdminLogo = () => {
 return (
+
 <AdminConfig.Public>
-<Logo
-squareLogo={<img src={logo} alt={"My Company"} />}
-horizontalLogo={<img src={logo} alt={"My Company"} />}
-/>
+  <Logo
+    squareLogo={<img src={logo} alt={"My Company"} />}
+    horizontalLogo={<img src={logo} alt={"My Company"} />}
+  />
 </AdminConfig.Public>
-);
-};
+); };
 
 export default AdminLogo;`}
 />
