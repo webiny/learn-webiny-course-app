@@ -144,21 +144,90 @@ No rewiring, no deep configuration - just replace the extension component.
 
 ### Declaration in webiny.config.tsx
 
-Extensions are declared in your `webiny.config.tsx` file using React components:
+Extensions are declared in your `webiny.config.tsx` file using React components. This file is the heart of your Webiny configuration.
+
+**Basic Configuration:**
+
+When you create a new Webiny project, your `webiny.config.tsx` starts minimal:
 
 ```tsx
 import React from "react";
-import { Api, Infra, Project } from "webiny/extensions";
+import { Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
   return (
     <>
-      <Api.Extension src={"/extensions/MyExtension.ts"} />
-      <Infra.Aws.Tags tags={{ PROJECT: "my-app" }} />
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Cognito />
     </>
   );
 };
 ```
+
+**With OpenSearch:**
+
+If you selected DynamoDB + OpenSearch during installation:
+
+```tsx
+import React from "react";
+import { Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.OpenSearch enabled={true} />
+      <Cognito />
+    </>
+  );
+};
+```
+
+**Extended Configuration:**
+
+As you add customizations, your configuration grows:
+
+```tsx
+import React from "react";
+import { Api, Admin, Infra, Project } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      {/* Infrastructure configuration */}
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.OpenSearch enabled={true} />
+      <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+
+      {/* Security & Identity */}
+      <Cognito />
+
+      {/* Custom extensions */}
+      <Api.Extension src={"/extensions/MyApiExtension.ts"} />
+      <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
+    </>
+  );
+};
+```
+
+<Callout type="hint" title="React Components for Configuration">
+  Notice how configuration uses React components? This provides type safety,
+  auto-completion in your IDE, and makes the configuration easy to understand
+  and maintain. It's declarative and explicit.
+</Callout>
+
+**Key Configuration Areas:**
+
+The `webiny.config.tsx` file typically includes:
+
+1. **Infrastructure configuration** - AWS region, tags, resource prefixes, VPC settings, OpenSearch options
+2. **Project settings** - Telemetry, auto-install configurations for CI/CD
+3. **Identity providers** - Cognito, Auth0, Okta, or custom authentication
+4. **Extensions** - References to your custom code (API extensions, CLI commands, Admin UI customizations)
+5. **Environment-specific settings** - Different configurations for dev, staging, and production
 
 ### Implementation Files
 

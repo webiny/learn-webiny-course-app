@@ -96,23 +96,27 @@ This command:
 When you run `yarn webiny watch api`, here's what happens behind the scenes:
 
 1. **Lambda stubs are deployed** - Your deployed Lambda functions are replaced with stub code that forwards events to your local machine
-2. **Local execution environment** - Your code runs locally with the full AWS Lambda environment (environment variables, context, etc.)
-3. **Event forwarding** - When a request comes to AWS, it gets forwarded to your local machine
+2. **Event forwarding** - When a request comes to AWS, it gets forwarded to your local machine
+3. **Local execution environment** - Your code runs locally with the full AWS Lambda environment (environment variables, context, etc.)
 4. **Response routing** - After your local code executes, the response is sent back through the Lambda stub to the user
 
 **The key benefit:** You can immediately see the results of your backend code changes without waiting for deployments. You can also debug your code since it's running in your local environment.
 
+<Callout type="info" title="Why This Hybrid Approach?">
+  This hybrid approach (code runs locally, but connects to cloud services)
+  exists because of the serverless nature of the services Webiny relies on.
+  Running DynamoDB, OpenSearch, S3, Cognito, and other AWS services entirely
+  locally would be complex and unreliable. It's simpler and more practical to
+  run your code locally while connecting to real AWS infrastructure - you get
+  fast iteration with a realistic environment.
+</Callout>
+
 <Callout type="warning" title="Important: Redeploy After Watch">
   When you stop the watch command, your Lambda functions still contain stub
   code. You must redeploy your API with `yarn webiny deploy api` to restore the
-  actual Lambda code and make your API functional again in the cloud.
-</Callout>
-
-<Callout type="info" title="Local AWS Lambda Development">
-  This isn't just a local Express server - it's the complete Lambda execution
-  environment transferred to your machine. Your code runs with real AWS
-  environment variables and context, while the deployed Lambda stubs forward
-  requests to your local environment.
+  actual Lambda code and make your API functional again in the cloud. Don't
+  worry - the watch command will print a warning message to remind you of this
+  when you stop it.
 </Callout>
 
 ### What You Can Develop Locally
@@ -122,6 +126,7 @@ When you run `yarn webiny watch api`, here's what happens behind the scenes:
 - Business logic and data transformations
 - Security extensions
 - Custom API endpoints
+- Background tasks (workflows)
 
 ## Type Safety and Build Validation
 
@@ -163,6 +168,32 @@ If you're developing with Website Builder, you'll need to run your Website appli
   Website Builder lessons.
 </Callout>
 
+## Quick Onboarding
+
+What about new developers joining an existing Webiny project? Unlike starting a new project where you'd run `npx create-webiny-project`, onboarding to an existing project is even simpler.
+
+When a developer joins your team, they don't need to run any project scaffolding commands. They simply clone the repository and install dependencies:
+
+```bash
+git clone <repository>
+yarn
+# You're ready to start developing!
+```
+
+That's it. No complex setup, no configuration files to create, no additional installation steps. The clean project structure means less configuration, fewer commands, and faster time to productivity.
+
+### About .env Files
+
+By default, Webiny projects don't require a `.env` file. However, if your team has added one for project-specific configuration, it's the team's responsibility to communicate what's needed.
+
+The `.env` file is typically not committed to git (it's in `.gitignore`), so teams usually maintain:
+
+- A `.env.example` file showing the required variables
+- Documentation explaining what each variable does
+- Internal processes for sharing sensitive values securely
+
+If you're joining a project and see a `.env.example` file, check with your team about which values you need to set up locally.
+
 ## Development Best Practices
 
 1. **Deploy Core and API first** - Run `yarn webiny deploy core api` before starting local development
@@ -171,9 +202,7 @@ If you're developing with Website Builder, you'll need to run your Website appli
 
 3. **Test locally first** - Make and test changes locally before deploying to AWS
 
-4. **Keep extensions focused** - Create small, focused extensions rather than large monolithic files
-
-5. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
+4. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
 
 <Quiz
   question="What applications do you need to deploy before you can start local development with Webiny?"

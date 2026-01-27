@@ -15,12 +15,9 @@ In this lesson, we'll explore the folder structure of a Webiny project. Understa
 
 <ChapterOverview
   items={[
-    { icon: "info", text: "Overview of the Webiny project structure." },
-    {
-      icon: "settings",
-      text: "Understanding webiny.config.tsx - the entry point.",
-    },
-    { icon: "folder", text: "Key folders and their purposes." },
+    { icon: "folder", text: "Overview of the project structure." },
+    { icon: "settings", text: "Introduction to webiny.config.tsx." },
+    { icon: "extension", text: "Where custom code lives." },
   ]}
 />
 
@@ -53,13 +50,11 @@ my-webiny-project/
   one `tsconfig.json`, and centralized configuration in `webiny.config.tsx`.
 </Callout>
 
-## webiny.config.tsx - The Starting Point
+## webiny.config.tsx - The Entry Point
 
-The `webiny.config.tsx` file is the heart of your Webiny project configuration. This is where you declare all your extensions, customize infrastructure settings, and configure the behavior of your Webiny instance.
+The `webiny.config.tsx` file is where you configure your Webiny project. This is where you declare extensions, set infrastructure options, and customize your Webiny instance.
 
-### Default Configuration (DynamoDB Only)
-
-When you create a new Webiny project with DynamoDB as the database, your `webiny.config.tsx` starts minimal:
+Here's what a basic configuration looks like:
 
 ```tsx
 import React from "react";
@@ -76,81 +71,28 @@ export const Extensions = () => {
 };
 ```
 
-### DynamoDB + OpenSearch Configuration
+This minimal configuration:
 
-If you selected DynamoDB + OpenSearch during installation, you'll also have OpenSearch enabled:
+- Sets the AWS region
+- Enables Cognito for authentication
 
-```tsx
-import React from "react";
-import { Infra } from "webiny/extensions";
-import { Cognito } from "@webiny/cognito";
-
-export const Extensions = () => {
-  return (
-    <>
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Infra.OpenSearch enabled={true} />
-      <Cognito />
-    </>
-  );
-};
-```
-
-### Extended Configuration
-
-As you add customizations, your configuration grows:
-
-```tsx
-import React from "react";
-import { Api, Infra, Project } from "webiny/extensions";
-import { Cognito } from "@webiny/cognito";
-
-export const Extensions = () => {
-  return (
-    <>
-      {/* Infrastructure configuration */}
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Infra.OpenSearch enabled={true} />
-      <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
-
-      {/* Security & Identity */}
-      <Cognito />
-
-      {/* Custom API extension */}
-      <Api.Extension src={"/extensions/MyApiKey.ts"} />
-    </>
-  );
-};
-```
-
-<Callout type="hint" title="React Components for Configuration">
-  Notice how configuration uses React components? This provides type safety,
-  auto-completion in your IDE, and makes the configuration easy to understand
-  and maintain. It's declarative and explicit.
+<Callout type="hint" title="Extensions Lesson">
+  We'll explore webiny.config.tsx in detail in the Extensions lesson. For now,
+  just know this is where all configuration lives.
 </Callout>
-
-### Key Configuration Areas
-
-The `webiny.config.tsx` file typically includes:
-
-1. **Infrastructure configuration** - AWS region, tags, resource prefixes, VPC settings, OpenSearch options
-2. **Project settings** - Telemetry, auto-install configurations for CI/CD
-3. **Identity providers** - Cognito, Auth0, Okta, or custom authentication
-4. **Extensions** - References to your custom code (API extensions, CLI commands, Admin UI customizations)
-5. **Environment-specific settings** - Different configurations for dev, staging, and production
 
 ## The `extensions/` Folder
 
-The `extensions/` folder is where all your custom code lives. This is where you'll spend most of your development time. Extensions can modify and extend any part of Webiny - the API, Admin UI, CLI, or infrastructure.
+The `extensions/` folder is where all your custom code lives. This is where you'll spend most of your development time.
 
 When you reference an extension in `webiny.config.tsx`, you point to a file in this folder:
 
 ```tsx
 // In webiny.config.tsx
-<Api.Extension src={"/extensions/MyApiKey.ts"} />
+<Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
 
 // The actual implementation lives at:
-// extensions/MyApiKey.ts
+// extensions/AdminBranding/AdminBranding.tsx
 ```
 
 Common types of extensions you'll create:
@@ -160,10 +102,10 @@ Common types of extensions you'll create:
 - **CLI Commands** - Create custom CLI commands for your workflows
 - **Infrastructure Extensions** - Modify Pulumi infrastructure code
 
-<Callout type="info" title="Extensions are Opt-In">
-  Webiny follows the philosophy of "here's what you need, extend when you want."
-  You only create extensions for the specific customizations you need - the
-  platform handles everything else.
+<Callout type="info" title="Learn More in Extensions Lesson">
+  The Extensions lesson covers how to create and register extensions in detail.
+  For now, just know that the extensions/ folder is your workspace for custom
+  code.
 </Callout>
 
 ## Other Important Files
@@ -208,24 +150,17 @@ Contains public assets for the Admin application:
 
 TypeScript type definitions for environment-specific types used throughout your project.
 
-## Quick Onboarding
-
-The simple project structure makes onboarding new developers straightforward:
-
-```bash
-git clone <repository>
-yarn
-# You're ready to start developing!
-```
-
-The clean structure means less configuration, fewer commands, and faster time to productivity.
-
 <Quiz
-  question="Where do you declare and configure extensions in a Webiny project?"
-  options={["package.json", "webiny.config.tsx", "tsconfig.json", ".env file"]}
+  question="Where does all your custom code live in a Webiny project?"
+  options={[
+    "public/ folder",
+    "extensions/ folder",
+    "node_modules/ folder",
+    "webiny.config.tsx file",
+  ]}
   correctAnswer={2}
-  explanation="Correct! The webiny.config.tsx file is the main configuration entry point where you declare all your extensions using React components. This provides type safety and a clear, declarative way to configure your project."
-  hint="Think about the file that uses React components for configuration."
+  explanation="Correct! The extensions/ folder is where all your custom code lives. This is where you create API extensions, Admin UI customizations, CLI commands, and more."
+  hint="Think about where you'd put your custom extensions and business logic."
 />
 
 ## Summary
