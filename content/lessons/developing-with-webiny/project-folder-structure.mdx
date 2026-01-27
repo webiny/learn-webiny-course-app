@@ -57,18 +57,22 @@ The `webiny.config.tsx` file is where you configure your Webiny project. This is
 
 Here's what a basic configuration looks like:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-  return (
-    <>
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Cognito />
-    </>
-  );
-};`} />
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Cognito />
+        </>
+    );
+};`}
+/>
 
 This minimal configuration:
 
@@ -86,18 +90,22 @@ The `extensions/` folder is where all your custom code lives. This is where you'
 
 When you reference an extension in `webiny.config.tsx`, you point to a file in this folder:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`// In webiny.config.tsx
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`// In webiny.config.tsx
 <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
 
 // The actual implementation lives at:
-// extensions/AdminBranding/AdminBranding.tsx`} />
+// extensions/AdminBranding/AdminBranding.tsx`}
+/>
 
-Common types of extensions you'll create:
+Types of extensions you can create:
 
 - **API Extensions** - Add GraphQL schemas, custom business logic, lifecycle hooks
 - **Admin Extensions** - Customize the Admin UI with themes, white-label branding, custom views
-- **CLI Commands** - Create custom CLI commands for your workflows
 - **Infrastructure Extensions** - Modify Pulumi infrastructure code
+- **CLI Extensions** - Create custom CLI commands for your workflows
 
 <Callout type="info" title="Learn More in Extensions Lesson">
   The Extensions lesson covers how to create and register extensions in detail.
@@ -115,18 +123,14 @@ Your root `package.json` file contains all project dependencies. Here are the ke
   language="json"
   filename="package.json"
   code={`{
-  "type": "module",
-  "dependencies": {
-    "@webiny/cognito": "^6.0.0",
-    "webiny": "^6.0.0"
-  },
-  "devDependencies": {
-    "@webiny/cli": "^6.0.0",
-    "typescript": "5.9.2"
-  },
-  "engines": {
-    "node": "^22.0.0"
-  }
+    "type": "module",
+    "dependencies": {
+        "@webiny/cognito": "^6.0.0",
+        "webiny": "^6.0.0"
+    },
+    "devDependencies": {
+        "@webiny/cli": "^6.0.0"
+    }
 }`}
 />
 

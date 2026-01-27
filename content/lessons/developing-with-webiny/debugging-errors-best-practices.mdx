@@ -15,22 +15,75 @@ In this lesson, we'll explore effective debugging strategies and best practices 
 
 <ChapterOverview
   items={[
-    { icon: "bug_report", text: "Debugging Admin application errors." },
     { icon: "terminal", text: "Debugging API and Lambda errors." },
+    { icon: "bug_report", text: "Debugging Admin application errors." },
     { icon: "verified", text: "Best practices for error prevention." },
   ]}
 />
 
 ## Understanding Webiny's Error Handling
 
-Webiny is built on AWS serverless infrastructure, which means errors can occur in different places:
+Webiny consists of Admin and API applications, which are frontend and backend apps respectively. This means errors can occur in different places:
 
+- **API application** - Server-side Lambda function errors, GraphQL queries and mutations
 - **Admin application** - Client-side React errors in the browser
-- **API application** - Server-side Lambda function errors
-- **GraphQL layer** - Query and mutation errors
-- **Infrastructure** - AWS service errors (permissions, quotas, etc.)
+- **Infrastructure** - Deployment errors from Pulumi (permissions, quotas, resource configuration)
 
 Understanding where an error originates is the first step to fixing it efficiently.
+
+## Debugging API Application Errors
+
+API errors occur in AWS Lambda functions. During local development with `yarn webiny watch api`, debugging is straightforward because your code runs locally.
+
+### Debugging Tools for API
+
+**Console Logs**
+
+When developing API extensions, console logs are a quick and solid choice for debugging - they get the job done:
+
+<CodeBlock language="typescript" filename="extensions/MyApiKeyAfterUpdate.ts" code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
+
+class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
+async handle() {
+console.log("An API key was updated!");
+}
+}
+
+const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
+implementation: MyApiKeyAfterUpdateImpl
+});
+
+export default MyApiKeyAfterUpdate;`} />
+
+With Local AWS Lambda Development (`yarn webiny watch api`), your console logs appear directly in the terminal. You don't need to check CloudWatch or the browser - the watch command outputs all logs immediately, giving you instant feedback like any local Node.js application.
+
+**Webiny Logger**
+
+For a more robust logging solution, especially for production use, use Webiny's Logger:
+
+<CodeBlock language="typescript" filename="extensions/MyApiKeyAfterUpdate.ts" code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
+import { Logger } from "webiny/api/logger";
+
+class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
+constructor(private logger: Logger.Interface) {}
+
+    async handle() {
+        this.logger.warn("An API key was updated!");
+    }
+
+}
+
+const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
+implementation: MyApiKeyAfterUpdateImpl,
+dependencies: [Logger]
+});
+
+export default MyApiKeyAfterUpdate;`} />
+
+**When to use Logger vs console.log:**
+
+- **console.log** - Quick debugging during local development
+- **Logger** - Production logging that needs to persist to CloudWatch
 
 ## Debugging Admin Application Errors
 
@@ -51,372 +104,9 @@ When developing Admin extensions, use your browser's DevTools:
   working with unfamiliar code.
 </Callout>
 
-## Debugging API Application Errors
-
-API errors occur in AWS Lambda functions. During local development with `yarn webiny watch api`, debugging is straightforward because your code runs locally.
-
-### Debugging Tools for API
-
-**Console Logs**
-
-When developing API extensions, console logs are your primary debugging tool:
-
-<CodeBlock
-  language="typescript"
-  code={`// In your API extension
-console.log("Processing entry:", entry.id);
-console.log("Entry data:", entry);`}
-/>
-
-Your console logs will appear directly in the terminal where you ran `yarn webiny watch api`. You don't need to check CloudWatch or the browser - the watch command outputs all logs immediately in your terminal.
-
-<Callout type="info" title="Real-Time Feedback">
-  With Local AWS Lambda Development, you see errors and logs instantly in your
-  terminal. No deployment delays, no CloudWatch hunting - just immediate
-  feedback like any local Node.js application.
-</Callout>
-
-**Webiny Logger**
-
-For logs you want to persist and use in production, use Webiny's Logger:
-
-<CodeBlock language="typescript" code={`// In your API extension
-import { Logger } from "webiny/api/features/Logger";
-
-class MyExtension {
-constructor(private logger: Logger.Interface) {}
-
-async handle() {
-this.logger.info("Processing completed");
-this.logger.warn("Something needs attention");
-}
-}`} />
-
-**When to use Logger vs console.log:**
-
-- **console.log** - Quick debugging during local development
-- **Logger** - Production logging that needs to persist to CloudWatch
-
-### Common API Error Patterns
-
-**Error: Cannot find module**
-
-<CodeBlock language="text" code={`Error: Cannot find module './MyModule'`} />
-
-You have an incorrect import path. Check:
-
-- File path is correct (case-sensitive on Linux)
-- File extension matches (`.ts` vs `.js`)
-- Module is exported properly
-
-**Error: Type mismatch**
-
-<CodeBlock
-  language="text"
-  code={`Type 'string' is not assignable to type 'number'`}
-/>
-
-TypeScript caught a type error. Fix the type or update your type definitions. The build will fail until types are correct.
-
-**Error: DynamoDB access denied**
-
-<CodeBlock
-  language="text"
-  code={`User is not authorized to perform: dynamodb:GetItem`}
-/>
-
-Your Lambda function doesn't have permission to access DynamoDB. Check your infrastructure extensions and IAM policies.
-
-**Error: Timeout**
-
-<CodeBlock language="text" code={`Task timed out after 10.00 seconds`} />
-
-Your Lambda function exceeded its timeout. Either:
-
-- Optimize your code to run faster
-- Increase the timeout in your infrastructure configuration
-- Check for infinite loops or blocking operations
-
-**Error: GraphQL authorization**
-
-<CodeBlock language="text" code={`Not authorized to access this resource`} />
-
-The current user lacks permission. Check:
-
-- User is logged in
-- User has the required role/permissions
-- Security rules are configured correctly
-
-## GraphQL Error Debugging
-
-GraphQL errors can be tricky because they might occur at different layers.
-
-### Understanding GraphQL Error Responses
-
-GraphQL can return partial data with errors:
-
-<CodeBlock
-  language="json"
-  code={`{
-  "data": {
-    "listArticles": null
-  },
-  "errors": [
-    {
-      "message": "Not authorized",
-      "path": ["listArticles"],
-      "extensions": {
-        "code": "FORBIDDEN"
-      }
-    }
-  ]
-}`}
-/>
-
-**Read GraphQL errors carefully:**
-
-- `message` - What went wrong
-- `path` - Which field caused the error
-- `extensions.code` - Error category (helps identify the issue type)
-
-### Common GraphQL Errors
-
-**Syntax errors**
-
-<CodeBlock language="text" code={`Syntax Error: Expected Name, found }`} />
-
-Your GraphQL query has invalid syntax. Check for:
-
-- Missing closing braces
-- Typos in field names
-- Missing required arguments
-
-**Validation errors**
-
-<CodeBlock
-  language="text"
-  code={`Cannot query field "userName" on type "User"`}
-/>
-
-You're querying a field that doesn't exist in the schema. Check:
-
-- Field name spelling
-- Schema definition
-- Whether field is available for your user role
-
-## TypeScript Type Errors
-
-Webiny enforces TypeScript type checking during builds. This catches errors before they reach production.
-
-### Common Type Errors
-
-**Property doesn't exist**
-
-<CodeBlock
-  language="text"
-  code={`Property 'firstName' does not exist on type 'User'`}
-/>
-
-You're accessing a property that TypeScript doesn't know about. Either:
-
-- Add the property to the type definition
-- Check if you're using the correct type
-- Verify the property name is correct
-
-**Type mismatch in function call**
-
-<CodeBlock
-  language="text"
-  code={`Argument of type 'string' is not assignable to parameter of type 'number'`}
-/>
-
-You're passing the wrong type to a function. Convert the value or fix the function signature.
-
-**Missing type annotations**
-
-<CodeBlock
-  language="text"
-  code={`Parameter 'user' implicitly has an 'any' type`}
-/>
-
-Add explicit type annotations to your parameters:
-
-<CodeBlock language="typescript" code={`// Before
-function greet(user) { ... }
-
-// After
-function greet(user: User) { ... }`} />
-
-<Callout type="info" title="Build-Time Safety">
-  Type errors prevent your build from succeeding. This is a good thing - it
-  catches bugs before they reach production. Fix type errors promptly and let
-  TypeScript be your safety net.
-</Callout>
-
 ## Debugging Deployment Errors
 
-Deployment errors occur when you run `yarn webiny deploy`. These are typically infrastructure-related.
-
-### Common Deployment Errors
-
-**Stack update failed**
-
-<CodeBlock
-  language="text"
-  code={`Stack update failed: Resource handler returned message: "Resource limit exceeded"`}
-/>
-
-You've hit an AWS service limit. Common limits:
-
-- DynamoDB tables per region
-- Lambda functions per region
-- CloudFormation stack resources
-
-**Solution:** Either request a limit increase from AWS or restructure your infrastructure.
-
-**Invalid CloudFormation template**
-
-<CodeBlock
-  language="text"
-  code={`Template error: instance of Fn::GetAtt references undefined resource`}
-/>
-
-Your infrastructure extension has an error. Check your Pulumi/CloudFormation code for:
-
-- Typos in resource names
-- Missing resource definitions
-- Incorrect references
-
-**Insufficient permissions**
-
-<CodeBlock
-  language="text"
-  code={`User is not authorized to perform: iam:CreateRole`}
-/>
-
-Your AWS credentials lack the necessary permissions. Ensure your user has:
-
-- AdministratorAccess (for initial setup)
-- Or specific permissions for all resources Webiny needs to create
-
-## Best Practices for Error Prevention
-
-Following these practices will help you avoid common errors:
-
-### 1. Use TypeScript Strictly
-
-Don't use `any` types. Let TypeScript help you catch errors:
-
-<CodeBlock language="typescript" code={`// Bad
-function processData(data: any) { ... }
-
-// Good
-function processData(data: Article[]) { ... }`} />
-
-### 2. Handle Errors Gracefully
-
-Always handle potential errors in async operations:
-
-<CodeBlock
-  language="typescript"
-  code={`try {
-  const data = await fetchData();
-  return processData(data);
-} catch (error) {
-  logger.error("Failed to process data", { error });
-  throw new Error("Data processing failed");
-}`}
-/>
-
-### 3. Validate Input Data
-
-Don't assume data is in the expected format:
-
-<CodeBlock
-  language="typescript"
-  code={`if (!entry || !entry.id) {
-  throw new Error("Invalid entry: missing id");
-}`}
-/>
-
-### 4. Test Locally Before Deploying
-
-Always test changes with watch commands before deploying:
-
-1. Make your changes
-2. Test with `yarn webiny watch admin` or `yarn webiny watch api`
-3. Verify everything works
-4. Only then deploy with `yarn webiny deploy`
-
-### 5. Use Meaningful Error Messages
-
-Help your future self with descriptive errors:
-
-<CodeBlock language="typescript" code={`// Bad
-throw new Error("Error");
-
-// Good
-throw new Error(\`Failed to update article \${articleId}: Article not found\`);`} />
-
-### 6. Check the Build Output
-
-Watch for warnings during builds. They often indicate potential issues:
-
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn webiny watch api
-# Watch the console output for warnings`}
-/>
-
-### 7. Keep Dependencies Updated
-
-Regularly update Webiny and dependencies to get bug fixes:
-
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn upgrade-interactive --latest`}
-/>
-
-<Callout type="warning" title="Test After Updates">
-  After updating dependencies, test your application thoroughly. Breaking
-  changes can occur between versions.
-</Callout>
-
-## Debugging Checklist
-
-When you encounter an error, follow this systematic approach:
-
-**For Admin errors:**
-
-1. Check browser console for error messages
-2. Use React DevTools to inspect component state
-3. Use GraphQL Network Inspector for API errors
-4. Check network tab for failed requests
-5. Verify data is loaded before accessing it
-
-**For API errors:**
-
-1. Check terminal output from watch command
-2. Look for error stack traces
-3. Add console.logs to track execution flow
-4. Verify permissions and AWS service access
-5. Check CloudWatch logs if deployed
-
-**For build errors:**
-
-1. Read the error message carefully
-2. Check file paths and imports
-3. Verify TypeScript types
-4. Fix one error at a time (cascade errors are common)
-
-**For deployment errors:**
-
-1. Check AWS service limits
-2. Verify AWS credentials and permissions
-3. Review CloudFormation/Pulumi code
-4. Check for resource naming conflicts
+Deployment errors occur when you run `yarn webiny deploy`. When Pulumi fails to deploy, errors are printed in the terminal, which helps you identify and fix issues in your infrastructure code.
 
 <Quiz
   question="Where do console.log statements appear when running 'yarn webiny watch api'?"
@@ -435,12 +125,9 @@ When you encounter an error, follow this systematic approach:
 
 Effective debugging is essential for productive development with Webiny:
 
+- **API debugging** - Use console.log during local development, Logger for production
 - **Admin debugging** - Use browser DevTools, React DevTools, and GraphQL Network Inspector
-- **API debugging** - Console logs appear in terminal during local development
-- **GraphQL errors** - Check message, path, and extension code for context
-- **Type errors** - Fix TypeScript errors promptly for build-time safety
-- **Error prevention** - Use TypeScript strictly, validate inputs, handle errors gracefully
+- **TypeScript** - Fix type errors promptly for build-time safety
+- **Deployment errors** - Read Pulumi error messages in terminal to fix infrastructure issues
 
 The combination of Local AWS Lambda Development and browser-based debugging tools makes debugging Webiny applications efficient and straightforward.
-
-With these debugging skills and best practices, you're ready to build robust Webiny applications!

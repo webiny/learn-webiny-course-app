@@ -44,7 +44,7 @@ Webiny is a serverless platform that runs on AWS. Before you can start local dev
 
 ## Watch Commands
 
-Webiny provides watch commands for different parts of your application. These commands monitor your code for changes and automatically rebuild when needed.
+Webiny provides watch commands for the Admin and API applications. These commands monitor your code for changes and automatically rebuild when needed.
 
 ## Admin Application Development
 
@@ -84,18 +84,11 @@ API development uses what we call **Local AWS Lambda Development**. This approac
 
 <CodeBlock language="bash" filename="Terminal" code={`yarn webiny watch api`} />
 
-This command:
-
-- Runs Lambda functions locally on your machine
-- Connects to deployed AWS infrastructure (DynamoDB, S3, OpenSearch, etc.)
-- Watches for code changes and hot-reloads instantly
-- Eliminates the need to redeploy after every change
-
 ### How It Works
 
 When you run `yarn webiny watch api`, here's what happens behind the scenes:
 
-1. **Lambda stubs are deployed** - Your deployed Lambda functions are replaced with stub code that forwards events to your local machine
+1. **Lambda stubs are deployed** - Webiny's Lambda functions (like the GraphQL Lambda that serves the remote GraphQL server) are replaced with stub code that forwards events to your local machine
 2. **Event forwarding** - When a request comes to AWS, it gets forwarded to your local machine
 3. **Local execution environment** - Your code runs locally with the full AWS Lambda environment (environment variables, context, etc.)
 4. **Response routing** - After your local code executes, the response is sent back through the Lambda stub to the user
@@ -201,9 +194,7 @@ If you're joining a project and see a `.env.example` file, check with your team 
 
 2. **Use watch commands** - Use `yarn webiny watch` during development rather than redeploying repeatedly
 
-3. **Test locally first** - Make and test changes locally before deploying to AWS
-
-4. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
+3. **Deploy Admin when needed** - Only deploy the Admin app when you need to share it via CloudFront URL or test in production conditions
 
 <Quiz
   question="What applications do you need to deploy before you can start local development with Webiny?"
@@ -224,7 +215,6 @@ Webiny's local development experience is designed for productivity:
 
 - **Admin development** - Standard React workflow with instant hot-reload
 - **API development** - Local AWS Lambda Development with full execution environment
-- **Debugging tools** - Browser DevTools, console logs, and Logger for production
 - **Cloud infrastructure** - Connects to deployed AWS resources for realistic testing
 
 The watch commands and Local AWS Lambda Development make developing with Webiny efficient and productive.

@@ -179,7 +179,23 @@ Example:
   components, etc.
 </Callout>
 
-### 3. CLI Extensions
+### 3. Infrastructure Extensions
+
+Infrastructure extensions modify your AWS infrastructure using Pulumi. Common use cases:
+
+- **Custom resources** - Add CloudWatch alarms, S3 buckets, Lambda functions
+- **Modify existing resources** - Change Lambda memory, timeout, or environment variables
+- **Conditional infrastructure** - Different setups per environment
+
+Example:
+
+<CodeBlock
+  language="tsx"
+  filename="webiny.config.tsx"
+  code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />`}
+/>
+
+### 4. CLI Extensions
 
 CLI extensions add custom commands to the Webiny CLI. Common use cases:
 
@@ -194,22 +210,6 @@ Example:
   language="tsx"
   filename="webiny.config.tsx"
   code={`<Cli.Command src={"/extensions/MyCustomCommand.ts"} />`}
-/>
-
-### 4. Infrastructure Extensions
-
-Infrastructure extensions modify your AWS infrastructure using Pulumi. Common use cases:
-
-- **Custom resources** - Add CloudWatch alarms, S3 buckets, Lambda functions
-- **Modify existing resources** - Change Lambda memory, timeout, or environment variables
-- **Conditional infrastructure** - Different setups per environment
-
-Example:
-
-<CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />`}
 />
 
 ## How Extensions Work
@@ -272,14 +272,14 @@ const { Logo } = AdminConfig;
 
 const AdminLogo = () => {
 return (
+
 <AdminConfig.Public>
-<Logo
-squareLogo={<img src={logo} alt={"My Company"} />}
-horizontalLogo={<img src={logo} alt={"My Company"} />}
-/>
+  <Logo
+    squareLogo={<img src={logo} alt={"My Company"} />}
+    horizontalLogo={<img src={logo} alt={"My Company"} />}
+  />
 </AdminConfig.Public>
-);
-};
+); };
 
 export default AdminLogo;`} />
 

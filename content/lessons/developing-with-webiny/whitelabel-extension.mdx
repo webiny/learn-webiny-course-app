@@ -58,7 +58,10 @@ Add your logo image to this folder (use your company logo or any image for now).
 
 Create `extensions/AdminBranding/AdminTheme.tsx`:
 
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminTheme.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="extensions/AdminBranding/AdminTheme.tsx"
+    code={`import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 
 const { Theme } = AdminConfig;
@@ -72,7 +75,8 @@ return (
 );
 };
 
-export default AdminTheme;`} />
+export default AdminTheme;`}
+/>
 
 This extension:
 
@@ -89,7 +93,10 @@ This extension:
 
 Create `extensions/AdminBranding/AdminTitleLogo.tsx`:
 
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminTitleLogo.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="extensions/AdminBranding/AdminTitleLogo.tsx"
+    code={`import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import squareLogo from "./logo.png";
 import horizontalLogo from "./logo.png";
@@ -108,7 +115,8 @@ horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
 );
 };
 
-export default AdminTitleLogo;`} />
+export default AdminTitleLogo;`}
+/>
 
 This extension:
 
@@ -126,23 +134,27 @@ This extension:
 
 Add both extensions to your `webiny.config.tsx`:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`import React from "react";
 import { Admin, Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-  return (
-    <>
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Cognito />
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Cognito />
 
-      {/* Admin branding */}
-      <Admin.Extension src={"/extensions/AdminBranding/AdminTitleLogo.tsx"} />
-      <Admin.Extension src={"/extensions/AdminBranding/AdminTheme.tsx"} />
-    </>
+            {/* Admin branding */}
+            <Admin.Extension src={"/extensions/AdminBranding/AdminTitleLogo.tsx"} />
+            <Admin.Extension src={"/extensions/AdminBranding/AdminTheme.tsx"} />
+        </>
+    );
 
-);
-};`} />
+};`}
+/>
 
 ### Step 5: Test Locally
 
@@ -166,7 +178,10 @@ You can also combine both extensions into a single file for simplicity:
 
 Create `extensions/AdminBranding/AdminBranding.tsx`:
 
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminBranding.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="extensions/AdminBranding/AdminBranding.tsx"
+    code={`import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import squareLogo from "./logo.png";
 import horizontalLogo from "./logo.png";
@@ -179,21 +194,22 @@ return (
 {/* Title */}
 <Title value={"ACME Corp"} />
 
-      {/* Logo */}
-      <Logo
-        squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
-        horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
-      />
+            {/* Logo */}
+            <Logo
+                squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
+                horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
+            />
 
-      {/* Theme colors */}
-      <Theme.Color palette={"primary"} color={"purple"} />
-      <Theme.Color palette={"secondary"} color={"green"} />
-    </AdminConfig.Public>
+            {/* Theme colors */}
+            <Theme.Color palette={"primary"} color={"purple"} />
+            <Theme.Color palette={"secondary"} color={"green"} />
+        </AdminConfig.Public>
+    );
 
-);
 };
 
-export default AdminBranding;`} />
+export default AdminBranding;`}
+/>
 
 Then register only this single extension in `webiny.config.tsx`:
 
@@ -208,97 +224,17 @@ Then register only this single extension in `webiny.config.tsx`:
   project organized and makes it easier to manage branding changes.
 </Callout>
 
-## Customizing for Different Environments
-
-You can apply different branding based on the environment:
-
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminBranding.tsx" code={`import React from "react";
-import { AdminConfig } from "webiny/admin/configs";
-import logo from "./logo.png";
-
-const { Title, Theme } = AdminConfig;
-
-const AdminBranding = () => {
-// Get the current environment
-const isProd = process.env.WEBINY_ENV === "prod";
-
-return (
-<AdminConfig.Public>
-<Title value={isProd ? "ACME Corp" : "ACME Corp (Dev)"} />
-<Theme.Color palette={"primary"} color={isProd ? "purple" : "orange"} />
-</AdminConfig.Public>
-);
-};
-
-export default AdminBranding;`} />
-
-This shows "ACME Corp (Dev)" in non-production environments and uses orange as the primary color to make it visually distinct.
-
-## Tenant-Specific Branding
-
-For multi-tenant setups, you can apply different branding per tenant:
-
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminBranding.tsx" code={`import React from "react";
-import { AdminConfig } from "webiny/admin/configs";
-import { useTenantContext } from "webiny/admin/tenancy";
-import acmeLogo from "./logos/acme.png";
-import globexLogo from "./logos/globex.png";
-
-const { Title, Logo, Theme } = AdminConfig;
-
-const AdminBranding = () => {
-const { tenant } = useTenantContext();
-
-// Different branding per tenant
-const branding = {
-acme: {
-title: "ACME Corp",
-logo: acmeLogo,
-color: "purple",
-},
-globex: {
-title: "Globex Corporation",
-logo: globexLogo,
-color: "blue",
-},
-};
-
-const config = branding[tenant.id] || branding.acme;
-
-return (
-<AdminConfig.Public>
-<Title value={config.title} />
-<Logo
-squareLogo={<img src={config.logo} alt={config.title} />}
-horizontalLogo={<img src={config.logo} alt={config.title} />}
-/>
-<Theme.Color palette={"primary"} color={config.color} />
-</AdminConfig.Public>
-);
-};
-
-export default AdminBranding;`} />
-
-Each tenant gets completely independent branding while maintaining a single codebase.
-
-<Callout type="info" title="Scaling to Many Tenants">
-  This hardcoded approach works well when you have a handful of tenants (up to
-  ~10). If you're managing many tenants or tenants are added continuously,
-  consider storing branding configuration in Headless CMS instead. This approach
-  is covered separately in the Webiny documentation portal.
-</Callout>
-
 <Quiz
-  question="What component do you use to wrap Admin configuration extensions?"
+  question="How do you register an Admin extension in your Webiny project?"
   options={[
-    "Admin.Provider",
-    "AdminConfig.Public",
-    "Admin.Config",
-    "ThemeProvider",
+    "Add it to package.json dependencies",
+    "Use <Admin.Extension src={...} /> in webiny.config.tsx",
+    "Import it directly in your components",
+    "Add it to a plugins.json file",
   ]}
   correctAnswer={2}
-  explanation="Correct! AdminConfig.Public is used to wrap all Admin configuration extensions like Title, Logo, and Theme. This makes the configuration available to the Admin app."
-  hint="Think about the component shown in all the examples that wraps Title, Logo, and Theme."
+  explanation="Correct! You register Admin extensions by using the <Admin.Extension src={...} /> component in your webiny.config.tsx file, pointing to the extension file path in the extensions/ folder."
+  hint="Think about the configuration file where all extensions are declared."
 />
 
 ## Summary
@@ -308,7 +244,5 @@ White-labeling in Webiny is straightforward:
 - **Simple extensions** using `AdminConfig` components
 - **Title, Logo, and Theme** are the main customization points
 - **Combine or separate** - Use single or multiple extension files
-- **Environment-specific** - Different branding per environment
-- **Multi-tenant support** - Different branding per tenant
 
 The extension system makes it easy to create fully branded Admin applications. In the next lesson, we'll explore debugging and best practices for Webiny development.
