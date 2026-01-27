@@ -41,19 +41,23 @@ API errors occur in AWS Lambda functions. During local development with `yarn we
 
 When developing API extensions, console logs are a quick and solid choice for debugging - they get the job done:
 
-<CodeBlock language="typescript" filename="extensions/MyApiKeyAfterUpdate.ts" code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
+<CodeBlock
+    language="typescript"
+    filename="extensions/MyApiKeyAfterUpdate.ts"
+    code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-async handle() {
-console.log("An API key was updated!");
-}
+    async handle() {
+        console.log("An API key was updated!");
+    }
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-implementation: MyApiKeyAfterUpdateImpl
+    implementation: MyApiKeyAfterUpdateImpl
 });
 
-export default MyApiKeyAfterUpdate;`} />
+export default MyApiKeyAfterUpdate;`}
+/>
 
 With Local AWS Lambda Development (`yarn webiny watch api`), your console logs appear directly in the terminal. You don't need to check CloudWatch or the browser - the watch command outputs all logs immediately, giving you instant feedback like any local Node.js application.
 
@@ -61,24 +65,27 @@ With Local AWS Lambda Development (`yarn webiny watch api`), your console logs a
 
 For a more robust logging solution, especially for production use, use Webiny's Logger:
 
-<CodeBlock language="typescript" filename="extensions/MyApiKeyAfterUpdate.ts" code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
+<CodeBlock
+    language="typescript"
+    filename="extensions/MyApiKeyAfterUpdate.ts"
+    code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 import { Logger } from "webiny/api/logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-constructor(private logger: Logger.Interface) {}
+    constructor(private logger: Logger.Interface) {}
 
     async handle() {
         this.logger.warn("An API key was updated!");
     }
-
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-implementation: MyApiKeyAfterUpdateImpl,
-dependencies: [Logger]
+    implementation: MyApiKeyAfterUpdateImpl,
+    dependencies: [Logger]
 });
 
-export default MyApiKeyAfterUpdate;`} />
+export default MyApiKeyAfterUpdate;`}
+/>
 
 **When to use Logger vs console.log:**
 
@@ -127,7 +134,6 @@ Effective debugging is essential for productive development with Webiny:
 
 - **API debugging** - Use console.log during local development, Logger for production
 - **Admin debugging** - Use browser DevTools, React DevTools, and GraphQL Network Inspector
-- **TypeScript** - Fix type errors promptly for build-time safety
 - **Deployment errors** - Read Pulumi error messages in terminal to fix infrastructure issues
 
-The combination of Local AWS Lambda Development and browser-based debugging tools makes debugging Webiny applications efficient and straightforward.
+Different tools are available for different parts of your application: browser-based tools for Admin development, and console logs or Logger for API development.

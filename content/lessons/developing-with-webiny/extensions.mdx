@@ -95,28 +95,31 @@ export const Extensions = () => {
 
 As you add customizations, your configuration grows:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`import React from "react";
 import { Api, Admin, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-  return (
-    <>
-      {/* Infrastructure configuration */}
-      <Infra.Aws.DefaultRegion name={"us-east-1"} />
-      <Infra.OpenSearch enabled={true} />
-      <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+    return (
+        <>
+            {/* Infrastructure configuration */}
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Infra.OpenSearch enabled={true} />
+            <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
 
-      {/* Security & Identity */}
-      <Cognito />
+            {/* Security & Identity */}
+            <Cognito />
 
-      {/* Custom extensions */}
-      <Api.Extension src={"/extensions/MyApiExtension.ts"} />
-      <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
-    </>
-
-);
-};`} />
+            {/* Custom extensions */}
+            <Api.Extension src={"/extensions/MyApiExtension.ts"} />
+            <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
+        </>
+    );
+};`}
+/>
 
 <Callout type="hint" title="React Components for Configuration">
   Notice how configuration uses React components? This provides type safety,
@@ -220,11 +223,14 @@ The actual code lives in the `extensions/` folder. When you reference `src={"/ex
 
 For example, `extensions/MyGraphQLSchema.ts` might look like:
 
-<CodeBlock language="typescript" filename="extensions/MyGraphQLSchema.ts" code={`import { GraphQLSchemaFactory } from "webiny/api/graphql";
+<CodeBlock
+    language="typescript"
+    filename="extensions/MyGraphQLSchema.ts"
+    code={`import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { IdentityContext } from "webiny/api/security";
 
 class Schema implements GraphQLSchemaFactory.Interface {
-constructor(private identityContext: IdentityContext.Interface) {}
+    constructor(private identityContext: IdentityContext.Interface) {}
 
     execute(): GraphQLSchemaFactory.Return {
         return [
@@ -245,13 +251,13 @@ constructor(private identityContext: IdentityContext.Interface) {}
             }
         ];
     }
-
 }
 
 export default GraphQLSchemaFactory.createImplementation({
     implementation: Schema,
     dependencies: [IdentityContext]
-});`} />
+});`}
+/>
 
 <Callout type="info" title="Dependency Injection in API Extensions">
   Notice how the `Schema` class receives `IdentityContext` through its
@@ -264,24 +270,28 @@ export default GraphQLSchemaFactory.createImplementation({
 
 An Admin extension example - `extensions/AdminBranding/AdminLogo.tsx`:
 
-<CodeBlock language="tsx" filename="extensions/AdminBranding/AdminLogo.tsx" code={`import React from "react";
+<CodeBlock
+    language="tsx"
+    filename="extensions/AdminBranding/AdminLogo.tsx"
+    code={`import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import logo from "./logo.png";
 
 const { Logo } = AdminConfig;
 
 const AdminLogo = () => {
-return (
+    return (
+        <AdminConfig.Public>
+            <Logo
+                squareLogo={<img src={logo} alt={"My Company"} />}
+                horizontalLogo={<img src={logo} alt={"My Company"} />}
+            />
+        </AdminConfig.Public>
+    );
+};
 
-<AdminConfig.Public>
-  <Logo
-    squareLogo={<img src={logo} alt={"My Company"} />}
-    horizontalLogo={<img src={logo} alt={"My Company"} />}
-  />
-</AdminConfig.Public>
-); };
-
-export default AdminLogo;`} />
+export default AdminLogo;`}
+/>
 
 <Callout type="hint" title="Admin Extensions: React + DI">
   Admin extensions are regular React components, so you can use hooks, context,
@@ -294,16 +304,19 @@ export default AdminLogo;`} />
 
 You can load extensions conditionally based on environment:
 
-<CodeBlock language="tsx" filename="webiny.config.tsx" code={`<Infra.Env.Is env="prod">
+<CodeBlock
+    language="tsx"
+    filename="webiny.config.tsx"
+    code={`<Infra.Env.Is env="prod">
     <Infra.Aws.Tags tags={{ ENV: "production" }} />
     <Infra.OpenSearch enabled={true} />
 </Infra.Env.Is>
 
 <Infra.Env.Is env={["dev", "staging"]}>
-  <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-  <Infra.OpenSearch enabled={false} />
-</Infra.Env.Is>
-`} />
+    <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+    <Infra.OpenSearch enabled={false} />
+</Infra.Env.Is>`}
+/>
 
 This is useful for:
 
