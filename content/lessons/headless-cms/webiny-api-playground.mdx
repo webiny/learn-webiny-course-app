@@ -9,6 +9,7 @@ order: 6
 In this lesson, you'll learn about the Webiny API Playground - an interactive GraphQL IDE that allows you to explore and test your Headless CMS APIs without writing any frontend code.
 
 **What you'll learn:**
+
 - What the API Playground is and why it's useful
 - How to access the API Playground
 - How to explore the GraphQL schema
@@ -16,6 +17,7 @@ In this lesson, you'll learn about the Webiny API Playground - an interactive Gr
 - How to work with different API types (Read, Preview, Manage)
 
 **Prerequisites:**
+
 - Completed Lesson 3 (Creating a Content Model via UI)
 - Completed Lesson 4 (Creating a Content Model via Code)
 - Completed Lesson 5 (Understanding Different HCMS APIs)
@@ -27,6 +29,7 @@ In this lesson, you'll learn about the Webiny API Playground - an interactive Gr
 The **Webiny API Playground** is a built-in GraphQL IDE (Integrated Development Environment) that comes with every Webiny project. It's based on GraphiQL, a popular tool for exploring and testing GraphQL APIs.
 
 The API Playground allows you to:
+
 - **Explore your API schema** - See all available queries, mutations, and types
 - **Test queries and mutations** - Execute GraphQL operations in real-time
 - **View documentation** - Access auto-generated docs for all API operations
@@ -34,53 +37,83 @@ The API Playground allows you to:
 - **Experiment safely** - Try out queries before implementing them in your app
 
 <Callout type="info">
-The API Playground is only available in development environments by default. In production, it's disabled for security reasons.
+  The API Playground is only available in development environments by default.
+  In production, it's disabled for security reasons.
 </Callout>
 
 ## Accessing the API Playground
 
-There are **three separate API Playgrounds** in Webiny, one for each HCMS API:
+The API Playground is accessed directly from the **Webiny Admin** application.
 
-### Read API Playground
-- **URL**: `https://your-domain/cms-read/en-US`
-- **Purpose**: Test queries for published content (public-facing)
-- **Authentication**: Not required (public API)
+### How to Open the API Playground
 
-### Preview API Playground
-- **URL**: `https://your-domain/cms-preview/en-US`
-- **Purpose**: Test queries for latest revisions including drafts
-- **Authentication**: Required (uses API token)
+1. **Open the Webiny Admin** application in your browser
+2. Click on **API Playground** in the left sidebar
+3. You'll see tabs for different APIs at the top:
+   - **Main API** - Core Webiny GraphQL API
+   - **Headless CMS - Manage API**
+   - **Headless CMS - Read API**
+   - **Headless CMS - Preview API**
 
-### Manage API Playground
-- **URL**: `https://your-domain/cms-manage/en-US`
+<Image
+  src="/images/headless-cms/api-playground-interface.png"
+  alt="API Playground interface showing tabs for different APIs, query editor, response panel, and documentation"
+  caption="The API Playground interface with Read API selected, showing example query and response"
+/>
+
+### The Three HCMS API Playgrounds
+
+Each Headless CMS API has its own playground tab:
+
+**Manage API**
+
 - **Purpose**: Test CRUD operations for managing content
-- **Authentication**: Required (uses API token)
+- **Returns**: All revisions, draft and published content, includes `meta` field
+- **Mutations**: Create, update, delete, publish, unpublish
+- **Authentication**: Required (automatically handled when logged into Webiny Admin)
 
-<Callout type="hint">
-The `/en-US` part of the URL represents the locale. If you have multiple locales configured, you can access different playgrounds for each locale.
-</Callout>
+**Read API**
+
+- **Purpose**: Test queries for published content (public-facing)
+- **Returns**: Published content only, no `meta` field
+- **Mutations**: None (read-only)
+- **Authentication**: Required (via API key)
+
+**Preview API**
+
+- **Purpose**: Test queries for latest revisions including drafts
+- **Returns**: Latest revision (published or draft), includes reference to unpublished entries
+- **Mutations**: None (read-only)
+- **Authentication**: Required (via API key)
 
 ### Finding Your API URLs
 
-To find your API Playground URLs:
+Each API has its own URL endpoint following this structure:
 
-1. **Start your Webiny development environment**:
-   ```bash
-   yarn webiny watch
-   ```
+<CodeBlock language="text" code={`https://{your-domain}/cms/{api-type}`} />
 
-2. **Look for the API URLs** in the terminal output. You'll see something like:
-   ```
-   Main GraphQL API: https://d123abc456.execute-api.us-east-1.amazonaws.com
-   Headless CMS - Read API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-read/en-US
-   Headless CMS - Preview API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-preview/en-US
-   Headless CMS - Manage API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-manage/en-US
-   ```
+**Examples:**
 
-3. **Open the Read API Playground** in your browser by navigating to the Read API URL.
+- Read API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/read`
+- Preview API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/preview`
+- Manage API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/manage`
+
+**To find your specific URLs:**
+
+**Option 1: Via Webiny CLI**
+
+<CodeBlock language="bash" code={`yarn webiny info`} />
+
+This command outputs all your API endpoints, including the Headless CMS URLs.
+
+**Option 2: In the API Playground**
+
+The URL for the currently selected API is displayed at the top of the playground interface, next to the "COPY CURL" button.
 
 <Callout type="info">
-For local development, your URLs might look like `http://localhost:3001/cms-read/en-US` if you're using the local development server.
+  When using the API Playground within Webiny Admin, you're automatically
+  authenticated. When accessing these URLs from your applications, you'll need
+  to provide an API key.
 </Callout>
 
 ## Understanding the Playground Interface
@@ -88,28 +121,36 @@ For local development, your URLs might look like `http://localhost:3001/cms-read
 The API Playground interface has several key areas:
 
 ### 1. Query Editor (Left Panel)
+
 This is where you write your GraphQL queries and mutations. It features:
+
 - **Syntax highlighting** for GraphQL
 - **Auto-completion** (press Ctrl+Space or Cmd+Space)
 - **Inline error detection**
 
 ### 2. Response Panel (Right Panel)
+
 Displays the results of your queries, including:
+
 - **Data returned** from the API
 - **Error messages** if something goes wrong
 - **Execution time** for performance monitoring
 
 ### 3. Documentation Explorer
+
 Click the "Docs" button to access:
+
 - **All available queries and mutations**
 - **Field types and descriptions**
 - **Required vs optional fields**
 - **Nested type definitions**
 
 ### 4. History
+
 View previously executed queries (useful for iterating on queries)
 
 ### 5. Variables Panel (Bottom)
+
 Define variables for your queries to make them reusable
 
 ## Your First Query
@@ -117,12 +158,15 @@ Define variables for your queries to make them reusable
 Let's write a query to fetch all published products using the **Read API Playground**.
 
 <Callout type="hint">
-Make sure you have at least one published product in your CMS before running this query. If you don't, create one following the steps in Lesson 3.
+  Make sure you have at least one published product in your CMS before running
+  this query. If you don't, create one following the steps in Lesson 3.
 </Callout>
 
 ### Step 1: Open the Read API Playground
 
-Navigate to your Read API URL (e.g., `https://your-domain/cms-read/en-US`)
+1. Open the Webiny Admin application
+2. Click **API Playground** in the left sidebar
+3. Select the **Headless CMS - Read API** tab at the top
 
 ### Step 2: Write the Query
 
@@ -173,7 +217,8 @@ The right panel will show the response:
 </CodeBlock>
 
 <Callout type="success">
-Congratulations! You've successfully executed your first GraphQL query in the API Playground.
+  Congratulations! You've successfully executed your first GraphQL query in the
+  API Playground.
 </Callout>
 
 ## Exploring the Schema with Documentation
@@ -201,7 +246,8 @@ The API Playground's documentation explorer is incredibly powerful for discoveri
 6. Click on **Product** to see all available fields
 
 <Callout type="hint">
-The documentation is auto-generated from your content models. Every time you add or modify a content model, the schema documentation updates automatically!
+  The documentation is auto-generated from your content models. Every time you
+  add or modify a content model, the schema documentation updates automatically!
 </Callout>
 
 ## Working with Query Variables
@@ -251,7 +297,8 @@ query GetProduct($id: ID!) {
 </CodeBlock>
 
 <Callout type="info">
-The `!` after `ID` means this variable is required. Without it, the variable would be optional.
+  The `!` after `ID` means this variable is required. Without it, the variable
+  would be optional.
 </Callout>
 
 ## Querying Related Content
@@ -279,7 +326,9 @@ Let's query products along with their categories (assuming you've added the cate
 </CodeBlock>
 
 <Callout type="hint">
-When querying reference fields, you can select any fields from the referenced model. The API Playground's auto-completion will help you discover available fields.
+  When querying reference fields, you can select any fields from the referenced
+  model. The API Playground's auto-completion will help you discover available
+  fields.
 </Callout>
 
 ## Filtering and Sorting
@@ -346,7 +395,9 @@ The Webiny HCMS API provides powerful filtering and sorting capabilities.
 </CodeBlock>
 
 <Callout type="hint">
-Available filter operators depend on the field type. For numbers: `_gte` (greater or equal), `_lte` (less or equal), `_gt`, `_lt`. For text: `_contains`, `_not_contains`, `_in`, `_not_in`.
+  Available filter operators depend on the field type. For numbers: `_gte`
+  (greater or equal), `_lte` (less or equal), `_gt`, `_lt`. For text:
+  `_contains`, `_not_contains`, `_in`, `_not_in`.
 </Callout>
 
 ## Pagination
@@ -398,43 +449,35 @@ For large datasets, pagination helps manage response size and improve performanc
 </CodeBlock>
 
 <Callout type="info">
-The `cursor` value from the previous response's `meta` should be passed as the `after` value for the next page.
+  The `cursor` value from the previous response's `meta` should be passed as the
+  `after` value for the next page.
 </Callout>
 
-## Using the Preview API Playground
+## Using the Preview and Manage API Playgrounds
 
-The Preview API allows you to query draft content (unpublished revisions). This is useful when building preview features in your application.
+The Preview and Manage API playgrounds work similarly to the Read API playground.
 
-### Authentication Required
+### Authentication
 
-Unlike the Read API, the Preview API requires authentication:
+When using the API Playground **within the Webiny Admin**, you're automatically authenticated based on your logged-in user session. You don't need to manually add API keys to the HTTP Headers.
 
-1. **Generate an API token** in the Webiny Admin:
-   - Navigate to **Settings > Access Management > API Keys**
-   - Click **+ New API Key**
-   - Give it a name (e.g., "Preview API Token")
-   - Select **Headless CMS** permissions
-   - Copy the generated token
-
-2. **Add the token to the Playground**:
-   - Click **HTTP Headers** at the bottom of the playground
-   - Add the authorization header:
-   
-   <CodeBlock language="json" title="HTTP Headers">
-   ```json
-   {
-     "Authorization": "Bearer your-api-token-here"
-   }
-   ```
-   </CodeBlock>
-
-3. **Execute queries** - Now you can query draft content!
-
-<Callout type="warning">
-Keep your API tokens secure! Never commit them to version control or share them publicly.
+<Callout type="info">
+  The Webiny Admin automatically handles authentication for the Manage and
+  Preview API playgrounds. API keys are only needed when accessing these APIs
+  from external applications.
 </Callout>
+
+### Switching Between APIs
+
+Simply click the tabs at the top of the API Playground to switch between different APIs:
+
+- **Headless CMS - Manage API** - Full CRUD operations
+- **Headless CMS - Read API** - Published content queries
+- **Headless CMS - Preview API** - Latest revision queries including drafts
 
 ### Preview API Query Example
+
+Switch to the **Headless CMS - Preview API** tab and run this query:
 
 <CodeBlock language="graphql" title="Query draft products">
 ```graphql
@@ -442,12 +485,9 @@ Keep your API tokens secure! Never commit them to version control or share them 
   listProducts {
     data {
       id
-      name
-      sku
-      price
-      meta {
-        status
-        version
+      values {
+        name
+        price
       }
     }
   }
@@ -455,11 +495,16 @@ Keep your API tokens secure! Never commit them to version control or share them 
 ```
 </CodeBlock>
 
-Notice that draft products will have `status: "draft"` in their metadata, while published ones will have `status: "published"`.
+The Preview API returns the latest revision of each product, whether it's published or draft.
+
+<Callout type="hint">
+  To see the status of each entry, query the Manage API which includes the
+  `meta` field with status and version information.
+</Callout>
 
 ## Using the Manage API Playground
 
-The Manage API provides full CRUD capabilities for managing content programmatically.
+The Manage API provides full CRUD capabilities for managing content programmatically. Switch to the **Headless CMS - Manage API** tab to access mutations.
 
 ### Creating a Product
 
@@ -530,7 +575,8 @@ mutation UpdateProduct($revision: ID!, $data: ProductInput!) {
 </CodeBlock>
 
 <Callout type="info">
-The `revision` parameter uses the format `{entryId}#{revisionNumber}`. For example: `654321fedcba#0001` refers to revision 1 of entry `654321fedcba`.
+  The `revision` parameter uses the format `{entryId}#{revisionNumber}`. For
+  example: `654321fedcba#0001` refers to revision 1 of entry `654321fedcba`.
 </Callout>
 
 ### Publishing a Product
@@ -569,7 +615,8 @@ mutation DeleteProduct($revision: ID!) {
 </CodeBlock>
 
 <Callout type="warning">
-Deleted entries are moved to the Trash Bin and can be restored. To permanently delete an entry, you need to delete it from the Trash Bin.
+  Deleted entries are moved to the Trash Bin and can be restored. To permanently
+  delete an entry, you need to delete it from the Trash Bin.
 </Callout>
 
 ## Common Error Messages
@@ -588,9 +635,9 @@ Deleted entries are moved to the Trash Bin and can be restored. To permanently d
 
 ### Error: "Not authorized"
 
-**Cause**: You're accessing the Preview or Manage API without proper authentication.
+**Cause**: This error typically occurs when accessing APIs outside of the Webiny Admin without proper authentication.
 
-**Solution**: Add the Authorization header with a valid API token.
+**Solution**: When using APIs from external applications, you need to create an API key and include it in the `Authorization` header. This is covered in detail in Lesson 7: Reading Records via the API.
 
 ### Error: "Entry not found"
 
@@ -600,40 +647,48 @@ Deleted entries are moved to the Trash Bin and can be restored. To permanently d
 
 ## Best Practices
 
-### 1. Start with the Read API
-When learning, start with the Read API Playground since it doesn't require authentication and is simpler to work with.
+### 1. Start with the Manage API
+
+When learning within the Webiny Admin, start with the Manage API Playground since you're already authenticated and can see all data including draft content and the `meta` field.
 
 ### 2. Use the Documentation Explorer
+
 Don't guess what fields are available - explore the schema using the Docs panel to discover all capabilities.
 
 ### 3. Test Queries Before Implementation
+
 Always test your queries in the playground before implementing them in your application code. This saves debugging time.
 
 ### 4. Use Variables for Dynamic Queries
+
 Get in the habit of using variables instead of hardcoding values. This makes queries more reusable.
 
 ### 5. Check Error Responses
+
 When mutations fail, check the `error` field in the response for detailed information about what went wrong.
 
-### 6. Keep API Tokens Secure
-Never share or commit API tokens. Regenerate them if they're accidentally exposed.
+### 6. API Keys for External Access
+
+The API Playground in Webiny Admin handles authentication automatically. When you need to access these APIs from your applications, you'll create API keys with specific permissions. This is covered in detail in the next lesson.
 
 ## Summary
 
 In this lesson, you learned:
 
-- ✅ The **API Playground** is a built-in GraphQL IDE for testing Webiny HCMS APIs
-- ✅ There are **three separate playgrounds** for Read, Preview, and Manage APIs
+- ✅ The **API Playground** is accessed from the Webiny Admin sidebar
+- ✅ There are **tabs for different APIs**: Main API, Manage API, Read API, and Preview API
+- ✅ **Authentication is automatic** when using the playground within Webiny Admin
 - ✅ The **Documentation Explorer** helps you discover available queries and fields
 - ✅ **Variables** make queries reusable and are essential for real applications
-- ✅ The **Read API** is public and doesn't require authentication
-- ✅ The **Preview and Manage APIs** require API tokens for authentication
+- ✅ The **Read API** returns only published content
+- ✅ The **Preview API** returns the latest revision (draft or published)
+- ✅ The **Manage API** provides full CRUD operations with mutations
 - ✅ You can **filter, sort, and paginate** results using query arguments
-- ✅ The **Manage API** provides mutations for creating, updating, publishing, and deleting content
 - ✅ Always test queries in the playground before implementing them in your app
 
 <Callout type="success">
-The API Playground is your best friend when working with Webiny HCMS. Use it frequently to experiment, debug, and understand how your API works!
+  The API Playground is your best friend when working with Webiny HCMS. Use it
+  frequently to experiment, debug, and understand how your API works!
 </Callout>
 
 <Quiz id="webiny-api-playground" />

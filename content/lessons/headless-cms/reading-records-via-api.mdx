@@ -442,13 +442,13 @@ if (loading) return <p>Loading...</p>;
 if (error) return <p>Error: {error.message}</p>;
 
 return (
+
 <ul>
-{data.listProducts.data.map((product) => (
-<li key={product.id}>{product.values.name}</li>
-))}
+  {data.listProducts.data.map((product) => (
+    <li key={product.id}>{product.values.name}</li>
+  ))}
 </ul>
-);
-}`} />
+); }`} />
 
 ## Filtering and Sorting
 
@@ -721,13 +721,13 @@ if (error) return <div>Error: {error.message}</div>;
 if (products.length === 0) return <div>No products found</div>;
 
 return (
+
 <ul>
-{products.map(product => (
-<li key={product.id}>{product.values.name}</li>
-))}
+  {products.map((product) => (
+    <li key={product.id}>{product.values.name}</li>
+  ))}
 </ul>
-);
-}`} />
+); }`} />
 
 ## Summary
 
@@ -745,65 +745,10 @@ In this lesson, you learned how to:
 
 In the next lesson, we'll explore the Learn Webiny Next.js app and see how all these concepts come together in a real-world application.
 
-<Quiz>
-  <Question
-    question="Are Webiny Headless CMS APIs publicly accessible by default?"
-    options={[
-      { label: "Yes, all APIs are public", isCorrect: false },
-      { label: "No, all APIs require authentication", isCorrect: true },
-      { label: "Only the Read API is public", isCorrect: false },
-      {
-        label: "Only the Manage API requires authentication",
-        isCorrect: false,
-      },
-    ]}
-  />
-  <Question
-    question="What object contains user-defined fields in the Read API response?"
-    options={[
-      { label: "data", isCorrect: false },
-      { label: "values", isCorrect: true },
-      { label: "fields", isCorrect: false },
-      { label: "meta", isCorrect: false },
-    ]}
-  />
-  <Question
-    question="What happens when you query a reference field that points to an unpublished entry using the Read API?"
-    options={[
-      { label: "It returns an error", isCorrect: false },
-      { label: "It returns null", isCorrect: true },
-      { label: "It returns the draft version", isCorrect: false },
-      { label: "It returns an empty object", isCorrect: false },
-    ]}
-  />
-  <Question
-    question="Which pagination approach does Webiny Headless CMS use?"
-    options={[
-      { label: "Offset-based pagination", isCorrect: false },
-      { label: "Page number pagination", isCorrect: false },
-      { label: "Cursor-based pagination", isCorrect: true },
-      { label: "Limit-only pagination", isCorrect: false },
-    ]}
-  />
-  <Question
-    question="Where should you store API tokens in a Next.js application?"
-    options={[
-      { label: "Hardcoded in client components", isCorrect: false },
-      {
-        label: "In environment variables, accessed server-side",
-        isCorrect: true,
-      },
-      { label: "In localStorage", isCorrect: false },
-      { label: "In public JavaScript files", isCorrect: false },
-    ]}
-  />
-  <Question
-    question="What is the recommended way to pass dynamic values to GraphQL queries?"
-    options={[
-      { label: "String interpolation", isCorrect: false },
-      { label: "Template literals", isCorrect: false },
-      { label: "Query variables", isCorrect: true },
-      { label: "URL parameters", isCorrect: false },
-    ]}
-  />
-</Quiz>
+<Quiz
+  question="What object contains user-defined fields in the Read API response?"
+  options={["data", "values", "fields", "meta"]}
+  correctAnswer={2}
+  explanation="Correct! The 'values' object contains all user-defined fields (like name, price, description). System fields like id and entryId are at the top level of the response."
+  hint="Think about where custom fields like 'name' and 'price' are nested in the response."
+/>

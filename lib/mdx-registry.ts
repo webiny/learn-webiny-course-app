@@ -367,7 +367,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
     frontmatter: {
       title: "Understanding Different HCMS APIs",
       description:
-        "Learn about Read, Preview, and Manage APIs and when to use each one.",
+        "Learn about Manage, Read, and Preview APIs and when to use each one.",
       order: 5,
     },
     chapter: "headless-cms",
