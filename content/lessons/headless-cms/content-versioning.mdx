@@ -11,7 +11,7 @@ In this lesson, we'll explore how Webiny handles content versioning. Webiny's ve
 <ChapterOverview
   items={[
     { icon: "history", text: "How content versioning works in Webiny." },
-    { icon: "branch", text: "Understanding revisions and published versions." },
+    { icon: "rebase", text: "Understanding revisions and published versions." },
     {
       icon: "workflow",
       text: "The content lifecycle from draft to published.",
@@ -21,13 +21,14 @@ In this lesson, we'll explore how Webiny handles content versioning. Webiny's ve
 
 ## What Is Content Versioning?
 
-**Content versioning** is a system that tracks changes to your content entries over time. Every time you modify an entry, Webiny creates a new version (also called a "revision") while preserving the previous versions.
+**Content versioning** is a system that tracks changes to your content entries over time. When you publish content, Webiny creates a new version (also called a "revision") while preserving the previous versions.
 
 Think of it like version control (Git) for your content:
 
-- Each save creates a new version
-- You can view the history of changes
-- You can revert to previous versions
+- Before publishing, you can save changes to the same draft revision as many times as you want
+- Publishing creates a new revision and makes it live
+- You can view the history of all published revisions
+- You can revert to previous revisions
 - You can have unpublished drafts alongside published content
 
 <Callout type="info" title="Non-Destructive Editing">
