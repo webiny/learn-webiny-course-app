@@ -67,6 +67,7 @@ Key rules:
 
 - All new revisions start as **draft**
 - Only **one revision** can have **published** status at a time
+- You can have **multiple draft revisions** at the same time
 - When you publish a new revision, the previous published revision automatically becomes **unpublished**
 
 This separation allows you to:
@@ -171,6 +172,32 @@ The pattern continues: edit the draft as many times as you want, then publish to
   Only one revision can have published status at any given time. When you
   publish a new revision, the previous published revision automatically becomes
   unpublished, but it's still preserved in the history.
+</Callout>
+
+### 8. Multiple Draft Revisions
+
+You can also have multiple draft revisions at the same time. For example, if you're working on different variations or experimental changes:
+
+```
+Entry: "My Blog Post"
+├─ Revision 2 (published) ← Current live version
+├─ Revision 3 (draft) ← First draft idea
+├─ Revision 4 (draft) ← Second draft idea
+├─ Revision 5 (draft) ← Third draft idea
+```
+
+This is useful when:
+
+- Testing different content approaches
+- Working on multiple updates in parallel
+- Collaborating with team members on different versions
+
+You can publish any of the draft revisions, and it will become the new published version while the others remain as drafts.
+
+<Callout type="hint" title="Multiple Drafts">
+  While you can only have one published revision at a time, you can create and
+  maintain multiple draft revisions simultaneously. This gives you flexibility
+  to experiment with different content variations.
 </Callout>
 
 ## Unpublishing Content
