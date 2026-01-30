@@ -7,40 +7,78 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
-  "developing-with-webiny/debugging-errors-best-practices": () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
-  "developing-with-webiny/extensions": () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
-  "developing-with-webiny/local-development": () => import("@/content/lessons/developing-with-webiny/local-development.mdx"),
-  "developing-with-webiny/project-folder-structure": () => import("@/content/lessons/developing-with-webiny/project-folder-structure.mdx"),
-  "developing-with-webiny/whitelabel-extension": () => import("@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"),
-  "devops-best-practices/application-deployment-stacks": () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
-  "devops-best-practices/webiny-deployments": () => import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
+  "developing-with-webiny/debugging-errors-best-practices": () =>
+    import(
+      "@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"
+    ),
+  "developing-with-webiny/extensions": () =>
+    import("@/content/lessons/developing-with-webiny/extensions.mdx"),
+  "developing-with-webiny/local-development": () =>
+    import("@/content/lessons/developing-with-webiny/local-development.mdx"),
+  "developing-with-webiny/project-folder-structure": () =>
+    import(
+      "@/content/lessons/developing-with-webiny/project-folder-structure.mdx"
+    ),
+  "developing-with-webiny/whitelabel-extension": () =>
+    import("@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"),
+  "devops-best-practices/application-deployment-stacks": () =>
+    import(
+      "@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"
+    ),
+  "devops-best-practices/webiny-deployments": () =>
+    import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
-  "foundation/infra-and-hosting": () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
-  "foundation/multi-tenancy": () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
-  "foundation/webiny-apps": () => import("@/content/lessons/foundation/webiny-apps.mdx"),
-  "foundation/webiny-framework": () => import("@/content/lessons/foundation/webiny-framework.mdx"),
-  "foundation/webiny-parts": () => import("@/content/lessons/foundation/webiny-parts.mdx"),
-  "getting-started/deploy-webiny": () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
-  "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
-  "getting-started/upgrade-project": () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
-  "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
-  "headless-cms/content-models-and-entries": () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
-  "headless-cms/content-versioning": () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
-  "headless-cms/creating-content-model-via-code": () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
-  "headless-cms/creating-content-model-via-ui": () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
-  "headless-cms/understanding-different-apis": () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
-  "headless-cms/webiny-api-playground": () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
-  "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
-  "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
-  "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
-  "webiny-control-panel": () => import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
-}
+  "foundation/infra-and-hosting": () =>
+    import("@/content/lessons/foundation/infra-and-hosting.mdx"),
+  "foundation/multi-tenancy": () =>
+    import("@/content/lessons/foundation/multi-tenancy.mdx"),
+  "foundation/webiny-apps": () =>
+    import("@/content/lessons/foundation/webiny-apps.mdx"),
+  "foundation/webiny-framework": () =>
+    import("@/content/lessons/foundation/webiny-framework.mdx"),
+  "foundation/webiny-parts": () =>
+    import("@/content/lessons/foundation/webiny-parts.mdx"),
+  "getting-started/deploy-webiny": () =>
+    import("@/content/lessons/getting-started/deploy-webiny.mdx"),
+  "getting-started/installing-webiny": () =>
+    import("@/content/lessons/getting-started/installing-webiny.mdx"),
+  "getting-started/upgrade-project": () =>
+    import("@/content/lessons/getting-started/upgrade-project.mdx"),
+  "getting-started/webiny-cli-overview": () =>
+    import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
+  "headless-cms/content-models-and-entries": () =>
+    import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
+  "headless-cms/content-versioning": () =>
+    import("@/content/lessons/headless-cms/content-versioning.mdx"),
+  "headless-cms/creating-content-model-via-code": () =>
+    import(
+      "@/content/lessons/headless-cms/creating-content-model-via-code.mdx"
+    ),
+  "headless-cms/creating-content-model-via-ui": () =>
+    import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+  "headless-cms/reading-records-via-api": () =>
+    import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
+  "headless-cms/understanding-different-apis": () =>
+    import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
+  "headless-cms/webiny-api-playground": () =>
+    import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
+  "webiny-control-panel/assigning-licenses": () =>
+    import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
+  "webiny-control-panel/structure-and-organization": () =>
+    import(
+      "@/content/lessons/webiny-control-panel/structure-and-organization.mdx"
+    ),
+  "webiny-control-panel/usage-tracking": () =>
+    import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
+  "webiny-control-panel": () =>
+    import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
+};
 
 /**
  * Get all registered lesson slugs
  */
 export function getRegisteredSlugs(): string[] {
-  return Object.keys(mdxImportRegistry)
+  return Object.keys(mdxImportRegistry);
 }
 
 export interface LessonRegistryItem {
@@ -57,309 +95,378 @@ export interface LessonRegistryItem {
 export const mdxRegistry: LessonRegistryItem[] = [
   {
     slug: "developing-with-webiny/debugging-errors-best-practices",
-    import: () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"
+      ),
     frontmatter: {
-          "title": "Debugging Errors & Best Practices",
-          "description": "Learn how to effectively debug errors and follow best practices when developing with Webiny.",
-          "order": 5
+      title: "Debugging Errors & Best Practices",
+      description:
+        "Learn how to effectively debug errors and follow best practices when developing with Webiny.",
+      order: 5,
     },
-    chapter: "developing-with-webiny"
+    chapter: "developing-with-webiny",
   },
   {
     slug: "developing-with-webiny/extensions",
-    import: () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
+    import: () =>
+      import("@/content/lessons/developing-with-webiny/extensions.mdx"),
     frontmatter: {
-          "title": "Extensions",
-          "description": "Understanding Webiny extensions - what they are and how they work.",
-          "order": 3
+      title: "Extensions",
+      description:
+        "Understanding Webiny extensions - what they are and how they work.",
+      order: 3,
     },
-    chapter: "developing-with-webiny"
+    chapter: "developing-with-webiny",
   },
   {
     slug: "developing-with-webiny/local-development",
-    import: () => import("@/content/lessons/developing-with-webiny/local-development.mdx"),
+    import: () =>
+      import("@/content/lessons/developing-with-webiny/local-development.mdx"),
     frontmatter: {
-          "title": "Local Development",
-          "description": "How local development with Webiny works and best practices.",
-          "order": 2
+      title: "Local Development",
+      description:
+        "How local development with Webiny works and best practices.",
+      order: 2,
     },
-    chapter: "developing-with-webiny"
+    chapter: "developing-with-webiny",
   },
   {
     slug: "developing-with-webiny/project-folder-structure",
-    import: () => import("@/content/lessons/developing-with-webiny/project-folder-structure.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/developing-with-webiny/project-folder-structure.mdx"
+      ),
     frontmatter: {
-          "title": "Project Folder Structure",
-          "description": "Understanding the Webiny project folder structure and key files.",
-          "order": 1
+      title: "Project Folder Structure",
+      description:
+        "Understanding the Webiny project folder structure and key files.",
+      order: 1,
     },
-    chapter: "developing-with-webiny"
+    chapter: "developing-with-webiny",
   },
   {
     slug: "developing-with-webiny/whitelabel-extension",
-    import: () => import("@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"
+      ),
     frontmatter: {
-          "title": "White-Label Extension",
-          "description": "Creating a white-label Admin extension to customize branding.",
-          "order": 4
+      title: "White-Label Extension",
+      description:
+        "Creating a white-label Admin extension to customize branding.",
+      order: 4,
     },
-    chapter: "developing-with-webiny"
+    chapter: "developing-with-webiny",
   },
   {
     slug: "devops-best-practices/application-deployment-stacks",
-    import: () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"
+      ),
     frontmatter: {
-          "title": "Application Deployment Stacks",
-          "description": "Understanding Webiny application deployment stacks and their components.",
-          "order": 4
+      title: "Application Deployment Stacks",
+      description:
+        "Understanding Webiny application deployment stacks and their components.",
+      order: 4,
     },
-    chapter: "devops-best-practices"
+    chapter: "devops-best-practices",
   },
   {
     slug: "devops-best-practices/webiny-deployments",
-    import: () => import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
+    import: () =>
+      import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
     frontmatter: {
-          "title": "Deployment Environments",
-          "description": "Understanding Webiny environments and deployments.",
-          "order": 3
+      title: "Deployment Environments",
+      description: "Understanding Webiny environments and deployments.",
+      order: 3,
     },
-    chapter: "devops-best-practices"
+    chapter: "devops-best-practices",
   },
   {
     slug: "foundation/about",
     import: () => import("@/content/lessons/foundation/about.mdx"),
     frontmatter: {
-          "title": "About Webiny",
-          "description": "An introduction to Webiny and its core concepts.",
-          "order": 1
+      title: "About Webiny",
+      description: "An introduction to Webiny and its core concepts.",
+      order: 1,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "foundation/infra-and-hosting",
     import: () => import("@/content/lessons/foundation/infra-and-hosting.mdx"),
     frontmatter: {
-          "title": "Infrastructure and Hosting",
-          "description": "An overview of the infrastructure and hosting options for deploying Webiny applications.",
-          "order": 5
+      title: "Infrastructure and Hosting",
+      description:
+        "An overview of the infrastructure and hosting options for deploying Webiny applications.",
+      order: 5,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "foundation/multi-tenancy",
     import: () => import("@/content/lessons/foundation/multi-tenancy.mdx"),
     frontmatter: {
-          "title": "Multi-Tenancy",
-          "description": "Understanding multi-tenancy in Webiny and how it enables managing multiple projects from a single instance.",
-          "order": 6
+      title: "Multi-Tenancy",
+      description:
+        "Understanding multi-tenancy in Webiny and how it enables managing multiple projects from a single instance.",
+      order: 6,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "foundation/webiny-apps",
     import: () => import("@/content/lessons/foundation/webiny-apps.mdx"),
     frontmatter: {
-          "title": "Webiny Applications",
-          "description": "An overview of the built-in applications that are included with the Webiny content platform.",
-          "order": 3
+      title: "Webiny Applications",
+      description:
+        "An overview of the built-in applications that are included with the Webiny content platform.",
+      order: 3,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "foundation/webiny-framework",
     import: () => import("@/content/lessons/foundation/webiny-framework.mdx"),
     frontmatter: {
-          "title": "Webiny Framework",
-          "description": "An overview of the Webiny Framework, the underlying framework that powers the Webiny content platform.",
-          "order": 4
+      title: "Webiny Framework",
+      description:
+        "An overview of the Webiny Framework, the underlying framework that powers the Webiny content platform.",
+      order: 4,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "foundation/webiny-parts",
     import: () => import("@/content/lessons/foundation/webiny-parts.mdx"),
     frontmatter: {
-          "title": "Parts that make Webiny",
-          "description": "An overview of the core components that make the Webiny platform.",
-          "order": 2
+      title: "Parts that make Webiny",
+      description:
+        "An overview of the core components that make the Webiny platform.",
+      order: 2,
     },
-    chapter: "foundation"
+    chapter: "foundation",
   },
   {
     slug: "getting-started/deploy-webiny",
     import: () => import("@/content/lessons/getting-started/deploy-webiny.mdx"),
     frontmatter: {
-          "title": "Deploy Webiny",
-          "description": "Guide to deploying Webiny to AWS and accessing the admin panel.",
-          "order": 5
+      title: "Deploy Webiny",
+      description:
+        "Guide to deploying Webiny to AWS and accessing the admin panel.",
+      order: 5,
     },
-    chapter: "getting-started"
+    chapter: "getting-started",
   },
   {
     slug: "getting-started/installing-webiny",
-    import: () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
+    import: () =>
+      import("@/content/lessons/getting-started/installing-webiny.mdx"),
     frontmatter: {
-          "title": "Installing Webiny",
-          "description": "Step-by-step guide to installing Webiny on your local machine.",
-          "order": 1
+      title: "Installing Webiny",
+      description:
+        "Step-by-step guide to installing Webiny on your local machine.",
+      order: 1,
     },
-    chapter: "getting-started"
+    chapter: "getting-started",
   },
   {
     slug: "getting-started/upgrade-project",
-    import: () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
+    import: () =>
+      import("@/content/lessons/getting-started/upgrade-project.mdx"),
     frontmatter: {
-          "title": "Upgrade Project",
-          "description": "How to upgrade your Webiny project to a paid license using the Webiny Control Panel.",
-          "order": 6
+      title: "Upgrade Project",
+      description:
+        "How to upgrade your Webiny project to a paid license using the Webiny Control Panel.",
+      order: 6,
     },
-    chapter: "getting-started"
+    chapter: "getting-started",
   },
   {
     slug: "getting-started/webiny-cli-overview",
-    import: () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
+    import: () =>
+      import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
     frontmatter: {
-          "title": "Webiny CLI Overview",
-          "description": "An introduction to the Webiny Command Line Interface (CLI) and its functionalities.",
-          "order": 2
+      title: "Webiny CLI Overview",
+      description:
+        "An introduction to the Webiny Command Line Interface (CLI) and its functionalities.",
+      order: 2,
     },
-    chapter: "getting-started"
+    chapter: "getting-started",
   },
   {
     slug: "headless-cms/content-models-and-entries",
-    import: () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
+    import: () =>
+      import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
     frontmatter: {
-          "title": "Content Models and Content Entries",
-          "description": "Understanding the foundation of Webiny Headless CMS - content models and entries.",
-          "order": 1
+      title: "Content Models and Content Entries",
+      description:
+        "Understanding the foundation of Webiny Headless CMS - content models and entries.",
+      order: 1,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
   },
   {
     slug: "headless-cms/content-versioning",
-    import: () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
+    import: () =>
+      import("@/content/lessons/headless-cms/content-versioning.mdx"),
     frontmatter: {
-          "title": "Content Versioning",
-          "description": "Understanding how content versioning works in Webiny Headless CMS.",
-          "order": 2
+      title: "Content Versioning",
+      description:
+        "Understanding how content versioning works in Webiny Headless CMS.",
+      order: 2,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
   },
   {
     slug: "headless-cms/creating-content-model-via-code",
-    import: () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/headless-cms/creating-content-model-via-code.mdx"
+      ),
     frontmatter: {
-          "title": "Creating a Content Model via Code",
-          "description": "Learn how to create content models programmatically and link them using reference fields.",
-          "order": 4
+      title: "Creating a Content Model via Code",
+      description:
+        "Learn how to create content models programmatically and link them using reference fields.",
+      order: 4,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
   },
   {
     slug: "headless-cms/creating-content-model-via-ui",
-    import: () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"
+      ),
     frontmatter: {
-          "title": "Creating a Content Model via UI",
-          "description": "Learn how to create a Product content model through the Webiny Admin UI.",
-          "order": 3
+      title: "Creating a Content Model via UI",
+      description:
+        "Learn how to create a Product content model through the Webiny Admin UI.",
+      order: 3,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
+  },
+  {
+    slug: "headless-cms/reading-records-via-api",
+    import: () =>
+      import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
+    frontmatter: {
+      title: "Reading Records via the API",
+      description:
+        "Learn how to fetch content from Webiny Headless CMS using the GraphQL APIs in your applications.",
+      chapter: 7,
+    },
+    chapter: "headless-cms",
   },
   {
     slug: "headless-cms/understanding-different-apis",
-    import: () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
+    import: () =>
+      import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
     frontmatter: {
-          "title": "Understanding Different HCMS APIs",
-          "description": "Learn about Read, Preview, and Manage APIs and when to use each one.",
-          "order": 5
+      title: "Understanding Different HCMS APIs",
+      description:
+        "Learn about Read, Preview, and Manage APIs and when to use each one.",
+      order: 5,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
   },
   {
     slug: "headless-cms/webiny-api-playground",
-    import: () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
+    import: () =>
+      import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
     frontmatter: {
-          "title": "Webiny API Playground",
-          "description": "What is Webiny API Playground, how to use it",
-          "order": 6
+      title: "Webiny API Playground",
+      description: "What is Webiny API Playground, how to use it",
+      order: 6,
     },
-    chapter: "headless-cms"
+    chapter: "headless-cms",
   },
   {
     slug: "webiny-control-panel/assigning-licenses",
-    import: () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
+    import: () =>
+      import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
     frontmatter: {
-          "title": "Assigning Licenses",
-          "description": "How to assign licenses to your Webiny projects using the Webiny Control Panel.",
-          "order": 4
+      title: "Assigning Licenses",
+      description:
+        "How to assign licenses to your Webiny projects using the Webiny Control Panel.",
+      order: 4,
     },
-    chapter: "webiny-control-panel"
+    chapter: "webiny-control-panel",
   },
   {
     slug: "webiny-control-panel/structure-and-organization",
-    import: () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
+    import: () =>
+      import(
+        "@/content/lessons/webiny-control-panel/structure-and-organization.mdx"
+      ),
     frontmatter: {
-          "title": "Structure and Organization",
-          "description": "Understanding the structure and organization of the Webiny Control Panel.",
-          "order": 2
+      title: "Structure and Organization",
+      description:
+        "Understanding the structure and organization of the Webiny Control Panel.",
+      order: 2,
     },
-    chapter: "webiny-control-panel"
+    chapter: "webiny-control-panel",
   },
   {
     slug: "webiny-control-panel/usage-tracking",
-    import: () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
+    import: () =>
+      import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
     frontmatter: {
-          "title": "Usage tracking",
-          "description": "Understanding usage tracking in the Webiny Control Panel.",
-          "order": 3
+      title: "Usage tracking",
+      description: "Understanding usage tracking in the Webiny Control Panel.",
+      order: 3,
     },
-    chapter: "webiny-control-panel"
+    chapter: "webiny-control-panel",
   },
   {
     slug: "webiny-control-panel",
-    import: () => import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
+    import: () =>
+      import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
     frontmatter: {
-          "title": "Webiny Control Panel",
-          "description": "An introduction to the Webiny Control Panel and its features.",
-          "order": 1
+      title: "Webiny Control Panel",
+      description:
+        "An introduction to the Webiny Control Panel and its features.",
+      order: 1,
     },
-    chapter: "webiny-control-panel"
-  }
-]
+    chapter: "webiny-control-panel",
+  },
+];
 
 /**
  * Get all chapters with their lessons
  * Lessons are sorted by the 'order' field in frontmatter, or alphabetically by slug if no order is specified
  */
 export function getChaptersWithLessons() {
-  const chapters: Record<string, LessonRegistryItem[]> = {}
-  mdxRegistry.forEach(item => {
-    if (!chapters[item.chapter]) chapters[item.chapter] = []
-    chapters[item.chapter].push(item)
-  })
-  
+  const chapters: Record<string, LessonRegistryItem[]> = {};
+  mdxRegistry.forEach((item) => {
+    if (!chapters[item.chapter]) chapters[item.chapter] = [];
+    chapters[item.chapter].push(item);
+  });
+
   // Sort lessons within each chapter by order field (if present) or by slug
-  Object.keys(chapters).forEach(chapterKey => {
+  Object.keys(chapters).forEach((chapterKey) => {
     chapters[chapterKey].sort((a, b) => {
       // If both have order, sort by order
-      const orderA = a.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
-      const orderB = b.frontmatter?.order ?? Number.MAX_SAFE_INTEGER
-      
+      const orderA = a.frontmatter?.order ?? Number.MAX_SAFE_INTEGER;
+      const orderB = b.frontmatter?.order ?? Number.MAX_SAFE_INTEGER;
+
       if (orderA !== orderB) {
-        return orderA - orderB
+        return orderA - orderB;
       }
-      
+
       // If order is the same (or both missing), sort alphabetically by slug
-      return a.slug.localeCompare(b.slug)
-    })
-  })
-  
-  return chapters
+      return a.slug.localeCompare(b.slug);
+    });
+  });
+
+  return chapters;
 }
 
 /**
  * Get lesson by slug
  */
 export function getLessonBySlug(slug: string): LessonRegistryItem | undefined {
-  return mdxRegistry.find(item => item.slug === slug)
+  return mdxRegistry.find((item) => item.slug === slug);
 }

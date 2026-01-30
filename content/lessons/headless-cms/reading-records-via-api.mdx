@@ -1,0 +1,809 @@
+---
+title: "Reading Records via the API"
+description: "Learn how to fetch content from Webiny Headless CMS using the GraphQL APIs in your applications."
+chapter: 7
+---
+
+<ChapterOverview>
+
+In this lesson, you'll learn how to fetch content from Webiny Headless CMS in your applications. We'll cover:
+
+- Making GraphQL queries to the Read API
+- Using different GraphQL clients
+- Fetching single records and lists
+- Working with reference fields
+- Handling pagination
+- Error handling and best practices
+
+</ChapterOverview>
+
+## Overview
+
+Now that you understand the different APIs available in Webiny Headless CMS, it's time to put that knowledge into practice. In this lesson, we'll explore how to actually fetch content from your CMS and use it in your applications.
+
+We'll continue building on the Product and Product Category models we created in previous lessons.
+
+## Finding Your API URL
+
+Before you can query the API, you need to know your API endpoint URL. There are two ways to find it:
+
+### Option 1: Using the CLI
+
+Run this command in your project directory:
+
+<CodeBlock language="bash" code={`yarn webiny info`} />
+
+This will display all your API endpoints, including the Headless CMS Read API URL.
+
+### Option 2: Using the API Playground
+
+1. Open the Webiny Admin UI
+2. Navigate to the **API Playground**
+3. Select **Headless CMS - Read API** from the dropdown
+4. The URL is displayed at the top of the playground
+
+The URL will look something like this:
+
+<CodeBlock
+  language="text"
+  code={`https://d1ud9w3i9i7d77.cloudfront.net/cms/read`}
+/>
+
+## Authentication with API Keys
+
+All Headless CMS API types (Read, Preview, and Manage) are **protected by default** and require authentication. To access the APIs, you need to create an **API key** with the appropriate permissions.
+
+<Callout type="warning">
+  Without an API key, you'll receive an authentication error when trying to
+  access any Headless CMS API endpoint.
+</Callout>
+
+### Creating an API Key
+
+To create an API key for accessing the Headless CMS:
+
+1. Open the Webiny Admin UI
+2. Navigate to **Settings > API Keys**
+3. Click **New API Key**
+4. Enter a **Name** and **Description** for your API key
+5. Under **Permissions**, expand the **Headless CMS** section
+6. Configure the access level:
+   - **No access** - No permissions
+   - **Full access** - All permissions for all API types and content
+   - **Custom access** - Granular control (recommended for production)
+
+<Image
+  src="/images/headless-cms/api-key-access-levels.png"
+  alt="API key access level options showing No access, Full access, and Custom access"
+  caption="Choose between No access, Full access, or Custom access for the Headless CMS"
+/>
+
+### Configuring Custom Access
+
+When you select **Custom access**, you can configure granular permissions across multiple levels:
+
+<Image
+  src="/images/headless-cms/api-key-permissions.png"
+  alt="Custom access configuration showing GraphQL API types, Content Model Groups, Content Models, Content Entries, and Publishing actions"
+  caption="Custom access allows fine-grained control over API types, groups, models, entries, and publishing permissions"
+/>
+
+#### 1. GraphQL API Types
+
+Choose which API types this key can access:
+
+- **Read** - Published content only
+- **Preview** - Draft and published content
+- **Manage** - Full CRUD operations
+
+<Callout type="info">
+  Each API type has a separate URL and specific purpose. An API key can have
+  access to one, two, or all three types.
+</Callout>
+
+#### 2. Content Model Groups
+
+Define access scope:
+
+- **All groups** - Access all content model groups
+- **Specific groups** - Limit to selected groups only
+
+Set primary actions:
+
+- **Read-only** - Can only query data
+- **Read and write** - Can query and modify data
+
+#### 3. Content Models
+
+Control which models are accessible:
+
+- **All models** - Access all models (based on group settings)
+- **Specific models** - Limit to selected models only
+
+#### 4. Content Entries
+
+Further restrict access to specific entries:
+
+- **All entries** - Access all entries (based on model settings)
+- **Specific entries** - Limit to selected entry IDs
+
+#### 5. Publishing Actions
+
+For the Manage API, control publishing permissions:
+
+- **Publish** - Can publish content entries
+- **Unpublish** - Can unpublish content entries
+
+### Getting Your API Token
+
+After saving the API key, you'll see the **token** displayed once. Copy and store it securely - you won't be able to see it again!
+
+<Callout type="hint">
+  For a public website displaying published content, create an API key with
+  **Read-only** access to the **Read API**. For a preview environment, add
+  access to the **Preview API**.
+</Callout>
+
+## Making Your First Query
+
+Now that you have an API key, let's make a query to fetch all published products. We'll use the native `fetch` API, which is available in modern browsers and Node.js.
+
+<CodeBlock language="typescript" code={`const API_URL = "https://your-domain.cloudfront.net/cms/read";
+const API_TOKEN = "your-api-key-token-here";
+
+async function getProducts() {
+const query = \`
+query ListProducts {
+listProducts {
+data {
+id
+entryId
+values {
+name
+description
+price
+}
+}
+}
+}
+\`;
+
+const response = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": API_TOKEN,
+},
+body: JSON.stringify({ query }),
+});
+
+const result = await response.json();
+
+if (result.errors) {
+console.error("GraphQL errors:", result.errors);
+throw new Error("Failed to fetch products");
+}
+
+return result.data.listProducts.data;
+}
+
+// Usage
+const products = await getProducts();
+console.log(products);`} />
+
+### Understanding the Response
+
+The response will look like this:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "id": "676d123456789#0001",
+          "entryId": "676d123456789",
+          "values": {
+            "name": "Laptop Pro 15",
+            "description": "High-performance laptop",
+            "price": 1299.99
+          }
+        },
+        {
+          "id": "676d987654321#0001",
+          "entryId": "676d987654321",
+          "values": {
+            "name": "Wireless Mouse",
+            "description": "Ergonomic wireless mouse",
+            "price": 29.99
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+Note that:
+
+- User-defined fields (name, description, price) are in the `values` object
+- System fields (id, entryId) are at the top level
+- Only **published** content is returned by the Read API
+
+## Fetching a Single Record
+
+To fetch a specific product by its entry ID:
+
+<CodeBlock language="typescript" code={`async function getProduct(entryId: string) {
+  const query = \`
+    query GetProduct($entryId: ID!) {
+      getProduct(where: { entryId: $entryId }) {
+        data {
+          id
+          entryId
+          values {
+            name
+            description
+            price
+          }
+        }
+      }
+    }
+  \`;
+
+const response = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": API_TOKEN,
+},
+body: JSON.stringify({
+query,
+variables: { entryId },
+}),
+});
+
+const result = await response.json();
+
+if (result.errors) {
+throw new Error("Failed to fetch product");
+}
+
+return result.data.getProduct.data;
+}
+
+// Usage
+const product = await getProduct("676d123456789");`} />
+
+<Callout type="hint">
+  Use **variables** for dynamic values instead of string interpolation. This
+  prevents GraphQL injection attacks and makes queries more readable.
+</Callout>
+
+## Working with Reference Fields
+
+When you query reference fields, you need to explicitly request the nested data. Let's fetch products with their categories:
+
+<CodeBlock language="typescript" code={`async function getProductsWithCategories() {
+  const query = \`
+    query ListProductsWithCategories {
+      listProducts {
+        data {
+          id
+          entryId
+          values {
+            name
+            description
+            price
+            category {
+              id
+              values {
+                name
+                slug
+              }
+            }
+          }
+        }
+      }
+    }
+  \`;
+
+const response = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": API_TOKEN,
+},
+body: JSON.stringify({ query }),
+});
+
+const result = await response.json();
+return result.data.listProducts.data;
+}`} />
+
+### Response with References
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "id": "676d123456789#0001",
+          "entryId": "676d123456789",
+          "values": {
+            "name": "Laptop Pro 15",
+            "description": "High-performance laptop",
+            "price": 1299.99,
+            "category": {
+              "id": "676d111111111#0001",
+              "values": {
+                "name": "Electronics",
+                "slug": "electronics"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+<Callout type="warning">
+  If a referenced entry is **not published**, it will return `null` in the Read
+  API. To see unpublished references during development, use the **Preview API**
+  instead.
+</Callout>
+
+## Using GraphQL Client Libraries
+
+While `fetch` works fine, GraphQL client libraries provide better developer experience with features like TypeScript support, caching, and automatic error handling.
+
+### Using graphql-request
+
+First, install the library:
+
+<CodeBlock language="bash" code={`npm install graphql-request graphql`} />
+
+Then use it in your code:
+
+<CodeBlock language="typescript" code={`import { GraphQLClient, gql } from "graphql-request";
+
+const client = new GraphQLClient(API_URL, {
+headers: {
+Authorization: API_TOKEN,
+},
+});
+
+const query = gql\`
+query ListProducts {
+listProducts {
+data {
+id
+entryId
+values {
+name
+description
+price
+}
+}
+}
+}
+\`;
+
+async function getProducts() {
+const data = await client.request(query);
+return data.listProducts.data;
+}
+
+// Usage
+const products = await getProducts();`} />
+
+### Using Apollo Client
+
+Apollo Client is great for React applications:
+
+<CodeBlock language="bash" code={`npm install @apollo/client graphql`} />
+
+<CodeBlock language="typescript" code={`import { ApolloClient, InMemoryCache, gql, useQuery } from "@apollo/client";
+
+const client = new ApolloClient({
+uri: API_URL,
+cache: new InMemoryCache(),
+headers: {
+Authorization: API_TOKEN,
+},
+});
+
+const GET_PRODUCTS = gql\`
+query ListProducts {
+listProducts {
+data {
+id
+entryId
+values {
+name
+description
+price
+}
+}
+}
+}
+\`;
+
+// In a React component
+function ProductList() {
+const { loading, error, data } = useQuery(GET_PRODUCTS);
+
+if (loading) return <p>Loading...</p>;
+if (error) return <p>Error: {error.message}</p>;
+
+return (
+<ul>
+{data.listProducts.data.map((product) => (
+<li key={product.id}>{product.values.name}</li>
+))}
+</ul>
+);
+}`} />
+
+## Filtering and Sorting
+
+You can filter and sort results using the `where` and `sort` parameters:
+
+<CodeBlock language="typescript" code={`const query = \`
+  query ListProducts($where: ProductListWhereInput, $sort: [ProductListSorter!]) {
+    listProducts(where: $where, sort: $sort) {
+      data {
+        id
+        entryId
+        values {
+          name
+          price
+        }
+      }
+    }
+  }
+\`;
+
+// Filter products with price greater than 100
+const variables = {
+where: {
+values_price_gte: 100
+},
+sort: ["values_price_ASC"]
+};
+
+const response = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": API_TOKEN,
+},
+body: JSON.stringify({ query, variables }),
+});`} />
+
+<Callout type="info">
+  The filtering syntax uses field names with suffixes like `_gte` (greater than
+  or equal), `_lt` (less than), `_contains`, etc. Explore the API Playground's
+  schema documentation to see all available filters.
+</Callout>
+
+## Pagination
+
+For large datasets, use cursor-based pagination:
+
+<CodeBlock language="typescript" code={`async function getProductsPaginated(after?: string) {
+  const query = \`
+    query ListProducts($after: String) {
+      listProducts(limit: 10, after: $after) {
+        data {
+          id
+          entryId
+          values {
+            name
+          }
+        }
+        meta {
+          cursor
+          hasMoreItems
+          totalCount
+        }
+      }
+    }
+  \`;
+
+const response = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": API_TOKEN,
+},
+body: JSON.stringify({
+query,
+variables: { after },
+}),
+});
+
+const result = await response.json();
+return result.data.listProducts;
+}
+
+// Usage: fetch first page
+const firstPage = await getProductsPaginated();
+console.log(firstPage.data); // First 10 products
+console.log(firstPage.meta.hasMoreItems); // true if more pages exist
+
+// Fetch next page
+if (firstPage.meta.hasMoreItems) {
+const secondPage = await getProductsPaginated(firstPage.meta.cursor);
+console.log(secondPage.data); // Next 10 products
+}`} />
+
+### Understanding Pagination Metadata
+
+The `meta` object provides important pagination information:
+
+- `cursor`: A string to pass as `after` to get the next page
+- `hasMoreItems`: Boolean indicating if more pages are available
+- `totalCount`: Total number of items across all pages
+
+## Error Handling
+
+Always handle errors gracefully in production code:
+
+<CodeBlock language="typescript" code={`async function getProductsSafely() {
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": API_TOKEN,
+      },
+      body: JSON.stringify({
+        query: \`
+          query ListProducts {
+            listProducts {
+              data {
+                id
+                values { name }
+              }
+            }
+          }
+        \`,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(\`HTTP error! status: \${response.status}\`);
+    }
+
+    const result = await response.json();
+
+    if (result.errors) {
+      console.error("GraphQL errors:", result.errors);
+      throw new Error("GraphQL query failed");
+    }
+
+    return result.data.listProducts.data;
+
+} catch (error) {
+console.error("Failed to fetch products:", error);
+// Return empty array or show user-friendly error
+return [];
+}
+}`} />
+
+## Best Practices
+
+Here are some best practices when reading data from Webiny Headless CMS:
+
+### 1. Only Request the Fields You Need
+
+Don't query for unnecessary fields. This reduces response size and improves performance:
+
+<CodeBlock language="typescript" code={`// ❌ Bad: Requesting too many fields
+query {
+  listProducts {
+    data {
+      id
+      entryId
+      createdOn
+      modifiedOn
+      savedOn
+      values {
+        name
+        description
+        price
+        sku
+        inventory
+        images
+        specifications
+      }
+    }
+  }
+}
+
+// ✅ Good: Only request what you need
+query {
+listProducts {
+data {
+id
+values {
+name
+price
+}
+}
+}
+}`} />
+
+### 2. Use Variables for Dynamic Values
+
+<CodeBlock language="typescript" code={`// ❌ Bad: String interpolation
+const query = \`
+  query {
+    getProduct(where: { entryId: "\${entryId}" }) {
+      data { id }
+    }
+  }
+\`;
+
+// ✅ Good: Use variables
+const query = \`
+query GetProduct($entryId: ID!) {
+getProduct(where: { entryId: $entryId }) {
+data { id }
+}
+}
+\`;`} />
+
+### 3. Secure Your API Tokens
+
+Never expose API tokens in client-side code or commit them to version control:
+
+<CodeBlock language="typescript" code={`// ❌ Bad: Hardcoded token in client code
+const API_TOKEN = "a7b2c9d4e5f6...";
+
+// ✅ Good: Use environment variables
+const API_TOKEN = process.env.NEXT_PUBLIC_CMS_API_TOKEN;
+
+// ✅ Better: Make requests from server-side code
+// In Next.js API route or server component
+const API_TOKEN = process.env.CMS_API_TOKEN; // Not exposed to browser`} />
+
+<Callout type="warning">
+  For public websites, make API requests from **server-side code** (like Next.js
+  API routes or server components) to keep your API token secure. Never include
+  it in client-side JavaScript bundles.
+</Callout>
+
+### 4. Implement Caching
+
+For frequently accessed data, implement caching to reduce API calls:
+
+<CodeBlock language="typescript" code={`const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function getCachedProducts() {
+const now = Date.now();
+const cached = cache.get("products");
+
+if (cached && now - cached.timestamp < CACHE_TTL) {
+return cached.data;
+}
+
+const products = await getProducts();
+cache.set("products", { data: products, timestamp: now });
+return products;
+}`} />
+
+### 5. Handle Loading and Error States
+
+Always provide feedback to users while data is loading:
+
+<CodeBlock language="typescript" code={`function ProductList() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+useEffect(() => {
+getProducts()
+.then(setProducts)
+.catch(setError)
+.finally(() => setLoading(false));
+}, []);
+
+if (loading) return <div>Loading products...</div>;
+if (error) return <div>Error: {error.message}</div>;
+if (products.length === 0) return <div>No products found</div>;
+
+return (
+<ul>
+{products.map(product => (
+<li key={product.id}>{product.values.name}</li>
+))}
+</ul>
+);
+}`} />
+
+## Summary
+
+In this lesson, you learned how to:
+
+- Find your Headless CMS API URL
+- Create API keys with granular permissions for accessing the APIs
+- Authenticate requests using API tokens
+- Make GraphQL queries using fetch and GraphQL client libraries
+- Fetch single records and lists of records
+- Work with reference fields to fetch related content
+- Implement filtering, sorting, and pagination
+- Handle errors gracefully
+- Follow best practices for optimal performance and security
+
+In the next lesson, we'll explore the Learn Webiny Next.js app and see how all these concepts come together in a real-world application.
+
+<Quiz>
+  <Question
+    question="Are Webiny Headless CMS APIs publicly accessible by default?"
+    options={[
+      { label: "Yes, all APIs are public", isCorrect: false },
+      { label: "No, all APIs require authentication", isCorrect: true },
+      { label: "Only the Read API is public", isCorrect: false },
+      {
+        label: "Only the Manage API requires authentication",
+        isCorrect: false,
+      },
+    ]}
+  />
+  <Question
+    question="What object contains user-defined fields in the Read API response?"
+    options={[
+      { label: "data", isCorrect: false },
+      { label: "values", isCorrect: true },
+      { label: "fields", isCorrect: false },
+      { label: "meta", isCorrect: false },
+    ]}
+  />
+  <Question
+    question="What happens when you query a reference field that points to an unpublished entry using the Read API?"
+    options={[
+      { label: "It returns an error", isCorrect: false },
+      { label: "It returns null", isCorrect: true },
+      { label: "It returns the draft version", isCorrect: false },
+      { label: "It returns an empty object", isCorrect: false },
+    ]}
+  />
+  <Question
+    question="Which pagination approach does Webiny Headless CMS use?"
+    options={[
+      { label: "Offset-based pagination", isCorrect: false },
+      { label: "Page number pagination", isCorrect: false },
+      { label: "Cursor-based pagination", isCorrect: true },
+      { label: "Limit-only pagination", isCorrect: false },
+    ]}
+  />
+  <Question
+    question="Where should you store API tokens in a Next.js application?"
+    options={[
+      { label: "Hardcoded in client components", isCorrect: false },
+      {
+        label: "In environment variables, accessed server-side",
+        isCorrect: true,
+      },
+      { label: "In localStorage", isCorrect: false },
+      { label: "In public JavaScript files", isCorrect: false },
+    ]}
+  />
+  <Question
+    question="What is the recommended way to pass dynamic values to GraphQL queries?"
+    options={[
+      { label: "String interpolation", isCorrect: false },
+      { label: "Template literals", isCorrect: false },
+      { label: "Query variables", isCorrect: true },
+      { label: "URL parameters", isCorrect: false },
+    ]}
+  />
+</Quiz>

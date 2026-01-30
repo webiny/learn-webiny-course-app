@@ -28,6 +28,41 @@ Webiny Headless CMS automatically generates three separate GraphQL APIs for ever
 
 Each API has its own endpoint and serves different purposes.
 
+## Finding Your API URLs
+
+The GraphQL API URLs follow a specific structure based on the API type:
+
+**URL Structure:**
+
+```
+https://{your-domain}/cms/{api-type}
+```
+
+**Examples:**
+
+- Read API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/read`
+- Preview API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/preview`
+- Manage API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/manage`
+
+### How to Find Your URLs
+
+You can find your API URLs in two ways:
+
+**Option 1: Via Webiny CLI**
+
+<CodeBlock language="bash" code={`yarn webiny info`} />
+
+This command outputs all your API endpoints, including the Headless CMS URLs for all three API types.
+
+**Option 2: Via API Playground**
+
+Navigate to **API Playground** in the Webiny Admin sidebar. The URL shown in the address bar is your current API endpoint.
+
+<Callout type="info" title="API Playground">
+  We'll explore the API Playground in detail in the next lesson, where you'll
+  learn how to use it to test queries and explore your GraphQL schema.
+</Callout>
+
 ## Read API
 
 The **Read API** is your public-facing API for production applications.
@@ -35,6 +70,7 @@ The **Read API** is your public-facing API for production applications.
 ### Purpose
 
 The Read API returns only **published** content. It's designed for:
+
 - Your website or mobile app
 - Public-facing content consumption
 - High-performance queries
@@ -50,21 +86,61 @@ The Read API returns only **published** content. It's designed for:
 
 Your e-commerce website queries the Read API to display products to customers. Only published products appear on the site.
 
+**Query Example:**
+
 <CodeBlock
   language="graphql"
-  filename="Example Query"
-  code={`query GetProducts {
+  filename="Read API Query"
+  code={`query ListProducts {
   listProducts {
     data {
-      name
-      price
-      category {
+      createdOn
+      lastPublishedOn
+      values {
         name
+        price
+        category {
+          id
+          entryId
+          modelId
+        }
       }
     }
   }
 }`}
 />
+
+**Response:**
+
+<CodeBlock
+  language="json"
+  filename="Read API Response"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "createdOn": "2026-01-30T14:12:49.882Z",
+          "lastPublishedOn": "2026-01-30T14:15:55.231Z",
+          "values": {
+            "name": "Wireless Headphones",
+            "price": 199.99,
+            "category": null
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+**Note that:**
+
+- The Read API returns **only published** entries (draft revisions are not accessible)
+- We queried `createdOn` and `lastPublishedOn` - these are system fields available on all entries (there are many more system fields available)
+- User-defined fields (like `name`, `price`, `category`) are returned in the **`values`** object
+- The Read API does **NOT** include `meta` (status/version) - not needed for public consumption, unlike the Manage API which we'll see soon
+- Reference fields may be `null` if not populated
 
 This query returns only published products - customers never see drafts or unpublished items.
 
@@ -72,6 +148,42 @@ This query returns only published products - customers never see drafts or unpub
   The Read API is optimized for performance and can be cached aggressively since
   it only returns published, stable content.
 </Callout>
+
+### Accessing the Read API
+
+The Read API is accessed programmatically using GraphQL clients such as:
+
+- **`fetch`** - Native browser API
+- **`graphql-request`** - Lightweight GraphQL client
+- **Apollo Client** - Full-featured GraphQL client
+- **URQL** - Lightweight React-focused client
+
+<CodeBlock
+  language="typescript"
+  code={`// Using fetch
+const response = await fetch('https://your-domain/cms/read', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    query: \`
+      query ListProducts {
+        listProducts {
+          data {
+            values {
+              name
+              price
+            }
+          }
+        }
+      }
+    \`
+  })
+});
+
+const { data } = await response.json();`}
+/>
 
 ### When to Use Read API
 
@@ -84,11 +196,12 @@ This query returns only published products - customers never see drafts or unpub
 
 ## Preview API
 
-The **Preview API** returns the latest revision of content, whether published or draft.
+The **Preview API** is essentially like the Read API, except it can show draft content too. It returns the latest revision of content, whether published or draft.
 
 ### Purpose
 
 The Preview API is designed for:
+
 - Preview functionality in your application
 - Seeing content changes before publishing
 - Editorial workflows
@@ -99,26 +212,73 @@ The Preview API is designed for:
 - ✅ Latest revision (published OR draft)
 - ✅ Unpublished entries
 - ✅ All content, regardless of status
+- ✅ Draft reference fields (unlike Read API which shows `null` for unpublished references)
 
 ### Example Use Case
 
 Your content editors want to preview how a new product will look on the website before publishing it. Your app has a "Preview Mode" that uses the Preview API.
 
+**Query Example:**
+
 <CodeBlock
   language="graphql"
-  filename="Example Query"
-  code={`query GetProduct($id: ID!) {
-  getProduct(where: { id: $id }) {
+  filename="Preview API Query"
+  code={`query ListProducts {
+  listProducts {
     data {
-      name
-      price
-      description
+      values {
+        name
+        price
+        category {
+          id
+          entryId
+          modelId
+        }
+      }
     }
   }
 }`}
 />
 
-When queried via the Preview API, this returns the latest revision even if it's a draft.
+**Response:**
+
+<CodeBlock
+  language="json"
+  filename="Preview API Response"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "values": {
+            "name": "Wireless Headphones",
+            "price": 199.99,
+            "category": {
+              "id": "697b5de1c1637cea62dbb3bc#0001",
+              "entryId": "697b5de1c1637cea62dbb3bc",
+              "modelId": "productCategory"
+            }
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+**Key Difference from Read API:**
+
+Notice that the `category` reference field returns the actual reference object:
+
+```json
+"category": {
+  "id": "697b5de1c1637cea62dbb3bc#0001",
+  "entryId": "697b5de1c1637cea62dbb3bc",
+  "modelId": "productCategory"
+}
+```
+
+In the Read API example earlier, the same field was `null` because the category wasn't published yet. The Preview API shows draft references, allowing editors to preview how content will look with all relationships in place.
 
 <Callout type="info" title="Preview Mode Pattern">
   A common pattern is to build a "Preview Mode" toggle in your application that
@@ -142,6 +302,7 @@ The **Manage API** provides full CRUD operations and access to all revisions.
 ### Purpose
 
 The Manage API is designed for:
+
 - Content management operations
 - Creating, updating, and deleting content
 - Accessing all revisions
@@ -158,6 +319,7 @@ The Manage API is designed for:
 ### What It Can Do
 
 Unlike Read and Preview APIs (which are read-only), the Manage API supports:
+
 - **Mutations** - Create, update, delete operations
 - **Publishing** - Publish and unpublish content
 - **Revision management** - Access and restore previous revisions
@@ -167,28 +329,101 @@ Unlike Read and Preview APIs (which are read-only), the Manage API supports:
 
 The Webiny Admin application uses the Manage API to let editors create, edit, and publish content.
 
+**Query Example:**
+
 <CodeBlock
   language="graphql"
-  filename="Example Mutation"
-  code={`mutation CreateProduct($data: ProductInput!) {
-  createProduct(data: $data) {
+  filename="Manage API Query"
+  code={`query ListProducts {
+  listProducts {
     data {
-      id
-      name
       meta {
         status
+        version
       }
-    }
-    error {
-      message
+      createdOn
+      lastPublishedOn
+      values {
+        name
+        price
+        category {
+          id
+          entryId
+          modelId
+        }
+      }
     }
   }
 }`}
 />
 
-<Callout type="warning" title="Security Sensitive">
-  The Manage API is powerful and should be protected! Never expose it to
-  unauthenticated users. It's typically used only by authenticated admin users.
+**Response:**
+
+<CodeBlock
+  language="json"
+  filename="Manage API Response"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "meta": {
+            "status": "published",
+            "version": 1
+          },
+          "createdOn": "2026-01-30T14:12:49.882Z",
+          "lastPublishedOn": "2026-01-30T14:15:55.231Z",
+          "values": {
+            "name": "Wireless Headphones",
+            "price": 199.99,
+            "category": {
+              "id": "697b5de1c1637cea62dbb3bc#0001",
+              "entryId": "697b5de1c1637cea62dbb3bc",
+              "modelId": "productCategory"
+            }
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+Notice how the Manage API returns:
+
+- **`meta`** - Status and version information
+- **`createdOn`** - When the entry was created
+- **`lastPublishedOn`** - When it was last published
+- **`values`** - The actual content fields
+- **Full reference details** - Including `id`, `entryId`, and `modelId` for the category
+
+**Mutation Example:**
+
+<CodeBlock
+  language="graphql"
+  filename="Create Product Mutation"
+  code={`mutation CreateProduct($data: ProductInput!) {
+  createProduct(data: $data) {
+    data {
+      id
+      entryId
+      meta {
+        status
+        version
+      }
+    }
+    error {
+      message
+      code
+    }
+  }
+}`}
+/>
+
+<Callout type="info" title="Built-in Security">
+  The Manage API is protected by Webiny's security layer. Only users with
+  appropriate roles and permissions (content editors, administrators) can access
+  it. The Webiny Admin UI automatically adapts based on user permissions.
 </Callout>
 
 ### When to Use Manage API
@@ -204,15 +439,15 @@ The Webiny Admin application uses the Manage API to let editors create, edit, an
 
 Here's a quick comparison of the three APIs:
 
-| Feature | Read API | Preview API | Manage API |
-|---------|----------|-------------|------------|
-| Returns published content | Yes | Yes | Yes |
-| Returns draft content | No | Yes | Yes |
-| Returns all revisions | No | No | Yes |
-| Supports mutations | No | No | Yes |
-| Authentication required | Optional | Recommended | Required |
-| Caching friendly | High | Low | No |
-| Use case | Production apps | Preview modes | Admin interfaces |
+| Feature                   | Read API        | Preview API   | Manage API       |
+| ------------------------- | --------------- | ------------- | ---------------- |
+| Returns published content | Yes             | Yes           | Yes              |
+| Returns draft content     | No              | Yes           | Yes              |
+| Returns all revisions     | No              | No            | Yes              |
+| Supports mutations        | No              | No            | Yes              |
+| Authentication required   | Optional        | Recommended   | Required         |
+| Caching friendly          | High            | Low           | No               |
+| Use case                  | Production apps | Preview modes | Admin interfaces |
 
 ## Best Practices
 
@@ -364,10 +599,413 @@ Webiny provides three specialized GraphQL APIs:
 - **Manage API** - Full CRUD operations, all revisions, admin only
 
 **Key takeaways:**
+
 - Use the right API for the right job
 - Secure the Manage API with authentication
 - Cache Read API responses, not Preview or Manage
 - Implement preview modes with proper security
 - References resolve differently across APIs
+
+## Security and Access Control
+
+The Headless CMS GraphQL API is protected by Webiny's built-in security layer that provides fine-grained access control for both authenticated and anonymous users.
+
+### Security Features
+
+The security layer allows you to:
+
+- **Control API access** - Allow or deny access to specific API types (Read, Preview, Manage)
+- **Limit content models** - Grant access to only specific content models, groups, or entries
+- **Define permissions** - Set read-only, write, publish, or delete permissions
+- **Role-based access** - Assign permissions via user roles in the Webiny Admin
+
+### How It Works
+
+- **Manage API** - Automatically restricted to authenticated users with content editor or administrator roles. The Webiny Admin UI dynamically shows/hides features based on user permissions.
+- **Preview API** - Requires authentication to prevent unauthorized access to draft content
+- **Read API** - Can be public or protected based on your security configuration
+
+<Callout type="info" title="Permission-Based UI">
+  In the Webiny Admin, users only see the content models and features they have
+  permission to access. The UI automatically adapts based on their assigned
+  role.
+</Callout>
+
+## Authentication with API Keys
+
+The Preview and Manage APIs require authentication via API keys. The Read API can optionally use API keys for access control.
+
+### Creating an API Key
+
+1. Navigate to **Settings > Access Management > API Keys** in the Webiny Admin
+2. Click **+ New API Key**
+3. Configure the API key:
+   - **Name**: Descriptive name (e.g., "Mobile App Read API")
+   - **Description**: Optional details about usage
+   - **Permissions**: Select which operations are allowed
+
+<Callout type="info" title="Fine-Grained Permissions">
+  API keys support fine-grained permissions. You can allow access to specific
+  content models, specific operations (read/write), or specific API types
+  (Read/Preview/Manage).
+</Callout>
+
+4. Click **Save**
+5. **Copy the generated token** - You won't be able to see it again!
+
+### Using the API Key
+
+Include the API key as an `Authorization` header in your HTTP requests:
+
+<CodeBlock
+  language="typescript"
+  code={`const client = new GraphQLClient(API_URL, {
+  headers: {
+    Authorization: \`Bearer your-api-token-here\`
+  }
+});`}
+/>
+
+<Callout type="warning" title="Bearer Keyword Required">
+  Always include the `Bearer` keyword before your API token. The format is:
+  `Bearer {token}`
+</Callout>
+
+### API Key Security Best Practices
+
+- **Never commit API keys** to version control
+- **Use environment variables** to store API keys
+- **Create separate keys** for different environments (dev, staging, production)
+- **Limit permissions** to only what's needed for each key
+- **Rotate keys regularly** for sensitive operations
+- **Delete unused keys** to reduce security risks
+
+<CodeBlock
+  language="typescript"
+  code={`// Store in .env file
+NEXT_PUBLIC_WEBINY_API_URL=https://...
+WEBINY_API_TOKEN=your-api-token-here
+
+// Use in your app
+const client = new GraphQLClient(process.env.NEXT_PUBLIC_WEBINY_API_URL, {
+headers: {
+Authorization: \`Bearer \${process.env.WEBINY_API_TOKEN}\`
+}
+});`}
+/>
+
+## Pagination
+
+Webiny uses **cursor-based pagination** for efficient data retrieval, especially with large datasets.
+
+### How Cursor-Based Pagination Works
+
+Instead of using page numbers or offsets, cursor-based pagination uses a unique identifier (cursor) to mark your position in the result set.
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(limit: 10, after: null) {
+    data {
+      id
+      name
+      price
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}`}
+/>
+
+**Response:**
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [...],
+      "meta": {
+        "cursor": "eyJpZCI6IjY1NDMyMWZlZGNiYSJ9",
+        "hasMoreItems": true,
+        "totalCount": 156
+      }
+    }
+  }
+}`}
+/>
+
+### Getting the Next Page
+
+Use the `cursor` value from the previous response as the `after` parameter:
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProductsNextPage {
+  listProducts(limit: 10, after: "eyJpZCI6IjY1NDMyMWZlZGNiYSJ9") {
+    data {
+      id
+      name
+      price
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}`}
+/>
+
+### Pagination Parameters
+
+- **`limit`** - Number of items per page (default: 10, max: 100)
+- **`after`** - Cursor from previous response (use `null` or omit for first page)
+
+### Implementing Pagination in Code
+
+<CodeBlock
+  language="typescript"
+  code={`async function fetchAllProducts() {
+  let allProducts = [];
+  let cursor = null;
+  let hasMore = true;
+
+while (hasMore) {
+const response = await client.query({
+query: LIST_PRODUCTS,
+variables: { after: cursor, limit: 50 }
+});
+
+    allProducts.push(...response.data.listProducts.data);
+    cursor = response.data.listProducts.meta.cursor;
+    hasMore = response.data.listProducts.meta.hasMoreItems;
+
+}
+
+return allProducts;
+}`}
+/>
+
+<Callout type="info" title="Why Cursor-Based Pagination?">
+  Cursor-based pagination is more efficient than offset-based pagination for
+  large datasets. It prevents issues like duplicate or missing items when data
+  changes between requests.
+</Callout>
+
+## Sorting
+
+All list queries support sorting via the `sort` parameter.
+
+### Basic Sorting
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(sort: price_ASC) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}`}
+/>
+
+### Available Sort Options
+
+Sort options are automatically generated based on your content model fields:
+
+- **`{fieldName}_ASC`** - Ascending order
+- **`{fieldName}_DESC`** - Descending order
+
+**Examples:**
+
+- `name_ASC` - Sort by name A-Z
+- `name_DESC` - Sort by name Z-A
+- `price_ASC` - Sort by price low to high
+- `price_DESC` - Sort by price high to low
+- `createdOn_DESC` - Sort by creation date, newest first
+
+### Discovering Available Sort Options
+
+Use the API Playground's documentation explorer to see all available sort options for your content model. Look for the enum type like `ProductListSorter`.
+
+### Combining Sorting and Pagination
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(
+    sort: price_DESC,
+    limit: 20,
+    after: null
+  ) {
+    data {
+      id
+      name
+      price
+    }
+    meta {
+      cursor
+      hasMoreItems
+    }
+  }
+}`}
+/>
+
+## Filtering
+
+All list queries support powerful filtering capabilities.
+
+### Basic Filtering
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(
+    where: {
+      price_gte: 100,
+      price_lte: 500
+    }
+  ) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}`}
+/>
+
+### Common Filter Operators
+
+**For Numbers:**
+
+- `_gt` - Greater than
+- `_gte` - Greater than or equal
+- `_lt` - Less than
+- `_lte` - Less than or equal
+- `_not` - Not equal
+- `_in` - In array
+- `_not_in` - Not in array
+
+**For Text:**
+
+- `_contains` - Contains substring
+- `_not_contains` - Does not contain substring
+- `_in` - Matches any value in array
+- `_not_in` - Doesn't match any value in array
+
+**For Booleans:**
+
+- Direct value: `{ inStock: true }`
+- `_not`: `{ inStock_not: false }`
+
+### Combining Multiple Filters
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(
+    where: {
+      price_gte: 50,
+      price_lte: 200,
+      category: { id: "electronics123" },
+      name_contains: "wireless"
+    }
+  ) {
+    data {
+      id
+      name
+      price
+      category {
+        name
+      }
+    }
+  }
+}`}
+/>
+
+### Filtering Reference Fields
+
+<CodeBlock
+  language="graphql"
+  code={`query ListProducts {
+  listProducts(
+    where: {
+      category: {
+        slug: "electronics"
+      }
+    }
+  ) {
+    data {
+      id
+      name
+      category {
+        name
+        slug
+      }
+    }
+  }
+}`}
+/>
+
+<Callout type="hint" title="Discovering Filter Options">
+  Use the API Playground's documentation explorer to see all available filters
+  for your content model. Look for the `{ModelName}ListWhereInput` type.
+</Callout>
+
+## FAQ
+
+### Can I use API keys in public-facing applications?
+
+Yes, as long as the API key has **minimal permissions**. For public websites, create a Read API-only key with no write permissions. Never expose Manage API keys publicly.
+
+### Why do I get "Not authorized" errors?
+
+Common causes:
+
+- Missing `Authorization` header
+- Missing `Bearer` keyword in the header
+- Expired or invalid API token
+- API key doesn't have permission for the requested operation
+- Using wrong API endpoint (e.g., accessing Manage API without authentication)
+
+### How do I disable GraphQL introspection in production?
+
+For security, you can disable introspection queries:
+
+<CodeBlock
+  language="bash"
+  code={`yarn webiny extension disable-gql-introspection`}
+/>
+
+This prevents external users from exploring your GraphQL schema.
+
+### What's the maximum page size for pagination?
+
+The maximum `limit` value is **100 items** per page. For better performance, use smaller page sizes (10-50 items) and implement pagination.
+
+## Summary
+
+Webiny provides three specialized GraphQL APIs:
+
+- **Read API** - Published content only, optimized for production
+- **Preview API** - Latest revisions (draft or published), for preview modes
+- **Manage API** - Full CRUD operations, all revisions, admin only
+
+**Key takeaways:**
+
+- API URLs follow the pattern: `/cms/{api-type}`
+- Use `yarn webiny info` to find your API URLs
+- Authenticate with API keys using `Authorization: Bearer {token}`
+- Use cursor-based pagination with `after` and `limit`
+- Sort with `{field}_ASC` or `{field}_DESC`
+- Filter with operators like `_gte`, `_contains`, `_in`
+- Never expose Manage API keys publicly
 
 In the next lesson, we'll explore the Webiny API Playground, where you can test queries and learn how these APIs work in practice.
