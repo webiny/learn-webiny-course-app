@@ -1,0 +1,427 @@
+---
+title: "Creating a Content Model via Code"
+description: "Learn how to create content models programmatically and link them using reference fields."
+order: 4
+---
+
+# Creating a Content Model via Code
+
+In the previous lesson, you created a Product model through the Admin UI. While the visual builder is great for quick modeling, sometimes you need to create models programmatically - especially when setting up projects, managing multiple environments, or when models are part of your codebase.
+
+In this lesson, we'll create a **Product Category** model via code and link it to the Product model using a reference field.
+
+<ChapterOverview
+  items={[
+    { icon: "code", text: "Creating models programmatically with extensions." },
+    { icon: "link", text: "Linking models with reference fields." },
+    { icon: "rocket", text: "Deploying and testing your changes." },
+  ]}
+/>
+
+## Why Create Models via Code?
+
+Creating content models via code offers several advantages:
+
+- **Version control** - Your models are in Git, tracked alongside your code
+- **Reproducibility** - Easy to recreate models across environments (dev, staging, prod)
+- **Automation** - Can be part of CI/CD pipelines
+- **Team collaboration** - Code reviews for model changes
+- **Documentation** - Models are self-documented in code
+
+<Callout type="info" title="UI vs Code">
+  Both approaches are valid! Use the UI for quick prototyping and non-technical
+  team members. Use code for production setups, version control, and when models
+  are part of your infrastructure.
+</Callout>
+
+## The Product Category Model
+
+We'll create a simple Product Category model with these fields:
+
+- **Name** (Text) - Category name (e.g., "Electronics", "Clothing")
+- **Slug** (Text) - URL-friendly identifier
+- **Description** (Long Text) - Category description
+
+Then we'll add a **Category** reference field to the Product model, creating a relationship between products and categories.
+
+## Creating the Extension
+
+Content models are created using API extensions. Let's create one:
+
+### Step 1: Create the Extension File
+
+Create a new file `extensions/ProductCategoryModel.ts` in your project.
+
+### Step 2: Write the Model Definition
+
+Open `extensions/ProductCategoryModel.ts` and add the following code:
+
+<CodeBlock
+  language="typescript"
+  filename="extensions/ProductCategoryModel.ts"
+  code={`import { ModelFactory } from "webiny/api/cms/model";
+
+export const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
+
+class ProductCategoryModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
+        return [
+            builder
+                .public()
+                .modelId(PRODUCT_CATEGORY_MODEL_ID)
+                .name("Product Category")
+                .description("Product categories for organizing products")
+                .group("ungrouped")
+                .fields(fields => ({
+                    name: fields
+                        .text()
+                        .renderer("text-input")
+                        .label("Name")
+                        .helpText("Name of the product category")
+                        .required("Name is required")
+                        .minLength(2)
+                        .maxLength(100),
+                    slug: fields
+                        .text()
+                        .renderer("text-input")
+                        .label("Slug")
+                        .helpText("URL-friendly identifier")
+                        .required("Slug is required")
+                        .unique()
+                        .pattern(
+                            "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                            "Slug must be lowercase letters, numbers, and hyphens only"
+                        ),
+                    description: fields
+                        .longText()
+                        .renderer("long-text-text-area")
+                        .label("Description")
+                        .minLength(10)
+                }))
+                .layout([["name", "slug"], ["description"]])
+                .titleFieldId("name")
+                .singularApiName("ProductCategory")
+                .pluralApiName("ProductCategories")
+        ];
+    }
+}
+
+export const ProductCategoryModel = ModelFactory.createImplementation({
+    implementation: ProductCategoryModelImpl,
+    dependencies: []
+});`}
+/>
+
+Let's break down what this code does:
+
+**Model Builder Pattern:**
+- Uses the `ModelFactory` pattern for creating content models programmatically
+- `ModelFactory.Interface` - Interface for creating model implementations
+- `ModelFactory.Builder` - Fluent API for building content models
+- `ModelFactory.createImplementation()` - Creates the model implementation with dependencies
+
+**Model Configuration:**
+- `.public()` - Makes this a public content model (accessible via Read API)
+- `.modelId()` - Internal identifier (used in the database)
+- `.name()` - Display name in the Admin UI
+- `.description()` - Model description
+- `.group()` - Organizes the model in the sidebar ("ungrouped" keeps it in the default group)
+- `.singularApiName()` and `.pluralApiName()` - GraphQL query names
+
+**Field Definitions:**
+The `.fields()` method uses a fluent API to define fields:
+- `fields.text()` - Creates a text field
+- `fields.longText()` - Creates a long text field
+- `.renderer()` - Specifies the UI renderer for the field
+- `.label()` - Display name for the field
+- `.helpText()` - Helper text shown in the editor
+- `.required()` - Makes field required with custom error message
+- `.minLength()` / `.maxLength()` - Validation constraints
+- `.unique()` - Ensures field values are unique
+- `.pattern()` - Regular expression validation
+
+**Layout:**
+- `.layout()` - Defines how fields are arranged in rows in the Admin UI
+- Example: `[["name", "slug"], ["description"]]` creates two rows
+
+**Title Field:**
+- `.titleFieldId()` - Which field to use as the entry title (in this case, "name")
+
+<Callout type="hint" title="Field Types">
+  The Model Builder provides fluent methods for all field types: `text()`, `longText()`, `richText()`, `number()`,
+  `boolean()`, `datetime()`, `file()`, `ref()` (reference), `object()`, and more. Each method returns a chainable API for configuring the field.
+</Callout>
+
+### Step 3: Register the Extension
+
+Now we need to register this extension in `webiny.config.tsx`:
+
+<CodeBlock
+  language="tsx"
+  filename="webiny.config.tsx"
+  code={`import React from "react";
+import { Api, Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+    return (
+        <>
+            <Infra.Aws.DefaultRegion name={"us-east-1"} />
+            <Cognito />
+            
+            {/* Register our Product Category model */}
+            <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
+        </>
+    );
+};`}
+/>
+
+<Callout type="success" title="Extension Registered">
+  That's it! The extension is now part of your project. When you deploy, Webiny
+  will automatically create the content model and generate the GraphQL API.
+</Callout>
+
+## Deploy or Test Your Changes
+
+To make the Product Category model available, you have two options:
+
+### Option 1: Deploy the API
+
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`yarn webiny deploy api`}
+/>
+
+### Option 2: Use Watch Mode (Faster for Development)
+
+<CodeBlock
+  language="bash"
+  filename="Terminal"
+  code={`yarn webiny watch api`}
+/>
+
+If you're using watch mode, the changes will be automatically deployed and visible in the Admin UI when you refresh. You can access the Admin either locally (via `yarn webiny watch admin`) or through your deployed Admin app (CloudFront URL).
+
+<Callout type="info" title="Watch Mode">
+  Watch mode is ideal during development as it automatically redeploys your API changes without manual deployment. Since we're only changing backend API code with these extensions, your Admin app (whether local or deployed) will pick up the changes after a refresh.
+</Callout>
+
+## Verify the Model
+
+After deployment completes:
+
+1. Open your Webiny Admin application
+2. Navigate to **Content** in the main menu
+3. You should see **Product Category** listed (in the Ungrouped section)
+
+<Image
+  src="/images/headless-cms/product-categories-list-view.png"
+  alt="Product Category model in the Content section"
+  caption="The Product Category model appears in the Ungrouped section"
+/>
+
+Try creating a category:
+- Name: "Electronics"
+- Slug: "electronics"
+- Description: "Electronic devices and accessories"
+
+<Image
+  src="/images/headless-cms/electronics-category-form.png"
+  alt="Creating an Electronics category"
+  caption="The layout shows Name and Slug side-by-side, with Description below"
+/>
+
+Click **Save & Publish** to save your category.
+
+<Image
+  src="/images/headless-cms/electronics-category-in-list.png"
+  alt="Electronics category in the list view"
+  caption="The Electronics category now appears in the Product Category list"
+/>
+
+Now that we have a Product Category, let's link it to the Product model.
+
+## Adding a Reference Field
+
+Now let's link Product Category to the Product model by adding a reference field. We'll do this through the UI since the Product model was created via the UI.
+
+### Step 1: Edit the Product Model
+
+1. Go to **Content Modeling** > **Models**
+2. Find the **Product** model
+3. Click the edit icon
+
+### Step 2: Add Category Reference Field
+
+1. Drag the **Reference** field onto the canvas
+2. Configure in the **General** tab:
+   - **Label**: Category
+   - **Field ID**: category
+   - **Content Models**: Select "Product Category"
+
+<Image
+  src="/images/headless-cms/reference-field-settings.png"
+  alt="Reference field settings for Category"
+  caption="Configure the reference field to link to Product Category model"
+/>
+
+3. In the **Validations** tab:
+   - **Required**: Enabled (optional - depends on your needs)
+4. Click **Save Field**
+5. Click **Save** to save the model changes
+
+<Callout type="success" title="Models Are Linked!">
+  You've just created a relationship between Product and Product Category. Now
+  when creating or editing products, you can select a category from a dropdown.
+</Callout>
+
+## Testing the Relationship
+
+Let's test the product-category relationship:
+
+1. Navigate to **Content** > **Ungrouped** > **Product**
+2. Edit your "Wireless Headphones" product (or create a new one)
+3. You'll now see a **Category** field with a reference to the Electronics category
+4. You can select an existing category or create a new one using the buttons below the field
+5. Click **Save & Publish**
+
+<Image
+  src="/images/headless-cms/product-with-category-reference.png"
+  alt="Product form with Category reference field"
+  caption="The Category reference field shows the linked Electronics category with options to create or select records"
+/>
+
+The product is now linked to the Electronics category!
+
+## Understanding Reference Fields
+
+Reference fields allow you to link content entries together. A reference field can be configured to link to:
+
+- **A single entry** - The default behavior (like Product → Category)
+- **Multiple entries** - Enable "Use as a list of references" in the field settings
+
+When you query a product via the GraphQL API, you can choose to:
+- Get just the category ID
+- Get the full category object with all its fields (resolved reference)
+
+We'll explore this in detail in the upcoming lessons on querying data.
+
+## Best Practice: Consistency in Model Creation
+
+In this lesson, we created the Product Category model **via code** and added the reference field to the Product model **via the UI**. While this works, it's generally better to be consistent:
+
+- **All models via code** - Recommended for production projects, better version control
+- **All models via UI** - Fine for prototyping and smaller projects
+
+Mixing approaches can make it harder to track where models are defined and maintain your project over time.
+
+### Creating Product Model via Code
+
+Here's how you would define the Product model programmatically to match what we created in the UI:
+
+<CodeBlock
+  language="typescript"
+  filename="extensions/ProductModel.ts"
+  code={`import { ModelFactory } from "webiny/api/cms/model";
+
+export const PRODUCT_MODEL_ID = "product";
+
+class ProductModelImpl implements ModelFactory.Interface {
+    execute(builder: ModelFactory.Builder) {
+        return [
+            builder
+                .public()
+                .modelId(PRODUCT_MODEL_ID)
+                .name("Product")
+                .description("Products for our e-commerce store")
+                .group("ungrouped")
+                .fields(fields => ({
+                    name: fields
+                        .text()
+                        .renderer("text-input")
+                        .label("Name")
+                        .helpText("Product name")
+                        .required("Name is required"),
+                    sku: fields
+                        .text()
+                        .renderer("text-input")
+                        .label("SKU")
+                        .helpText("Stock Keeping Unit - unique product identifier")
+                        .required("SKU is required")
+                        .unique(),
+                    description: fields
+                        .longText()
+                        .renderer("long-text-text-area")
+                        .label("Description")
+                        .helpText("Detailed product description"),
+                    price: fields
+                        .number()
+                        .renderer("number-input")
+                        .label("Price")
+                        .required("Price is required")
+                        .gte(0, "Price must be greater than or equal to 0"),
+                    category: fields
+                        .ref()
+                        .renderer("ref-advanced-single")
+                        .label("Category")
+                        .models([{ modelId: "productCategory" }])
+                }))
+                .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
+                .titleFieldId("name")
+                .singularApiName("Product")
+                .pluralApiName("Products")
+        ];
+    }
+}
+
+export const ProductModel = ModelFactory.createImplementation({
+    implementation: ProductModelImpl,
+    dependencies: []
+});`}
+/>
+
+**Key points:**
+- `fields.ref()` - Creates a reference field
+- `.renderer("ref-advanced-single")` - Specifies the UI renderer for reference fields
+- `.models([{ modelId: "productCategory" }])` - Specifies which model(s) this field can reference
+- To allow multiple references, add `.list()` after `.ref()` and use `"ref-advanced-multiple"` renderer
+- The reference field appears in the layout alongside other fields
+
+Then register it in `webiny.config.tsx`:
+
+<CodeBlock
+  language="tsx"
+  filename="webiny.config.tsx"
+  code={`<Api.Extension src={"/extensions/ProductModel.ts"} />
+<Api.Extension src={"/extensions/ProductCategoryModel.ts"} />`}
+/>
+
+<Callout type="warning" title="Cleaning Up Required">
+  If you choose to define the Product model via code, you **must** delete the existing Product model from the UI (via **Content Modeling** > **Models**) before deploying. Having both will cause conflicts. After deleting it from the UI, deploy your code-based model.
+</Callout>
+
+<Quiz
+  question="What's a key advantage of creating content models via code instead of the UI?"
+  options={[
+    "It's faster to create models via code",
+    "Models created via code have better performance",
+    "Code-based models are version controlled and reproducible across environments",
+    "You can create more field types via code",
+  ]}
+  correctAnswer={3}
+  explanation="Correct! Creating models via code allows you to version control them in Git, reproduce them across environments (dev, staging, prod), and include them in CI/CD pipelines. Both UI and code approaches support the same field types and have similar performance."
+  hint="Think about DevOps and team collaboration benefits."
+/>
+
+## Summary
+
+Creating content models via code is powerful for production workflows:
+
+- **CmsModelPlugin** - Create models programmatically
+- **Version control** - Track model changes in Git
+- **Reference fields** - Link models together for relationships
+- **Flexible approach** - Mix UI and code creation as needed
+- **Deployment required** - Changes take effect after deploying the API
+
+You've successfully created a Product Category model via code and linked it to the Product model. In the next lesson, we'll explore the different Headless CMS APIs and understand when to use each one.

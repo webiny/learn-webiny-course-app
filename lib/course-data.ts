@@ -35,9 +35,35 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
-        id: "developing",
-        ...chapterMetadata["developing"],
-        lessons: []
+        id: "developing-with-webiny",
+        ...chapterMetadata["developing-with-webiny"],
+        lessons: [
+                  {
+                            "id": "debugging-errors-best-practices",
+                            "title": "Debugging Errors & Best Practices",
+                            "slug": "developing-with-webiny/debugging-errors-best-practices"
+                  },
+                  {
+                            "id": "extensions",
+                            "title": "Extensions",
+                            "slug": "developing-with-webiny/extensions"
+                  },
+                  {
+                            "id": "local-development",
+                            "title": "Local Development",
+                            "slug": "developing-with-webiny/local-development"
+                  },
+                  {
+                            "id": "project-folder-structure",
+                            "title": "Project Folder Structure",
+                            "slug": "developing-with-webiny/project-folder-structure"
+                  },
+                  {
+                            "id": "whitelabel-extension",
+                            "title": "White-Label Extension",
+                            "slug": "developing-with-webiny/whitelabel-extension"
+                  }
+        ]
     },
     {
         id: "devops-best-practices",
@@ -120,12 +146,38 @@ export const courseData: Course = {
     {
         id: "headless-cms",
         ...chapterMetadata["headless-cms"],
-        lessons: []
-    },
-    {
-        id: "multi-tenancy",
-        ...chapterMetadata["multi-tenancy"],
-        lessons: []
+        lessons: [
+                  {
+                            "id": "content-models-and-entries",
+                            "title": "Content Models and Content Entries",
+                            "slug": "headless-cms/content-models-and-entries"
+                  },
+                  {
+                            "id": "content-versioning",
+                            "title": "Content Versioning",
+                            "slug": "headless-cms/content-versioning"
+                  },
+                  {
+                            "id": "creating-content-model-via-code",
+                            "title": "Creating a Content Model via Code",
+                            "slug": "headless-cms/creating-content-model-via-code"
+                  },
+                  {
+                            "id": "creating-content-model-via-ui",
+                            "title": "Creating a Content Model via UI",
+                            "slug": "headless-cms/creating-content-model-via-ui"
+                  },
+                  {
+                            "id": "understanding-different-apis",
+                            "title": "Understanding Different HCMS APIs",
+                            "slug": "headless-cms/understanding-different-apis"
+                  },
+                  {
+                            "id": "webiny-api-playground",
+                            "title": "Webiny API Playground",
+                            "slug": "headless-cms/webiny-api-playground"
+                  }
+        ]
     },
     {
         id: "webiny-control-panel",
@@ -152,11 +204,6 @@ export const courseData: Course = {
                             "slug": "webiny-control-panel"
                   }
         ]
-    },
-    {
-        id: "website-builder",
-        ...chapterMetadata["website-builder"],
-        lessons: []
     }
 ],
 }

@@ -7,6 +7,11 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
+  "developing-with-webiny/debugging-errors-best-practices": () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
+  "developing-with-webiny/extensions": () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
+  "developing-with-webiny/local-development": () => import("@/content/lessons/developing-with-webiny/local-development.mdx"),
+  "developing-with-webiny/project-folder-structure": () => import("@/content/lessons/developing-with-webiny/project-folder-structure.mdx"),
+  "developing-with-webiny/whitelabel-extension": () => import("@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"),
   "devops-best-practices/application-deployment-stacks": () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
   "devops-best-practices/webiny-deployments": () => import("@/content/lessons/devops-best-practices/webiny-deployments.mdx"),
   "foundation/about": () => import("@/content/lessons/foundation/about.mdx"),
@@ -19,6 +24,12 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "getting-started/installing-webiny": () => import("@/content/lessons/getting-started/installing-webiny.mdx"),
   "getting-started/upgrade-project": () => import("@/content/lessons/getting-started/upgrade-project.mdx"),
   "getting-started/webiny-cli-overview": () => import("@/content/lessons/getting-started/webiny-cli-overview.mdx"),
+  "headless-cms/content-models-and-entries": () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
+  "headless-cms/content-versioning": () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
+  "headless-cms/creating-content-model-via-code": () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
+  "headless-cms/creating-content-model-via-ui": () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+  "headless-cms/understanding-different-apis": () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
+  "headless-cms/webiny-api-playground": () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
   "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
   "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
   "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
@@ -44,6 +55,56 @@ export interface LessonRegistryItem {
  * Includes frontmatter and chapter info for each lesson
  */
 export const mdxRegistry: LessonRegistryItem[] = [
+  {
+    slug: "developing-with-webiny/debugging-errors-best-practices",
+    import: () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
+    frontmatter: {
+          "title": "Debugging Errors & Best Practices",
+          "description": "Learn how to effectively debug errors and follow best practices when developing with Webiny.",
+          "order": 5
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
+    slug: "developing-with-webiny/extensions",
+    import: () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
+    frontmatter: {
+          "title": "Extensions",
+          "description": "Understanding Webiny extensions - what they are and how they work.",
+          "order": 3
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
+    slug: "developing-with-webiny/local-development",
+    import: () => import("@/content/lessons/developing-with-webiny/local-development.mdx"),
+    frontmatter: {
+          "title": "Local Development",
+          "description": "How local development with Webiny works and best practices.",
+          "order": 2
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
+    slug: "developing-with-webiny/project-folder-structure",
+    import: () => import("@/content/lessons/developing-with-webiny/project-folder-structure.mdx"),
+    frontmatter: {
+          "title": "Project Folder Structure",
+          "description": "Understanding the Webiny project folder structure and key files.",
+          "order": 1
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
+    slug: "developing-with-webiny/whitelabel-extension",
+    import: () => import("@/content/lessons/developing-with-webiny/whitelabel-extension.mdx"),
+    frontmatter: {
+          "title": "White-Label Extension",
+          "description": "Creating a white-label Admin extension to customize branding.",
+          "order": 4
+    },
+    chapter: "developing-with-webiny"
+  },
   {
     slug: "devops-best-practices/application-deployment-stacks",
     import: () => import("@/content/lessons/devops-best-practices/application-deployment-stacks.mdx"),
@@ -163,6 +224,66 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "order": 2
     },
     chapter: "getting-started"
+  },
+  {
+    slug: "headless-cms/content-models-and-entries",
+    import: () => import("@/content/lessons/headless-cms/content-models-and-entries.mdx"),
+    frontmatter: {
+          "title": "Content Models and Content Entries",
+          "description": "Understanding the foundation of Webiny Headless CMS - content models and entries.",
+          "order": 1
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/content-versioning",
+    import: () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
+    frontmatter: {
+          "title": "Content Versioning",
+          "description": "Understanding how content versioning works in Webiny Headless CMS.",
+          "order": 2
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/creating-content-model-via-code",
+    import: () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
+    frontmatter: {
+          "title": "Creating a Content Model via Code",
+          "description": "Learn how to create content models programmatically and link them using reference fields.",
+          "order": 4
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/creating-content-model-via-ui",
+    import: () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+    frontmatter: {
+          "title": "Creating a Content Model via UI",
+          "description": "Learn how to create a Product content model through the Webiny Admin UI.",
+          "order": 3
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/understanding-different-apis",
+    import: () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
+    frontmatter: {
+          "title": "Understanding Different HCMS APIs",
+          "description": "Learn about Read, Preview, and Manage APIs and when to use each one.",
+          "order": 5
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/webiny-api-playground",
+    import: () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
+    frontmatter: {
+          "title": "Webiny API Playground",
+          "description": "What is Webiny API Playground, how to use it",
+          "order": 6
+    },
+    chapter: "headless-cms"
   },
   {
     slug: "webiny-control-panel/assigning-licenses",

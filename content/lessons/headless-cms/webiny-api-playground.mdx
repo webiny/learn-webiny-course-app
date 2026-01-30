@@ -1,0 +1,643 @@
+---
+title: "Webiny API Playground"
+description: "What is Webiny API Playground, how to use it"
+order: 6
+---
+
+<ChapterOverview>
+
+In this lesson, you'll learn about the Webiny API Playground - an interactive GraphQL IDE that allows you to explore and test your Headless CMS APIs without writing any frontend code.
+
+**What you'll learn:**
+- What the API Playground is and why it's useful
+- How to access the API Playground
+- How to explore the GraphQL schema
+- How to write and execute queries
+- How to work with different API types (Read, Preview, Manage)
+
+**Prerequisites:**
+- Completed Lesson 3 (Creating a Content Model via UI)
+- Completed Lesson 4 (Creating a Content Model via Code)
+- Completed Lesson 5 (Understanding Different HCMS APIs)
+
+</ChapterOverview>
+
+## What is the API Playground?
+
+The **Webiny API Playground** is a built-in GraphQL IDE (Integrated Development Environment) that comes with every Webiny project. It's based on GraphiQL, a popular tool for exploring and testing GraphQL APIs.
+
+The API Playground allows you to:
+- **Explore your API schema** - See all available queries, mutations, and types
+- **Test queries and mutations** - Execute GraphQL operations in real-time
+- **View documentation** - Access auto-generated docs for all API operations
+- **Debug responses** - See exactly what data your API returns
+- **Experiment safely** - Try out queries before implementing them in your app
+
+<Callout type="info">
+The API Playground is only available in development environments by default. In production, it's disabled for security reasons.
+</Callout>
+
+## Accessing the API Playground
+
+There are **three separate API Playgrounds** in Webiny, one for each HCMS API:
+
+### Read API Playground
+- **URL**: `https://your-domain/cms-read/en-US`
+- **Purpose**: Test queries for published content (public-facing)
+- **Authentication**: Not required (public API)
+
+### Preview API Playground
+- **URL**: `https://your-domain/cms-preview/en-US`
+- **Purpose**: Test queries for latest revisions including drafts
+- **Authentication**: Required (uses API token)
+
+### Manage API Playground
+- **URL**: `https://your-domain/cms-manage/en-US`
+- **Purpose**: Test CRUD operations for managing content
+- **Authentication**: Required (uses API token)
+
+<Callout type="hint">
+The `/en-US` part of the URL represents the locale. If you have multiple locales configured, you can access different playgrounds for each locale.
+</Callout>
+
+### Finding Your API URLs
+
+To find your API Playground URLs:
+
+1. **Start your Webiny development environment**:
+   ```bash
+   yarn webiny watch
+   ```
+
+2. **Look for the API URLs** in the terminal output. You'll see something like:
+   ```
+   Main GraphQL API: https://d123abc456.execute-api.us-east-1.amazonaws.com
+   Headless CMS - Read API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-read/en-US
+   Headless CMS - Preview API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-preview/en-US
+   Headless CMS - Manage API: https://d123abc456.execute-api.us-east-1.amazonaws.com/cms-manage/en-US
+   ```
+
+3. **Open the Read API Playground** in your browser by navigating to the Read API URL.
+
+<Callout type="info">
+For local development, your URLs might look like `http://localhost:3001/cms-read/en-US` if you're using the local development server.
+</Callout>
+
+## Understanding the Playground Interface
+
+The API Playground interface has several key areas:
+
+### 1. Query Editor (Left Panel)
+This is where you write your GraphQL queries and mutations. It features:
+- **Syntax highlighting** for GraphQL
+- **Auto-completion** (press Ctrl+Space or Cmd+Space)
+- **Inline error detection**
+
+### 2. Response Panel (Right Panel)
+Displays the results of your queries, including:
+- **Data returned** from the API
+- **Error messages** if something goes wrong
+- **Execution time** for performance monitoring
+
+### 3. Documentation Explorer
+Click the "Docs" button to access:
+- **All available queries and mutations**
+- **Field types and descriptions**
+- **Required vs optional fields**
+- **Nested type definitions**
+
+### 4. History
+View previously executed queries (useful for iterating on queries)
+
+### 5. Variables Panel (Bottom)
+Define variables for your queries to make them reusable
+
+## Your First Query
+
+Let's write a query to fetch all published products using the **Read API Playground**.
+
+<Callout type="hint">
+Make sure you have at least one published product in your CMS before running this query. If you don't, create one following the steps in Lesson 3.
+</Callout>
+
+### Step 1: Open the Read API Playground
+
+Navigate to your Read API URL (e.g., `https://your-domain/cms-read/en-US`)
+
+### Step 2: Write the Query
+
+In the query editor (left panel), enter the following query:
+
+<CodeBlock language="graphql" title="Query: List all products">
+```graphql
+{
+  listProducts {
+    data {
+      id
+      name
+      sku
+      description
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Step 3: Execute the Query
+
+Click the **Play button** (▶️) or press **Ctrl+Enter** (Cmd+Enter on Mac)
+
+### Step 4: View the Response
+
+The right panel will show the response:
+
+<CodeBlock language="json" title="Response">
+```json
+{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "id": "654321fedcba",
+          "name": "Laptop",
+          "sku": "LAP-001",
+          "description": "High-performance laptop for professionals",
+          "price": 1299.99
+        }
+      ]
+    }
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="success">
+Congratulations! You've successfully executed your first GraphQL query in the API Playground.
+</Callout>
+
+## Exploring the Schema with Documentation
+
+The API Playground's documentation explorer is incredibly powerful for discovering what's available in your API.
+
+### How to Use the Documentation Explorer
+
+1. **Click the "Docs" button** in the top-right corner of the playground
+2. **Browse the root types**:
+   - **Query** - All available read operations
+   - **Mutation** - All available write operations (Manage API only)
+3. **Click on any type** to see its fields and descriptions
+4. **Navigate deeper** by clicking on field types
+
+### Example: Exploring the Product Model
+
+1. Open the Docs panel
+2. Click on **Query**
+3. Scroll to find **listProducts**
+4. Click on it to see:
+   - Return type: `ProductListResponse`
+   - Available arguments (filters, sorting, pagination)
+5. Click on **ProductListResponse** to see its structure
+6. Click on **Product** to see all available fields
+
+<Callout type="hint">
+The documentation is auto-generated from your content models. Every time you add or modify a content model, the schema documentation updates automatically!
+</Callout>
+
+## Working with Query Variables
+
+Variables make your queries reusable and are essential when building real applications.
+
+### Query Without Variables
+
+<CodeBlock language="graphql" title="Hardcoded query">
+```graphql
+{
+  getProduct(where: { id: "654321fedcba" }) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Query With Variables
+
+<CodeBlock language="graphql" title="Query with variables">
+```graphql
+query GetProduct($id: ID!) {
+  getProduct(where: { id: $id }) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+**Variables panel (bottom of playground):**
+
+<CodeBlock language="json" title="Query variables">
+```json
+{
+  "id": "654321fedcba"
+}
+```
+</CodeBlock>
+
+<Callout type="info">
+The `!` after `ID` means this variable is required. Without it, the variable would be optional.
+</Callout>
+
+## Querying Related Content
+
+Let's query products along with their categories (assuming you've added the category reference field from Lesson 4).
+
+<CodeBlock language="graphql" title="Query with nested reference">
+```graphql
+{
+  listProducts {
+    data {
+      id
+      name
+      sku
+      price
+      category {
+        id
+        name
+        description
+      }
+    }
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="hint">
+When querying reference fields, you can select any fields from the referenced model. The API Playground's auto-completion will help you discover available fields.
+</Callout>
+
+## Filtering and Sorting
+
+The Webiny HCMS API provides powerful filtering and sorting capabilities.
+
+### Filtering by Field Value
+
+<CodeBlock language="graphql" title="Filter products by price">
+```graphql
+{
+  listProducts(
+    where: {
+      price_gte: 1000
+    }
+  ) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Sorting Results
+
+<CodeBlock language="graphql" title="Sort products by price descending">
+```graphql
+{
+  listProducts(
+    sort: price_DESC
+  ) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Combining Filter and Sort
+
+<CodeBlock language="graphql" title="Filter and sort together">
+```graphql
+{
+  listProducts(
+    where: {
+      price_gte: 500
+    }
+    sort: price_ASC
+  ) {
+    data {
+      id
+      name
+      price
+    }
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="hint">
+Available filter operators depend on the field type. For numbers: `_gte` (greater or equal), `_lte` (less or equal), `_gt`, `_lt`. For text: `_contains`, `_not_contains`, `_in`, `_not_in`.
+</Callout>
+
+## Pagination
+
+For large datasets, pagination helps manage response size and improve performance.
+
+<CodeBlock language="graphql" title="Paginated query">
+```graphql
+{
+  listProducts(
+    limit: 10
+    after: null
+  ) {
+    data {
+      id
+      name
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}
+```
+</CodeBlock>
+
+**To get the next page:**
+
+<CodeBlock language="graphql" title="Get next page">
+```graphql
+{
+  listProducts(
+    limit: 10
+    after: "eyJpZCI6IjY1NDMyMWZlZGNiYSJ9"
+  ) {
+    data {
+      id
+      name
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="info">
+The `cursor` value from the previous response's `meta` should be passed as the `after` value for the next page.
+</Callout>
+
+## Using the Preview API Playground
+
+The Preview API allows you to query draft content (unpublished revisions). This is useful when building preview features in your application.
+
+### Authentication Required
+
+Unlike the Read API, the Preview API requires authentication:
+
+1. **Generate an API token** in the Webiny Admin:
+   - Navigate to **Settings > Access Management > API Keys**
+   - Click **+ New API Key**
+   - Give it a name (e.g., "Preview API Token")
+   - Select **Headless CMS** permissions
+   - Copy the generated token
+
+2. **Add the token to the Playground**:
+   - Click **HTTP Headers** at the bottom of the playground
+   - Add the authorization header:
+   
+   <CodeBlock language="json" title="HTTP Headers">
+   ```json
+   {
+     "Authorization": "Bearer your-api-token-here"
+   }
+   ```
+   </CodeBlock>
+
+3. **Execute queries** - Now you can query draft content!
+
+<Callout type="warning">
+Keep your API tokens secure! Never commit them to version control or share them publicly.
+</Callout>
+
+### Preview API Query Example
+
+<CodeBlock language="graphql" title="Query draft products">
+```graphql
+{
+  listProducts {
+    data {
+      id
+      name
+      sku
+      price
+      meta {
+        status
+        version
+      }
+    }
+  }
+}
+```
+</CodeBlock>
+
+Notice that draft products will have `status: "draft"` in their metadata, while published ones will have `status: "published"`.
+
+## Using the Manage API Playground
+
+The Manage API provides full CRUD capabilities for managing content programmatically.
+
+### Creating a Product
+
+<CodeBlock language="graphql" title="Mutation: Create product">
+```graphql
+mutation CreateProduct($data: ProductInput!) {
+  createProduct(data: $data) {
+    data {
+      id
+      name
+      sku
+      price
+    }
+    error {
+      message
+      code
+    }
+  }
+}
+```
+</CodeBlock>
+
+**Variables:**
+
+<CodeBlock language="json" title="Create product variables">
+```json
+{
+  "data": {
+    "name": "Wireless Mouse",
+    "sku": "MOU-002",
+    "description": "Ergonomic wireless mouse with long battery life",
+    "price": 29.99
+  }
+}
+```
+</CodeBlock>
+
+### Updating a Product
+
+<CodeBlock language="graphql" title="Mutation: Update product">
+```graphql
+mutation UpdateProduct($revision: ID!, $data: ProductInput!) {
+  updateProduct(revision: $revision, data: $data) {
+    data {
+      id
+      name
+      price
+    }
+    error {
+      message
+    }
+  }
+}
+```
+</CodeBlock>
+
+**Variables:**
+
+<CodeBlock language="json" title="Update product variables">
+```json
+{
+  "revision": "654321fedcba#0001",
+  "data": {
+    "price": 24.99
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="info">
+The `revision` parameter uses the format `{entryId}#{revisionNumber}`. For example: `654321fedcba#0001` refers to revision 1 of entry `654321fedcba`.
+</Callout>
+
+### Publishing a Product
+
+<CodeBlock language="graphql" title="Mutation: Publish product">
+```graphql
+mutation PublishProduct($revision: ID!) {
+  publishProduct(revision: $revision) {
+    data {
+      id
+      meta {
+        status
+      }
+    }
+    error {
+      message
+    }
+  }
+}
+```
+</CodeBlock>
+
+### Deleting a Product
+
+<CodeBlock language="graphql" title="Mutation: Delete product">
+```graphql
+mutation DeleteProduct($revision: ID!) {
+  deleteProduct(revision: $revision) {
+    data
+    error {
+      message
+    }
+  }
+}
+```
+</CodeBlock>
+
+<Callout type="warning">
+Deleted entries are moved to the Trash Bin and can be restored. To permanently delete an entry, you need to delete it from the Trash Bin.
+</Callout>
+
+## Common Error Messages
+
+### Error: "Cannot query field 'X' on type 'Y'"
+
+**Cause**: You're trying to query a field that doesn't exist.
+
+**Solution**: Check the schema documentation to see available fields, or verify your content model has the field you're trying to query.
+
+### Error: "Variable '$X' of required type 'Y!' was not provided"
+
+**Cause**: You defined a required variable but didn't provide it in the variables panel.
+
+**Solution**: Add the missing variable to the variables panel at the bottom of the playground.
+
+### Error: "Not authorized"
+
+**Cause**: You're accessing the Preview or Manage API without proper authentication.
+
+**Solution**: Add the Authorization header with a valid API token.
+
+### Error: "Entry not found"
+
+**Cause**: You're trying to query, update, or delete an entry that doesn't exist.
+
+**Solution**: Verify the entry ID is correct and the entry exists in the system.
+
+## Best Practices
+
+### 1. Start with the Read API
+When learning, start with the Read API Playground since it doesn't require authentication and is simpler to work with.
+
+### 2. Use the Documentation Explorer
+Don't guess what fields are available - explore the schema using the Docs panel to discover all capabilities.
+
+### 3. Test Queries Before Implementation
+Always test your queries in the playground before implementing them in your application code. This saves debugging time.
+
+### 4. Use Variables for Dynamic Queries
+Get in the habit of using variables instead of hardcoding values. This makes queries more reusable.
+
+### 5. Check Error Responses
+When mutations fail, check the `error` field in the response for detailed information about what went wrong.
+
+### 6. Keep API Tokens Secure
+Never share or commit API tokens. Regenerate them if they're accidentally exposed.
+
+## Summary
+
+In this lesson, you learned:
+
+- ✅ The **API Playground** is a built-in GraphQL IDE for testing Webiny HCMS APIs
+- ✅ There are **three separate playgrounds** for Read, Preview, and Manage APIs
+- ✅ The **Documentation Explorer** helps you discover available queries and fields
+- ✅ **Variables** make queries reusable and are essential for real applications
+- ✅ The **Read API** is public and doesn't require authentication
+- ✅ The **Preview and Manage APIs** require API tokens for authentication
+- ✅ You can **filter, sort, and paginate** results using query arguments
+- ✅ The **Manage API** provides mutations for creating, updating, publishing, and deleting content
+- ✅ Always test queries in the playground before implementing them in your app
+
+<Callout type="success">
+The API Playground is your best friend when working with Webiny HCMS. Use it frequently to experiment, debug, and understand how your API works!
+</Callout>
+
+<Quiz id="webiny-api-playground" />
+
+---
+
+**Next lesson**: [Reading Records via the API](/lessons/headless-cms/reading-records-via-api) - Learn how to fetch data from the HCMS API in your application code.

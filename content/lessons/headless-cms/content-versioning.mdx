@@ -1,0 +1,334 @@
+---
+title: "Content Versioning"
+description: "Understanding how content versioning works in Webiny Headless CMS."
+order: 2
+---
+
+# Content Versioning
+
+In this lesson, we'll explore how Webiny handles content versioning. Webiny's versioning system is designed to give you full control over your content lifecycle, from drafts to published versions, with the ability to track changes and revert when needed.
+
+<ChapterOverview
+  items={[
+    { icon: "history", text: "How content versioning works in Webiny." },
+    { icon: "rebase", text: "Understanding revisions and published versions." },
+    {
+      icon: "workflow",
+      text: "The content lifecycle from draft to published.",
+    },
+  ]}
+/>
+
+## What Is Content Versioning?
+
+**Content versioning** is a system that tracks changes to your content entries over time. When you publish content, Webiny creates a new version (also called a "revision") while preserving the previous versions.
+
+Think of it like version control (Git) for your content:
+
+- Before publishing, you can save changes to the same draft revision as many times as you want
+- Publishing creates a new revision and makes it live
+- You can view the history of all published revisions
+- You can revert to previous revisions
+- You can have unpublished drafts alongside published content
+
+<Callout type="info" title="Non-Destructive Editing">
+  With Webiny's versioning system, you never lose content. Every change is
+  tracked, and you can always revert to a previous version if needed.
+</Callout>
+
+## Key Concepts
+
+### Revisions
+
+A **revision** is a snapshot of your content at a specific point in time. In Webiny, new revisions are created strategically:
+
+- When you **create a new entry**, you get **revision 1** with status **draft**
+- You can edit and save revision 1 as many times as you want (all saves update the same revision)
+- Once you **publish** revision 1, its status becomes **published**
+- After publishing, any further edits create **new revisions** (starting with revision 2)
+
+Each revision is numbered, making it easy to track the evolution of your content.
+
+<Callout type="info" title="Revisions vs Saves">
+  Don't confuse "saving changes" with "creating revisions". Before publishing,
+  all your edits update revision 1. New revisions are only created after the
+  first publish, ensuring you don't clutter your revision history with
+  work-in-progress saves.
+</Callout>
+
+### Draft vs Published Status
+
+Every revision has a status:
+
+- **Draft** - Content that exists but is not publicly available (initial state for all revisions)
+- **Published** - Content that is live and accessible via the public Read API
+
+Key rules:
+
+- All new revisions start as **draft**
+- Only **one revision** can have **published** status at a time
+- You can have **multiple draft revisions** at the same time
+- When you publish a new revision, the previous published revision automatically becomes **unpublished**
+
+This separation allows you to:
+
+- Work on changes without affecting the live content
+- Preview changes before publishing
+- Maintain a published version while working on updates
+
+<Callout type="hint" title="Safe Editing">
+  You can edit a published entry without affecting what's live. Your changes
+  create a new draft revision, and the published version remains unchanged until
+  you explicitly publish the new revision.
+</Callout>
+
+## The Content Lifecycle
+
+Let's walk through the typical lifecycle of a content entry:
+
+### 1. Create a New Entry
+
+When you create a new entry, it starts as **revision 1** with status **draft**.
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (draft)
+```
+
+At this point, the entry exists but is not accessible via the public Read API.
+
+### 2. Edit Before Publishing
+
+You can edit revision 1 as many times as you want. Each save updates revision 1 - no new revisions are created yet:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (draft) ← Still revision 1, just updated
+```
+
+You're free to make changes, add content, upload images - all changes update the same draft revision.
+
+### 3. Publish for the First Time
+
+When you're ready to make your content public, you hit the **Publish** button. Revision 1's status changes to **published**:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (published) ← Now live and accessible
+```
+
+Now the entry is accessible via the Read API, and users can see your content.
+
+### 4. Edit Published Content
+
+Here's where it gets interesting. When you edit a published entry, Webiny creates **revision 2** with status **draft**:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (published) ← Still the live version
+├─ Revision 2 (draft) ← New revision for your changes
+```
+
+The published version (revision 1) remains live while you work on revision 2. Your changes don't affect the public content.
+
+### 5. Continue Editing
+
+You can edit revision 2 as many times as needed. Just like before publishing, all saves update revision 2:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (published) ← Still the live version
+├─ Revision 2 (draft) ← Updated with your changes
+```
+
+No new revisions are created until you publish again.
+
+### 6. Publish Updates
+
+When you publish revision 2, it becomes the new published version. Revision 1 automatically becomes unpublished:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (unpublished) ← No longer published
+├─ Revision 2 (published) ← Now the live version
+```
+
+Only one revision can be published at a time. Publishing revision 2 automatically unpublishes revision 1.
+
+### 7. More Edits, More Revisions
+
+Edit the published entry again, and you get revision 3 as a draft:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (unpublished)
+├─ Revision 2 (published) ← Still live
+├─ Revision 3 (draft) ← Your new changes
+```
+
+The pattern continues: edit the draft as many times as you want, then publish to create the next revision.
+
+<Callout type="success" title="One Published Revision at a Time">
+  Only one revision can have published status at any given time. When you
+  publish a new revision, the previous published revision automatically becomes
+  unpublished, but it's still preserved in the history.
+</Callout>
+
+### 8. Multiple Draft Revisions
+
+You can also have multiple draft revisions at the same time. For example, if you're working on different variations or experimental changes:
+
+```
+Entry: "My Blog Post"
+├─ Revision 2 (published) ← Current live version
+├─ Revision 3 (draft) ← First draft idea
+├─ Revision 4 (draft) ← Second draft idea
+├─ Revision 5 (draft) ← Third draft idea
+```
+
+This is useful when:
+
+- Testing different content approaches
+- Working on multiple updates in parallel
+- Collaborating with team members on different versions
+
+You can publish any of the draft revisions, and it will become the new published version while the others remain as drafts.
+
+<Callout type="hint" title="Multiple Drafts">
+  While you can only have one published revision at a time, you can create and
+  maintain multiple draft revisions simultaneously. This gives you flexibility
+  to experiment with different content variations.
+</Callout>
+
+## Unpublishing Content
+
+You can unpublish content, which removes it from the public API. The currently published revision changes its status to unpublished:
+
+```
+Entry: "My Blog Post"
+├─ Revision 1 (unpublished)
+├─ Revision 2 (unpublished) ← Changed from published to unpublished
+├─ Revision 3 (draft)
+```
+
+The entry still exists with all its revisions, but none have published status, so it won't appear in the public Read API.
+
+## Revision Management
+
+### Viewing Revision History
+
+In the Webiny Admin UI, you can:
+
+- View the list of all revisions for an entry
+- See who created each revision and when
+- Compare different revisions (coming soon)
+- Restore a previous revision
+
+### Restoring Previous Revisions
+
+If you need to revert to a previous version, it's simple:
+
+1. Navigate to the revision history
+2. Find the revision you want to make live
+3. Click **Publish** on that revision
+
+That's it! The selected revision becomes published, and the previously published revision becomes unpublished.
+
+```
+Before:
+Entry: "My Blog Post"
+├─ Revision 1 (unpublished)
+├─ Revision 2 (unpublished)
+├─ Revision 3 (published) ← Current live version
+├─ Revision 4 (draft) ← Has a mistake
+
+After publishing Revision 2:
+Entry: "My Blog Post"
+├─ Revision 1 (unpublished)
+├─ Revision 2 (published) ← Now the live version
+├─ Revision 3 (unpublished)
+├─ Revision 4 (draft)
+```
+
+<Callout type="hint" title="Quick Rollback">
+  Need to quickly rollback a published change? Just find the previous revision
+  and publish it. No need to create new revisions or copy content - simply
+  publish the version you want live.
+</Callout>
+
+Alternatively, if you want to create a new revision based on an old one (to make edits before publishing):
+
+1. Select the revision you want to use as a starting point
+2. Click "Create from this revision"
+3. A new draft revision is created with that content
+4. Edit as needed and publish when ready
+
+## Different APIs See Different Versions
+
+Webiny provides multiple GraphQL APIs that behave differently regarding versioning:
+
+- **Read API** - Returns only published revisions (this is the public-facing API for your website/app)
+- **Preview API** - Returns the latest revision (published or draft)
+- **Manage API** - Full access to all revisions (used by the Admin UI)
+
+<Callout type="info" title="GraphQL APIs">
+  All three APIs are GraphQL APIs. The Read API is what you'll use in your
+  frontend application to fetch published content. The Preview API is perfect
+  for "preview mode" to see draft changes before publishing. The Manage API is
+  typically only used within the Webiny Admin application.
+</Callout>
+
+We'll explore these APIs in detail in a later lesson, but it's important to understand that versioning is tightly integrated with how these APIs work.
+
+## Best Practices
+
+### 1. Don't Worry About Saving
+
+Save as often as you want while working on a draft revision. Your edits update the same revision, so you won't clutter the revision history.
+
+### 2. Publish Deliberately
+
+Each publish creates a new revision, so publish when you have meaningful changes worth preserving as a snapshot. This keeps your revision history clean and useful.
+
+### 3. Preview Before Publishing
+
+Always use the Preview API or preview mode to review changes before publishing them to production.
+
+### 4. Unpublish Before Deleting
+
+If you need to remove content, unpublish it first and monitor for a while before deleting. When you delete an entry, it goes to the Trash Bin where it can be restored if needed, giving you an extra safety net.
+
+## Why Versioning Matters
+
+Content versioning provides several critical benefits:
+
+1. **Safety** - Never lose content due to accidental changes
+2. **Flexibility** - Work on updates without affecting live content
+3. **Audit Trail** - Track who changed what and when
+4. **Rollback Capability** - Revert to previous versions when needed
+5. **Workflow Support** - Separate draft and published states enable editorial workflows
+
+<Quiz
+  question="When you create a new content entry and save it multiple times before publishing, how many revisions do you have?"
+  options={[
+    "One revision for each save",
+    "Just one revision (revision 1) that gets updated with each save",
+    "Two revisions - the initial and the latest",
+    "No revisions until you publish",
+  ]}
+  correctAnswer={2}
+  explanation="Correct! Before publishing, all your edits update revision 1 as a draft. New revisions are only created AFTER you publish. This prevents cluttering your revision history with work-in-progress saves."
+  hint="Think about when Webiny creates NEW revisions vs updating existing ones."
+/>
+
+## Summary
+
+Webiny's content versioning system provides powerful content management capabilities:
+
+- **New revisions created after publish** - Before publishing, edits update the same draft revision
+- **Draft and published status** - All revisions start as draft; only one can be published at a time
+- **One published revision at a time** - Publishing a new revision automatically unpublishes the previous one
+- **Non-destructive editing** - Never lose previous revisions
+- **Restore capability** - Revert to any previous revision by creating a new one based on it
+
+This versioning system is the foundation for safe, professional content management. In the next lesson, we'll put this knowledge into practice by creating your first content model through the Webiny Admin UI.
