@@ -90,7 +90,10 @@ Each Headless CMS API has its own playground tab:
 
 Each API has its own URL endpoint following this structure:
 
-<CodeBlock language="text" code={`https://{your-domain}/cms/{api-type}`} />
+<CodeBlock
+  language="text"
+  code={`https://{your-domain}/cms/{manage|read|preview}`}
+/>
 
 **Examples:**
 
@@ -102,9 +105,13 @@ Each API has its own URL endpoint following this structure:
 
 **Option 1: Via Webiny CLI**
 
-<CodeBlock language="bash" code={`yarn webiny info`} />
+Run `yarn webiny info` in your terminal to see all your API endpoints:
 
-This command outputs all your API endpoints, including the Headless CMS URLs.
+<Image
+  src="/images/headless-cms/webiny-info-output.png"
+  alt="Webiny info command output showing API endpoints"
+  caption="The yarn webiny info command displays all your Webiny API endpoints."
+/>
 
 **Option 2: In the API Playground**
 

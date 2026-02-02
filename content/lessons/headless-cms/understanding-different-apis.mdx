@@ -14,7 +14,7 @@ In this lesson, we'll explore the Manage, Read, and Preview APIs, their differen
   items={[
     { icon: "settings", text: "Manage API for content administration." },
     { icon: "book", text: "Read API for public content consumption." },
-    { icon: "eye", text: "Preview API for draft content viewing." },
+    { icon: "visibility", text: "Preview API for draft content viewing." },
   ]}
 />
 
@@ -33,7 +33,7 @@ Each API has its own endpoint and serves different purposes.
 The GraphQL API URLs follow a specific structure:
 
 ```
-https://{your-domain}/cms/{api-type}
+https://{your-domain}/cms/{manage|read|preview}
 ```
 
 **Examples:**
@@ -48,9 +48,21 @@ https://{your-domain}/cms/{api-type}
 
 Run `yarn webiny info` in your terminal to see all your API endpoints, including the Headless CMS URLs.
 
+<Image
+  src="/images/headless-cms/webiny-info-output.png"
+  alt="Webiny info command output showing API endpoints"
+  caption="The yarn webiny info command displays all your Webiny API endpoints, including the three Headless CMS GraphQL APIs."
+/>
+
 **Option 2: Via API Playground**
 
 Navigate to **API Playground** in the Webiny Admin sidebar. The URL for the currently selected API is displayed at the top of the playground interface.
+
+<Image
+  src="/images/headless-cms/api-playground-url-location.png"
+  alt="API Playground interface showing the API URL at the top"
+  caption="The API Playground displays the URL for the currently selected API at the top of the interface, next to the PRETTIFY and HISTORY buttons."
+/>
 
 <Callout type="info">
   We'll explore the API Playground in detail in the next lesson (Lesson 6),
@@ -86,7 +98,6 @@ Unlike Read and Preview APIs (which are read-only), the Manage API supports:
 - **Mutations** - Create, update, delete operations
 - **Publishing** - Publish and unpublish content
 - **Revision management** - Access and restore previous revisions
-- **Advanced filtering** - More powerful query options
 
 ### Response Structure
 
@@ -95,7 +106,7 @@ The Manage API returns data with:
 - **User-defined fields** in the `values` object
 - **System fields** at the top level (e.g., `id`, `entryId`, `createdOn`, `lastPublishedOn`)
 - **`meta` field** containing status (`published`, `draft`, `unpublished`) and version number
-- **Full reference details** including complete nested data for references
+- **Reference fields** return metadata (`id`, `entryId`, `modelId`) but cannot query nested `values` from referenced entries
 
 ### Example Use Case
 
@@ -142,7 +153,7 @@ The Read API returns data with:
 - **User-defined fields** in the `values` object (e.g., `name`, `price`, `description`)
 - **System fields** at the top level (e.g., `id`, `entryId`, `createdOn`, `lastPublishedOn`)
 - **No `meta` field** - Status and version information is not included since it's not needed for public consumption
-- **Reference fields** return `null` if the referenced entry is not published
+- **Reference fields** can query nested `values` from referenced entries (e.g., `category { id, values { name } }`), but return `null` if the referenced entry is not published
 
 ### Example Use Case
 
@@ -189,7 +200,7 @@ The Preview API returns data with:
 - **User-defined fields** in the `values` object
 - **System fields** at the top level
 - **No `meta` field** - Similar to Read API
-- **Reference fields** return complete data even if the referenced entry is unpublished
+- **Reference fields** can query nested `values` from referenced entries (e.g., `category { id, values { name } }`), and return complete data even if the referenced entry is unpublished
 
 ### Example Use Case
 
@@ -266,22 +277,64 @@ Reference fields behave differently across the three APIs:
 
 ### Manage API
 
-- Provides the most complete reference data
-- Includes `id`, `entryId`, `modelId`, and all queried fields
-- Can access all revisions of referenced entries
+- Returns reference metadata: `id`, `entryId`, `modelId`
+- **Cannot** query nested `values` from referenced entries
+- Can access `meta.revisions` to see all revisions of the reference
 - Shows all references regardless of publish status
+- Designed for administrative operations, not nested data retrieval
+
+**Example:**
+
+```graphql
+category {
+  id
+  entryId
+  modelId
+  meta {
+    revisions {
+      id
+    }
+  }
+}
+```
 
 ### Read API
 
+- **Can** query nested `values` from referenced entries
 - Returns `null` for unpublished references
 - Only shows references to published entries
-- You must explicitly query the fields you want from the referenced entry
+- Optimized for retrieving complete nested data
+
+**Example:**
+
+```graphql
+category {
+  id
+  values {
+    name
+    slug
+  }
+}
+```
 
 ### Preview API
 
+- **Can** query nested `values` from referenced entries
 - Returns complete reference data including unpublished entries
 - Shows the latest revision of referenced content
 - Allows editors to preview content with all relationships intact
+
+**Example:**
+
+```graphql
+category {
+  id
+  values {
+    name
+    slug
+  }
+}
+```
 
 ## Summary
 
