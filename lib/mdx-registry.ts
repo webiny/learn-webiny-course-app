@@ -355,8 +355,8 @@ export const mdxRegistry: LessonRegistryItem[] = [
     frontmatter: {
       title: "Reading Records via the API",
       description:
-        "Learn how to fetch content from Webiny Headless CMS using the GraphQL APIs in your applications.",
-      chapter: 7,
+        "Learn how to query content using the API Playground and understand the differences between Manage, Read, and Preview APIs.",
+      order: 7,
     },
     chapter: "headless-cms",
   },
