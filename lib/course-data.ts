@@ -168,6 +168,11 @@ export const courseData: Course = {
           slug: "headless-cms/creating-content-model-via-ui",
         },
         {
+          id: "learn-webiny-nextjs-app",
+          title: "Learn Webiny Next.js App",
+          slug: "headless-cms/learn-webiny-nextjs-app",
+        },
+        {
           id: "reading-records-via-api",
           title: "Reading Records via the API",
           slug: "headless-cms/reading-records-via-api",
@@ -181,6 +186,11 @@ export const courseData: Course = {
           id: "webiny-api-playground",
           title: "Webiny API Playground",
           slug: "headless-cms/webiny-api-playground",
+        },
+        {
+          id: "writing-data",
+          title: "Writing Data",
+          slug: "headless-cms/writing-data",
         },
       ],
     },

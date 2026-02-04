@@ -722,7 +722,9 @@ Press the Play button. The variable value will be substituted into the query aut
 
 ### 2. Request Only the Fields You Need
 
-<CodeBlock language="graphql" code={`# ❌ Bad: Requesting too many fields
+<CodeBlock
+  language="graphql"
+  code={`# ❌ Bad: Requesting too many fields
 {
   listProducts {
     data {
@@ -758,11 +760,14 @@ price
 }
 }
 }
-}`} />
+}`}
+/>
 
 ### 3. Use Variables for Dynamic Values
 
-<CodeBlock language="graphql" code={`# ❌ Bad: Hardcoded value
+<CodeBlock
+  language="graphql"
+  code={`# ❌ Bad: Hardcoded value
 {
   getProduct(where: { entryId: "676d123456789" }) {
     data { ... }
@@ -775,7 +780,8 @@ query GetProduct($entryId: ID!) {
 getProduct(where: { entryId: $entryId }) {
 data { ... }
 }
-}`} />
+}`}
+/>
 
 ### 4. Use the Right API for Your Use Case
 

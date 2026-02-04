@@ -56,12 +56,16 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
     ),
   "headless-cms/creating-content-model-via-ui": () =>
     import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+  "headless-cms/learn-webiny-nextjs-app": () =>
+    import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
   "headless-cms/reading-records-via-api": () =>
     import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
   "headless-cms/understanding-different-apis": () =>
     import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
   "headless-cms/webiny-api-playground": () =>
     import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
+  "headless-cms/writing-data": () =>
+    import("@/content/lessons/headless-cms/writing-data.mdx"),
   "webiny-control-panel/assigning-licenses": () =>
     import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
   "webiny-control-panel/structure-and-organization": () =>
@@ -349,6 +353,18 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms",
   },
   {
+    slug: "headless-cms/learn-webiny-nextjs-app",
+    import: () =>
+      import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
+    frontmatter: {
+      title: "Learn Webiny Next.js App",
+      description:
+        "Checkout the Learn Webiny Next.js App, create an API key and connect the app to Webiny API.",
+      order: 8,
+    },
+    chapter: "headless-cms",
+  },
+  {
     slug: "headless-cms/reading-records-via-api",
     import: () =>
       import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
@@ -380,6 +396,17 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Webiny API Playground",
       description: "What is Webiny API Playground, how to use it",
       order: 6,
+    },
+    chapter: "headless-cms",
+  },
+  {
+    slug: "headless-cms/writing-data",
+    import: () => import("@/content/lessons/headless-cms/writing-data.mdx"),
+    frontmatter: {
+      title: "Writing Data",
+      description:
+        "Create a contact form that submits data to Webiny Headless CMS using mutations and the Manage API.",
+      order: 9,
     },
     chapter: "headless-cms",
   },
