@@ -12,7 +12,7 @@ In this lesson, we'll explore effective debugging strategies and best practices 
   items={[
     { icon: "terminal", text: "Debugging API and Lambda errors." },
     { icon: "bug_report", text: "Debugging Admin application errors." },
-    { icon: "verified", text: "Best practices for error prevention." },
+    { icon: "verified", text: "Best practices for error prevention." }
   ]}
 />
 
@@ -36,23 +36,21 @@ API errors occur in AWS Lambda functions. During local development with `yarn we
 
 When developing API extensions, console logs are a quick and solid choice for debugging - they get the job done:
 
-<CodeBlock
-    language="typescript"
-    filename="extensions/MyApiKeyAfterUpdate.ts"
-    code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+```typescript title="extensions/MyApiKeyAfterUpdate.ts"
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-    async handle() {
-        console.log("An API key was updated!");
-    }
+  async handle() {
+    console.log("An API key was updated!");
+  }
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-    implementation: MyApiKeyAfterUpdateImpl
+  implementation: MyApiKeyAfterUpdateImpl
 });
 
-export default MyApiKeyAfterUpdate;`}
-/>
+export default MyApiKeyAfterUpdate;
+```
 
 With Local AWS Lambda Development (`yarn webiny watch api`), your console logs appear directly in the terminal. You don't need to check CloudWatch or the browser - the watch command outputs all logs immediately, giving you instant feedback like any local Node.js application.
 
@@ -60,27 +58,25 @@ With Local AWS Lambda Development (`yarn webiny watch api`), your console logs a
 
 For a more robust logging solution, especially for production use, use Webiny's Logger:
 
-<CodeBlock
-    language="typescript"
-    filename="extensions/MyApiKeyAfterUpdate.ts"
-    code={`import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+```typescript title="extensions/MyApiKeyAfterUpdate.ts"
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
 import { Logger } from "webiny/api/logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-    constructor(private logger: Logger.Interface) {}
+  constructor(private logger: Logger.Interface) {}
 
-    async handle() {
-        this.logger.warn("An API key was updated!");
-    }
+  async handle() {
+    this.logger.warn("An API key was updated!");
+  }
 }
 
 const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
-    implementation: MyApiKeyAfterUpdateImpl,
-    dependencies: [Logger]
+  implementation: MyApiKeyAfterUpdateImpl,
+  dependencies: [Logger]
 });
 
-export default MyApiKeyAfterUpdate;`}
-/>
+export default MyApiKeyAfterUpdate;
+```
 
 **When to use Logger vs console.log:**
 
@@ -101,9 +97,8 @@ When developing Admin extensions, use your browser's DevTools:
 - **<ExternalLink href="https://chromewebstore.google.com/detail/graphql-network-inspector/ndlbedplllcgconngcnfmkadhokfaaln">GraphQL Network Inspector</ExternalLink>** - Inspect and debug GraphQL queries and mutations
 
 <Callout type="hint" title="Finding Components">
-  Use the React DevTools "Select Element" tool to click on any UI element and
-  immediately see which React component renders it. This is invaluable when
-  working with unfamiliar code.
+  Use the React DevTools "Select Element" tool to click on any UI element and immediately see which
+  React component renders it. This is invaluable when working with unfamiliar code.
 </Callout>
 
 ## Debugging Deployment Errors
@@ -116,7 +111,7 @@ Deployment errors occur when you run `yarn webiny deploy`. When Pulumi fails to 
     "In the browser console",
     "In CloudWatch Logs",
     "In the terminal where you ran the command",
-    "In the GraphQL Network Inspector",
+    "In the GraphQL Network Inspector"
   ]}
   correctAnswer={3}
   explanation="Correct! With Local AWS Lambda Development, your code runs locally, so all console.log statements appear directly in the terminal where you ran 'yarn webiny watch api'."
