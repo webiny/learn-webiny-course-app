@@ -12,7 +12,7 @@ In this lesson, we'll explore how local development works with Webiny. You'll le
   items={[
     { icon: "code", text: "Understanding the local development workflow." },
     { icon: "speed", text: "Developing Admin and API applications." },
-    { icon: "settings", text: "Environment variables and type safety." },
+    { icon: "settings", text: "Environment variables and type safety." }
   ]}
 />
 
@@ -27,14 +27,14 @@ Webiny is a serverless platform that runs on AWS. Before you can start local dev
 3. **Deploy changes** - Deploy when you need to update cloud infrastructure or share your progress (deploying creates a CloudFront URL that your teammates can access)
 
 <Callout type="info" title="Cloud Infrastructure Required">
-  Local development requires deployed Core and API applications in AWS. The
-  watch commands connect to this infrastructure while running your code locally.
+  Local development requires deployed Core and API applications in AWS. The watch commands connect
+  to this infrastructure while running your code locally.
 </Callout>
 
 <Callout type="hint" title="Admin Deployment Optional">
-  You don't need to deploy the Admin app for local development. Only deploy it
-  with `yarn webiny deploy admin` when you need a CloudFront URL to share with
-  others or test in production-like conditions.
+  You don't need to deploy the Admin app for local development. Only deploy it with `yarn webiny
+  deploy admin` when you need a CloudFront URL to share with others or test in production-like
+  conditions.
 </Callout>
 
 ## Watch Commands
@@ -47,11 +47,9 @@ Developing the Admin application is just like any other React app development. Y
 
 ### Starting the Admin Dev Server
 
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn webiny watch admin`}
-/>
+```bash title="Terminal"
+yarn webiny watch admin
+```
 
 This command:
 
@@ -72,7 +70,9 @@ API development uses what we call **Local AWS Lambda Development**. This approac
 
 ### Starting API Development
 
-<CodeBlock language="bash" filename="Terminal" code={`yarn webiny watch api`} />
+```bash title="Terminal"
+yarn webiny watch api
+```
 
 ### How It Works
 
@@ -86,20 +86,18 @@ When you run `yarn webiny watch api`, here's what happens behind the scenes:
 **The key benefit:** You can immediately see the results of your backend code changes without waiting for deployments. You can also debug your code since it's running in your local environment.
 
 <Callout type="info" title="Why This Hybrid Approach?">
-  This hybrid approach (code runs locally, but connects to cloud services)
-  exists because of the serverless nature of the services Webiny relies on.
-  Running DynamoDB, OpenSearch, S3, Cognito, and other AWS services entirely
-  locally would be complex and unreliable. It's simpler and more practical to
-  run your code locally while connecting to real AWS infrastructure - you get
-  fast iteration with a realistic environment.
+  This hybrid approach (code runs locally, but connects to cloud services) exists because of the
+  serverless nature of the services Webiny relies on. Running DynamoDB, OpenSearch, S3, Cognito, and
+  other AWS services entirely locally would be complex and unreliable. It's simpler and more
+  practical to run your code locally while connecting to real AWS infrastructure - you get fast
+  iteration with a realistic environment.
 </Callout>
 
 <Callout type="warning" title="Important: Redeploy After Watch">
-  When you stop the watch command, your Lambda functions still contain stub
-  code. You must redeploy your API with `yarn webiny deploy api` to restore the
-  actual Lambda code and make your API functional again in the cloud. Don't
-  worry - the watch command will print a warning message to remind you of this
-  when you stop it.
+  When you stop the watch command, your Lambda functions still contain stub code. You must redeploy
+  your API with `yarn webiny deploy api` to restore the actual Lambda code and make your API
+  functional again in the cloud. Don't worry - the watch command will print a warning message to
+  remind you of this when you stop it.
 </Callout>
 
 ### What You Can Develop Locally
@@ -117,13 +115,11 @@ When you need to modify your AWS infrastructure - such as adding CloudWatch alar
 
 Infrastructure changes are made through dedicated extensions that can target Core, API, or Admin applications:
 
-<CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+```tsx title="webiny.config.tsx"
+<Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
 <Infra.Api.Pulumi src={"/extensions/MyApiPulumiHandler.ts"} />
-<Infra.Admin.Pulumi src={"/extensions/MyAdminPulumiHandler.ts"} />`}
-/>
+<Infra.Admin.Pulumi src={"/extensions/MyAdminPulumiHandler.ts"} />
+```
 
 **Key points about infrastructure development:**
 
@@ -132,9 +128,8 @@ Infrastructure changes are made through dedicated extensions that can target Cor
 - Use `yarn webiny deploy <app>` to apply infrastructure changes
 
 <Callout type="info" title="Infrastructure Extensions">
-  Infrastructure extensions will be covered in detail in later lessons. For now,
-  just know that any changes to cloud resources require a deployment to take
-  effect.
+  Infrastructure extensions will be covered in detail in later lessons. For now, just know that any
+  changes to cloud resources require a deployment to take effect.
 </Callout>
 
 ## Type Safety and Build Validation
@@ -154,17 +149,18 @@ When you do need to set environment variables, use prefixes to target specific a
 
 Example `.env` file:
 
-<CodeBlock language="bash" filename=".env" code={`# Admin-specific variables
+```bash title=".env"
+# Admin-specific variables
 WEBINY_ADMIN_MY_CUSTOM_VAR=value
 
 # API-specific variables
 
-WEBINY_API_MY_SERVICE_KEY=secret_key`} />
+WEBINY_API_MY_SERVICE_KEY=secret_key
+```
 
 <Callout type="info" title="Application-Specific Variables">
-  Environment variable prefixes ensure variables are only loaded in the
-  appropriate application. This prevents accidental variable leakage between
-  Admin and API applications.
+  Environment variable prefixes ensure variables are only loaded in the appropriate application.
+  This prevents accidental variable leakage between Admin and API applications.
 </Callout>
 
 ## Website Development
@@ -172,8 +168,7 @@ WEBINY_API_MY_SERVICE_KEY=secret_key`} />
 If you're developing with Website Builder, you'll need to run your Website application locally (e.g., a Next.js app) in addition to the watch commands.
 
 <Callout type="info" title="Website Builder Development">
-  Website development workflow and setup will be covered in detail in the
-  Website Builder lessons.
+  Website development workflow and setup will be covered in detail in the Website Builder lessons.
 </Callout>
 
 ## Quick Onboarding
@@ -182,13 +177,11 @@ What about new developers joining an existing Webiny project? Unlike starting a 
 
 When a developer joins your team, they don't need to run any project scaffolding commands. They simply clone the repository and install dependencies:
 
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`git clone <repository>
+```bash title="Terminal"
+git clone <repository>
 yarn
-# You're ready to start developing!`}
-/>
+# You're ready to start developing!
+```
 
 That's it. No complex setup, no configuration files to create, no additional installation steps. The clean project structure means less configuration, fewer commands, and faster time to productivity.
 
@@ -218,7 +211,7 @@ If you're joining a project and see a `.env.example` file, check with your team 
     "Only Core",
     "Core and API",
     "Core, API, and Admin",
-    "All applications including Website",
+    "All applications including Website"
   ]}
   correctAnswer={2}
   explanation="Correct! You only need to deploy Core and API applications to start local development. The Admin app doesn't need to be deployed unless you need a CloudFront URL to share with others."

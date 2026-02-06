@@ -12,7 +12,7 @@ In this lesson, we'll create a practical Admin extension to white-label the Webi
   items={[
     { icon: "palette", text: "What is white-labeling." },
     { icon: "code", text: "Creating the AdminBranding extension." },
-    { icon: "settings", text: "Customizing logo, title, and colors." },
+    { icon: "settings", text: "Customizing logo, title, and colors." }
   ]}
 />
 
@@ -39,14 +39,13 @@ Let's create a white-label extension step by step. We'll customize:
 
 Create a new folder structure in your `extensions/` directory:
 
-<CodeBlock
-  language="text"
-  code={`extensions/
+```text
+extensions/
 └── AdminBranding/
     ├── AdminTheme.tsx
     ├── AdminTitleLogo.tsx
-    └── logo.png`}
-/>
+    └── logo.png
+```
 
 Add your logo image to this folder (use your company logo or any image for now).
 
@@ -54,25 +53,23 @@ Add your logo image to this folder (use your company logo or any image for now).
 
 Create `extensions/AdminBranding/AdminTheme.tsx`:
 
-<CodeBlock
-    language="tsx"
-    filename="extensions/AdminBranding/AdminTheme.tsx"
-    code={`import React from "react";
+```tsx title="extensions/AdminBranding/AdminTheme.tsx"
+import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 
 const { Theme } = AdminConfig;
 
 const AdminTheme = () => {
-    return (
-        <AdminConfig.Public>
-            <Theme.Color palette={"primary"} color={"purple"} />
-            <Theme.Color palette={"neutral"} color={"light-green"} />
-        </AdminConfig.Public>
-    );
+  return (
+    <AdminConfig.Public>
+      <Theme.Color palette={"primary"} color={"purple"} />
+      <Theme.Color palette={"neutral"} color={"light-green"} />
+    </AdminConfig.Public>
+  );
 };
 
-export default AdminTheme;`}
-/>
+export default AdminTheme;
+```
 
 This extension:
 
@@ -81,18 +78,16 @@ This extension:
 - Uses `AdminConfig.Public` to make this configuration available to the Admin app
 
 <Callout type="info" title="Color Options">
-  You can use any valid CSS color value: named colors (like "purple", "green"),
-  hex codes ("#6B46C1"), or RGB values.
+  You can use any valid CSS color value: named colors (like "purple", "green"), hex codes
+  ("#6B46C1"), or RGB values.
 </Callout>
 
 ### Step 3: Create the Logo and Title Extension
 
 Create `extensions/AdminBranding/AdminTitleLogo.tsx`:
 
-<CodeBlock
-    language="tsx"
-    filename="extensions/AdminBranding/AdminTitleLogo.tsx"
-    code={`import React from "react";
+```tsx title="extensions/AdminBranding/AdminTitleLogo.tsx"
+import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import squareLogo from "./logo.png";
 import horizontalLogo from "./logo.png";
@@ -100,19 +95,19 @@ import horizontalLogo from "./logo.png";
 const { Title, Logo } = AdminConfig;
 
 const AdminTitleLogo = () => {
-    return (
-        <AdminConfig.Public>
-            <Title value={"ACME Corp"} />
-            <Logo
-                squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
-                horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
-            />
-        </AdminConfig.Public>
-    );
+  return (
+    <AdminConfig.Public>
+      <Title value={"ACME Corp"} />
+      <Logo
+        squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
+        horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
+      />
+    </AdminConfig.Public>
+  );
 };
 
-export default AdminTitleLogo;`}
-/>
+export default AdminTitleLogo;
+```
 
 This extension:
 
@@ -121,46 +116,40 @@ This extension:
 - Imports the logo image from the same folder
 
 <Callout type="hint" title="Logo Formats">
-  The Admin app uses two logo variants: square (for the sidebar) and horizontal
-  (for the login page). You can use the same image for both or provide different
-  images for each.
+  The Admin app uses two logo variants: square (for the sidebar) and horizontal (for the login
+  page). You can use the same image for both or provide different images for each.
 </Callout>
 
 ### Step 4: Register the Extensions
 
 Add both extensions to your `webiny.config.tsx`:
 
-<CodeBlock
-    language="tsx"
-    filename="webiny.config.tsx"
-    code={`import React from "react";
+```tsx title="webiny.config.tsx"
+import React from "react";
 import { Admin, Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-    return (
-        <>
-            <Infra.Aws.DefaultRegion name={"us-east-1"} />
-            <Cognito />
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Cognito />
 
-            {/* Admin branding */}
-            <Admin.Extension src={"/extensions/AdminBranding/AdminTitleLogo.tsx"} />
-            <Admin.Extension src={"/extensions/AdminBranding/AdminTheme.tsx"} />
-        </>
-    );
-
-};`}
-/>
+      {/* Admin branding */}
+      <Admin.Extension src={"/extensions/AdminBranding/AdminTitleLogo.tsx"} />
+      <Admin.Extension src={"/extensions/AdminBranding/AdminTheme.tsx"} />
+    </>
+  );
+};
+```
 
 ### Step 5: Test Locally
 
 Start the Admin development server:
 
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn webiny watch admin`}
-/>
+```bash title="Terminal"
+yarn webiny watch admin
+```
 
 Open http://localhost:3001 in your browser. You should see:
 
@@ -174,10 +163,8 @@ You can also combine both extensions into a single file for simplicity:
 
 Create `extensions/AdminBranding/AdminBranding.tsx`:
 
-<CodeBlock
-    language="tsx"
-    filename="extensions/AdminBranding/AdminBranding.tsx"
-    code={`import React from "react";
+```tsx title="extensions/AdminBranding/AdminBranding.tsx"
+import React from "react";
 import { AdminConfig } from "webiny/admin/configs";
 import squareLogo from "./logo.png";
 import horizontalLogo from "./logo.png";
@@ -185,38 +172,36 @@ import horizontalLogo from "./logo.png";
 const { Title, Logo, Theme } = AdminConfig;
 
 const AdminBranding = () => {
-    return (
-        <AdminConfig.Public>
-            {/* Title */}
-            <Title value={"ACME Corp"} />
+  return (
+    <AdminConfig.Public>
+      {/* Title */}
+      <Title value={"ACME Corp"} />
 
-            {/* Logo */}
-            <Logo
-                squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
-                horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
-            />
+      {/* Logo */}
+      <Logo
+        squareLogo={<img src={squareLogo} alt={"ACME Corp"} />}
+        horizontalLogo={<img src={horizontalLogo} alt={"ACME Corp"} />}
+      />
 
-            {/* Theme colors */}
-            <Theme.Color palette={"primary"} color={"purple"} />
-            <Theme.Color palette={"neutral"} color={"light-green"} />
-        </AdminConfig.Public>
-    );
+      {/* Theme colors */}
+      <Theme.Color palette={"primary"} color={"purple"} />
+      <Theme.Color palette={"neutral"} color={"light-green"} />
+    </AdminConfig.Public>
+  );
 };
 
-export default AdminBranding;`}
-/>
+export default AdminBranding;
+```
 
 Then register only this single extension in `webiny.config.tsx`:
 
-<CodeBlock
-  language="tsx"
-  filename="webiny.config.tsx"
-  code={`<Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />`}
-/>
+```tsx title="webiny.config.tsx"
+<Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
+```
 
 <Callout type="success" title="Simpler Approach">
-  Combining related configurations into a single extension file keeps your
-  project organized and makes it easier to manage branding changes.
+  Combining related configurations into a single extension file keeps your project organized and
+  makes it easier to manage branding changes.
 </Callout>
 
 <Quiz
@@ -225,7 +210,7 @@ Then register only this single extension in `webiny.config.tsx`:
     "Add it to package.json dependencies",
     "Use <Admin.Extension src={...} /> in webiny.config.tsx",
     "Import it directly in your components",
-    "Add it to a plugins.json file",
+    "Add it to a plugins.json file"
   ]}
   correctAnswer={2}
   explanation="Correct! You register Admin extensions by using the <Admin.Extension src={...} /> component in your webiny.config.tsx file, pointing to the extension file path in the extensions/ folder."

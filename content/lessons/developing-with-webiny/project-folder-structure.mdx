@@ -12,7 +12,7 @@ In this lesson, we'll explore the folder structure of a Webiny project. Understa
   items={[
     { icon: "folder", text: "Overview of the project structure." },
     { icon: "settings", text: "Introduction to webiny.config.tsx." },
-    { icon: "extension", text: "Where custom code lives." },
+    { icon: "extension", text: "Where custom code lives." }
   ]}
 />
 
@@ -22,9 +22,8 @@ Webiny projects have a clean and simple structure that's easy to navigate and un
 
 A typical Webiny project structure looks like this:
 
-<CodeBlock
-  language="text"
-  code={`my-webiny-project/
+```text
+my-webiny-project/
 ├── extensions/          # Your custom extensions and code
 │   └── README.md
 ├── node_modules/        # Dependencies
@@ -38,12 +37,12 @@ A typical Webiny project structure looks like this:
 ├── tsconfig.json        # TypeScript configuration
 ├── webiny.config.tsx    # Main configuration file
 ├── webiny-env.d.ts      # TypeScript environment types
-└── yarn.lock            # Locked dependencies`}
-/>
+└── yarn.lock            # Locked dependencies
+```
 
 <Callout type="info" title="Clean and Simple">
-  Webiny projects use a straightforward structure with a single `package.json`,
-  one `tsconfig.json`, and centralized configuration in `webiny.config.tsx`.
+  Webiny projects use a straightforward structure with a single `package.json`, one `tsconfig.json`,
+  and centralized configuration in `webiny.config.tsx`.
 </Callout>
 
 ## webiny.config.tsx - The Entry Point
@@ -52,22 +51,20 @@ The `webiny.config.tsx` file is where you configure your Webiny project. This is
 
 Here's what a basic configuration looks like:
 
-<CodeBlock
-    language="tsx"
-    filename="webiny.config.tsx"
-    code={`import React from "react";
+```tsx title="webiny.config.tsx"
+import React from "react";
 import { Infra } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-    return (
-        <>
-            <Infra.Aws.DefaultRegion name={"us-east-1"} />
-            <Cognito />
-        </>
-    );
-};`}
-/>
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Cognito />
+    </>
+  );
+};
+```
 
 This minimal configuration:
 
@@ -75,8 +72,8 @@ This minimal configuration:
 - Enables Cognito for authentication
 
 <Callout type="hint" title="Extensions Lesson">
-  We'll explore webiny.config.tsx in detail in the Extensions lesson. For now,
-  just know this is where all configuration lives.
+  We'll explore webiny.config.tsx in detail in the Extensions lesson. For now, just know this is
+  where all configuration lives.
 </Callout>
 
 ## The `extensions/` Folder
@@ -85,15 +82,13 @@ The `extensions/` folder is where all your custom code lives. This is where you'
 
 When you reference an extension in `webiny.config.tsx`, you point to a file in this folder:
 
-<CodeBlock
-    language="tsx"
-    filename="webiny.config.tsx"
-    code={`// In webiny.config.tsx
+```tsx title="webiny.config.tsx"
+// In webiny.config.tsx
 <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
 
 // The actual implementation lives at:
-// extensions/AdminBranding/AdminBranding.tsx`}
-/>
+// extensions/AdminBranding/AdminBranding.tsx
+```
 
 Types of extensions you can create:
 
@@ -103,9 +98,8 @@ Types of extensions you can create:
 - **CLI Extensions** - Create custom CLI commands for your workflows
 
 <Callout type="info" title="Learn More in Extensions Lesson">
-  The Extensions lesson covers how to create and register extensions in detail.
-  For now, just know that the extensions/ folder is your workspace for custom
-  code.
+  The Extensions lesson covers how to create and register extensions in detail. For now, just know
+  that the extensions/ folder is your workspace for custom code.
 </Callout>
 
 ## Other Important Files
@@ -114,20 +108,18 @@ Types of extensions you can create:
 
 Your root `package.json` file contains all project dependencies. Here are the key Webiny-related packages:
 
-<CodeBlock
-  language="json"
-  filename="package.json"
-  code={`{
-    "type": "module",
-    "dependencies": {
-        "@webiny/cognito": "^6.0.0",
-        "webiny": "^6.0.0"
-    },
-    "devDependencies": {
-        "@webiny/cli": "^6.0.0"
-    }
-}`}
-/>
+```json title="package.json"
+{
+  "type": "module",
+  "dependencies": {
+    "@webiny/cognito": "^6.0.0",
+    "webiny": "^6.0.0"
+  },
+  "devDependencies": {
+    "@webiny/cli": "^6.0.0"
+  }
+}
+```
 
 The `webiny` package is the unified API that provides all the building blocks for extensions, `@webiny/cognito` provides the default identity provider, and `@webiny/cli` provides the command-line tools for development and deployment.
 
@@ -154,7 +146,7 @@ TypeScript type definitions for environment-specific types used throughout your 
     "public/ folder",
     "extensions/ folder",
     "node_modules/ folder",
-    "webiny.config.tsx file",
+    "webiny.config.tsx file"
   ]}
   correctAnswer={2}
   explanation="Correct! The extensions/ folder is where all your custom code lives. This is where you create API extensions, Admin UI customizations, CLI commands, and more."
