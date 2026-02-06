@@ -64,46 +64,46 @@ Open `extensions/ProductCategoryModel.ts` and add the following code:
 export const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
 
 class ProductCategoryModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public()
-                .modelId(PRODUCT_CATEGORY_MODEL_ID)
-                .name("Product Category")
-                .description("Product categories for organizing products")
-                .group("ungrouped")
-                .fields(fields => ({
-                    name: fields
-                        .text()
-                        .renderer("text-input")
-                        .label("Name")
-                        .helpText("Name of the product category")
-                        .required("Name is required")
-                        .minLength(2)
-                        .maxLength(100),
-                    slug: fields
-                        .text()
-                        .renderer("text-input")
-                        .label("Slug")
-                        .helpText("URL-friendly identifier")
-                        .required("Slug is required")
-                        .unique()
-                        .pattern(
-                            "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-                            "Slug must be lowercase letters, numbers, and hyphens only"
-                        ),
-                    description: fields
-                        .longText()
-                        .renderer("long-text-text-area")
-                        .label("Description")
-                        .minLength(10)
-                }))
-                .layout([["name", "slug"], ["description"]])
-                .titleFieldId("name")
-                .singularApiName("ProductCategory")
-                .pluralApiName("ProductCategories")
-        ];
-    }
+async execute(builder: ModelFactory.Builder) {
+return [
+builder
+.public()
+.modelId(PRODUCT_CATEGORY_MODEL_ID)
+.name("Product Category")
+.description("Product categories for organizing products")
+.group("ungrouped")
+.fields(fields => ({
+name: fields
+.text()
+.renderer("text-input")
+.label("Name")
+.helpText("Name of the product category")
+.required("Name is required")
+.minLength(2)
+.maxLength(100),
+slug: fields
+.text()
+.renderer("text-input")
+.label("Slug")
+.helpText("URL-friendly identifier")
+.required("Slug is required")
+.unique()
+.pattern(
+"^[a-z0-9]+(?:-[a-z0-9]+)\*$",
+"Slug must be lowercase letters, numbers, and hyphens only"
+),
+description: fields
+.longText()
+.renderer("long-text-text-area")
+.label("Description")
+.minLength(10)
+}))
+.layout([["name", "slug"], ["description"]])
+.titleFieldId("name")
+.singularApiName("ProductCategory")
+.pluralApiName("ProductCategories")
+];
+}
 }
 
 export const ProductCategoryModel = ModelFactory.createImplementation({
@@ -115,12 +115,14 @@ export const ProductCategoryModel = ModelFactory.createImplementation({
 Let's break down what this code does:
 
 **Model Builder Pattern:**
+
 - Uses the `ModelFactory` pattern for creating content models programmatically
 - `ModelFactory.Interface` - Interface for creating model implementations
 - `ModelFactory.Builder` - Fluent API for building content models
 - `ModelFactory.createImplementation()` - Creates the model implementation with dependencies
 
 **Model Configuration:**
+
 - `.public()` - Makes this a public content model (accessible via Read API)
 - `.modelId()` - Internal identifier (used in the database)
 - `.name()` - Display name in the Admin UI
@@ -130,6 +132,7 @@ Let's break down what this code does:
 
 **Field Definitions:**
 The `.fields()` method uses a fluent API to define fields:
+
 - `fields.text()` - Creates a text field
 - `fields.longText()` - Creates a long text field
 - `.renderer()` - Specifies the UI renderer for the field
@@ -141,15 +144,19 @@ The `.fields()` method uses a fluent API to define fields:
 - `.pattern()` - Regular expression validation
 
 **Layout:**
+
 - `.layout()` - Defines how fields are arranged in rows in the Admin UI
 - Example: `[["name", "slug"], ["description"]]` creates two rows
 
 **Title Field:**
+
 - `.titleFieldId()` - Which field to use as the entry title (in this case, "name")
 
 <Callout type="hint" title="Field Types">
-  The Model Builder provides fluent methods for all field types: `text()`, `longText()`, `richText()`, `number()`,
-  `boolean()`, `datetime()`, `file()`, `ref()` (reference), `object()`, and more. Each method returns a chainable API for configuring the field.
+  The Model Builder provides fluent methods for all field types: `text()`,
+  `longText()`, `richText()`, `number()`, `boolean()`, `datetime()`, `file()`,
+  `ref()` (reference), `object()`, and more. Each method returns a chainable API
+  for configuring the field.
 </Callout>
 
 ### Step 3: Register the Extension
@@ -195,16 +202,15 @@ To make the Product Category model available, you have two options:
 
 ### Option 2: Use Watch Mode (Faster for Development)
 
-<CodeBlock
-  language="bash"
-  filename="Terminal"
-  code={`yarn webiny watch api`}
-/>
+<CodeBlock language="bash" filename="Terminal" code={`yarn webiny watch api`} />
 
 If you're using watch mode, the changes will be automatically deployed and visible in the Admin UI when you refresh. You can access the Admin either locally (via `yarn webiny watch admin`) or through your deployed Admin app (CloudFront URL).
 
 <Callout type="info" title="Watch Mode">
-  Watch mode is ideal during development as it automatically redeploys your API changes without manual deployment. Since we're only changing backend API code with these extensions, your Admin app (whether local or deployed) will pick up the changes after a refresh.
+  Watch mode is ideal during development as it automatically redeploys your API
+  changes without manual deployment. Since we're only changing backend API code
+  with these extensions, your Admin app (whether local or deployed) will pick up
+  the changes after a refresh.
 </Callout>
 
 ## Verify the Model
@@ -222,6 +228,7 @@ After deployment completes:
 />
 
 Try creating a category:
+
 - Name: "Electronics"
 - Slug: "electronics"
 - Description: "Electronic devices and accessories"
@@ -302,6 +309,7 @@ Reference fields allow you to link content entries together. A reference field c
 - **Multiple entries** - Enable "Use as a list of references" in the field settings
 
 When you query a product via the GraphQL API, you can choose to:
+
 - Get just the category ID
 - Get the full category object with all its fields (resolved reference)
 
@@ -328,51 +336,51 @@ Here's how you would define the Product model programmatically to match what we 
 export const PRODUCT_MODEL_ID = "product";
 
 class ProductModelImpl implements ModelFactory.Interface {
-    execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public()
-                .modelId(PRODUCT_MODEL_ID)
-                .name("Product")
-                .description("Products for our e-commerce store")
-                .group("ungrouped")
-                .fields(fields => ({
-                    name: fields
-                        .text()
-                        .renderer("text-input")
-                        .label("Name")
-                        .helpText("Product name")
-                        .required("Name is required"),
-                    sku: fields
-                        .text()
-                        .renderer("text-input")
-                        .label("SKU")
-                        .helpText("Stock Keeping Unit - unique product identifier")
-                        .required("SKU is required")
-                        .unique(),
-                    description: fields
-                        .longText()
-                        .renderer("long-text-text-area")
-                        .label("Description")
-                        .helpText("Detailed product description"),
-                    price: fields
-                        .number()
-                        .renderer("number-input")
-                        .label("Price")
-                        .required("Price is required")
-                        .gte(0, "Price must be greater than or equal to 0"),
-                    category: fields
-                        .ref()
-                        .renderer("ref-advanced-single")
-                        .label("Category")
-                        .models([{ modelId: "productCategory" }])
-                }))
-                .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
-                .titleFieldId("name")
-                .singularApiName("Product")
-                .pluralApiName("Products")
-        ];
-    }
+async execute(builder: ModelFactory.Builder) {
+return [
+builder
+.public()
+.modelId(PRODUCT_MODEL_ID)
+.name("Product")
+.description("Products for our e-commerce store")
+.group("ungrouped")
+.fields(fields => ({
+name: fields
+.text()
+.renderer("text-input")
+.label("Name")
+.helpText("Product name")
+.required("Name is required"),
+sku: fields
+.text()
+.renderer("text-input")
+.label("SKU")
+.helpText("Stock Keeping Unit - unique product identifier")
+.required("SKU is required")
+.unique(),
+description: fields
+.longText()
+.renderer("long-text-text-area")
+.label("Description")
+.helpText("Detailed product description"),
+price: fields
+.number()
+.renderer("number-input")
+.label("Price")
+.required("Price is required")
+.gte(0, "Price must be greater than or equal to 0"),
+category: fields
+.ref()
+.renderer("ref-advanced-single")
+.label("Category")
+.models([{ modelId: "productCategory" }])
+}))
+.layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
+.titleFieldId("name")
+.singularApiName("Product")
+.pluralApiName("Products")
+];
+}
 }
 
 export const ProductModel = ModelFactory.createImplementation({
@@ -382,6 +390,7 @@ export const ProductModel = ModelFactory.createImplementation({
 />
 
 **Key points:**
+
 - `fields.ref()` - Creates a reference field
 - `.renderer("ref-advanced-single")` - Specifies the UI renderer for reference fields
 - `.models([{ modelId: "productCategory" }])` - Specifies which model(s) this field can reference
@@ -398,7 +407,10 @@ Then register it in `webiny.config.tsx`:
 />
 
 <Callout type="warning" title="Cleaning Up Required">
-  If you choose to define the Product model via code, you **must** delete the existing Product model from the UI (via **Content Modeling** > **Models**) before deploying. Having both will cause conflicts. After deleting it from the UI, deploy your code-based model.
+  If you choose to define the Product model via code, you **must** delete the
+  existing Product model from the UI (via **Content Modeling** > **Models**)
+  before deploying. Having both will cause conflicts. After deleting it from the
+  UI, deploy your code-based model.
 </Callout>
 
 <Quiz

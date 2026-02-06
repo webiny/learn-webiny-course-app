@@ -28,8 +28,11 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "headless-cms/content-versioning": () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
   "headless-cms/creating-content-model-via-code": () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
   "headless-cms/creating-content-model-via-ui": () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+  "headless-cms/learn-webiny-nextjs-app": () => import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
+  "headless-cms/reading-records-via-api": () => import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
   "headless-cms/understanding-different-apis": () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
   "headless-cms/webiny-api-playground": () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
+  "headless-cms/writing-data": () => import("@/content/lessons/headless-cms/writing-data.mdx"),
   "webiny-control-panel/assigning-licenses": () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
   "webiny-control-panel/structure-and-organization": () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
   "webiny-control-panel/usage-tracking": () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
@@ -266,11 +269,31 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms"
   },
   {
+    slug: "headless-cms/learn-webiny-nextjs-app",
+    import: () => import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
+    frontmatter: {
+          "title": "Learn Webiny Next.js App",
+          "description": "Checkout the Learn Webiny Next.js App, create an API key and connect the app to Webiny API.",
+          "order": 8
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/reading-records-via-api",
+    import: () => import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
+    frontmatter: {
+          "title": "Reading Records via the API",
+          "description": "Learn how to query content using the API Playground and understand the differences between Manage, Read, and Preview APIs.",
+          "order": 7
+    },
+    chapter: "headless-cms"
+  },
+  {
     slug: "headless-cms/understanding-different-apis",
     import: () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
     frontmatter: {
           "title": "Understanding Different HCMS APIs",
-          "description": "Learn about Read, Preview, and Manage APIs and when to use each one.",
+          "description": "Learn about Manage, Read, and Preview APIs and when to use each one.",
           "order": 5
     },
     chapter: "headless-cms"
@@ -282,6 +305,16 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "title": "Webiny API Playground",
           "description": "What is Webiny API Playground, how to use it",
           "order": 6
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/writing-data",
+    import: () => import("@/content/lessons/headless-cms/writing-data.mdx"),
+    frontmatter: {
+          "title": "Writing Data",
+          "description": "Create a contact form that submits data to Webiny Headless CMS using mutations and the Manage API.",
+          "order": 9
     },
     chapter: "headless-cms"
   },

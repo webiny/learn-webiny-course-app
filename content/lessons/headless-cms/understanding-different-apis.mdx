@@ -1,6 +1,6 @@
 ---
 title: "Understanding Different HCMS APIs"
-description: "Learn about Read, Preview, and Manage APIs and when to use each one."
+description: "Learn about Manage, Read, and Preview APIs and when to use each one."
 order: 5
 ---
 
@@ -8,13 +8,13 @@ order: 5
 
 Webiny Headless CMS provides three distinct GraphQL APIs, each designed for specific use cases. Understanding when to use each API is crucial for building efficient and secure applications.
 
-In this lesson, we'll explore the Read, Preview, and Manage APIs, their differences, and best practices for using them.
+In this lesson, we'll explore the Manage, Read, and Preview APIs, their differences, and best practices for using them.
 
 <ChapterOverview
   items={[
-    { icon: "book", text: "Read API for public content consumption." },
-    { icon: "eye", text: "Preview API for draft content viewing." },
     { icon: "settings", text: "Manage API for content administration." },
+    { icon: "book", text: "Read API for public content consumption." },
+    { icon: "visibility", text: "Preview API for draft content viewing." },
   ]}
 />
 
@@ -22,11 +22,110 @@ In this lesson, we'll explore the Read, Preview, and Manage APIs, their differen
 
 Webiny Headless CMS automatically generates three separate GraphQL APIs for every content model you create:
 
-1. **Read API** - For public-facing applications
-2. **Preview API** - For previewing unpublished content
-3. **Manage API** - For content management operations
+1. **Manage API** - For content management operations
+2. **Read API** - For public-facing applications
+3. **Preview API** - For previewing unpublished content
 
 Each API has its own endpoint and serves different purposes.
+
+## Finding Your API URLs
+
+The GraphQL API URLs follow a specific structure:
+
+```
+https://{your-domain}/cms/{manage|read|preview}
+```
+
+**Examples:**
+
+- Manage API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/manage`
+- Read API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/read`
+- Preview API: `https://d1ud9w3i9i7d77.cloudfront.net/cms/preview`
+
+### How to Find Your URLs
+
+**Option 1: Via Webiny CLI**
+
+Run `yarn webiny info` in your terminal to see all your API endpoints, including the Headless CMS URLs.
+
+<Image
+  src="/images/headless-cms/webiny-info-output.png"
+  alt="Webiny info command output showing API endpoints"
+  caption="The yarn webiny info command displays all your Webiny API endpoints, including the three Headless CMS GraphQL APIs."
+/>
+
+**Option 2: Via API Playground**
+
+Navigate to **API Playground** in the Webiny Admin sidebar. The URL for the currently selected API is displayed at the top of the playground interface.
+
+<Image
+  src="/images/headless-cms/api-playground-url-location.png"
+  alt="API Playground interface showing the API URL at the top"
+  caption="The API Playground displays the URL for the currently selected API at the top of the interface, next to the PRETTIFY and HISTORY buttons."
+/>
+
+<Callout type="info">
+  We'll explore the API Playground in detail in the next lesson (Lesson 6),
+  where you'll learn how to test queries and explore your GraphQL schema
+  interactively.
+</Callout>
+
+## Manage API
+
+The **Manage API** provides full CRUD operations and access to all revisions. This is the API that the Webiny Admin application uses.
+
+### Purpose
+
+The Manage API is designed for:
+
+- Content management operations
+- Creating, updating, and deleting content
+- Accessing all revisions
+- Publishing and unpublishing
+- Admin interfaces
+
+### What It Returns
+
+- ✅ All revisions of all entries
+- ✅ Full revision history
+- ✅ Draft and published content
+- ✅ Metadata (`meta` field with status, version, etc.)
+
+### What It Can Do
+
+Unlike Read and Preview APIs (which are read-only), the Manage API supports:
+
+- **Mutations** - Create, update, delete operations
+- **Publishing** - Publish and unpublish content
+- **Revision management** - Access and restore previous revisions
+
+### Response Structure
+
+The Manage API returns data with:
+
+- **User-defined fields** in the `values` object
+- **System fields** at the top level (e.g., `id`, `entryId`, `createdOn`, `lastPublishedOn`)
+- **`meta` field** containing status (`published`, `draft`, `unpublished`) and version number
+- **Reference fields** return metadata (`id`, `entryId`, `modelId`) but cannot query nested `values` from referenced entries
+
+### Example Use Case
+
+The Webiny Admin application uses the Manage API to let editors create, edit, and publish content. When you're logged into the Admin and working with content, you're using the Manage API.
+
+<Callout type="info" title="Built-in Security">
+  The Manage API is protected by Webiny's security layer. Only users with
+  appropriate roles and permissions (content editors, administrators) can access
+  it. The Webiny Admin UI automatically adapts based on user permissions.
+</Callout>
+
+### When to Use Manage API
+
+- ✅ Admin interfaces and dashboards
+- ✅ Content management systems
+- ✅ Authenticated backend operations
+- ✅ Bulk operations and migrations
+- ❌ Public-facing applications
+- ❌ Unauthenticated users
 
 ## Read API
 
@@ -35,6 +134,7 @@ The **Read API** is your public-facing API for production applications.
 ### Purpose
 
 The Read API returns only **published** content. It's designed for:
+
 - Your website or mobile app
 - Public-facing content consumption
 - High-performance queries
@@ -46,27 +146,18 @@ The Read API returns only **published** content. It's designed for:
 - ❌ Draft revisions are not accessible
 - ❌ Unpublished entries are not accessible
 
+### Response Structure
+
+The Read API returns data with:
+
+- **User-defined fields** in the `values` object (e.g., `name`, `price`, `description`)
+- **System fields** at the top level (e.g., `id`, `entryId`, `createdOn`, `lastPublishedOn`)
+- **No `meta` field** - Status and version information is not included since it's not needed for public consumption
+- **Reference fields** can query nested `values` from referenced entries (e.g., `category { id, values { name } }`), but return `null` if the referenced entry is not published
+
 ### Example Use Case
 
-Your e-commerce website queries the Read API to display products to customers. Only published products appear on the site.
-
-<CodeBlock
-  language="graphql"
-  filename="Example Query"
-  code={`query GetProducts {
-  listProducts {
-    data {
-      name
-      price
-      category {
-        name
-      }
-    }
-  }
-}`}
-/>
-
-This query returns only published products - customers never see drafts or unpublished items.
+Your e-commerce website queries the Read API to display products to customers. Only published products appear on the site, ensuring customers never see draft or work-in-progress content.
 
 <Callout type="success" title="Optimized for Performance">
   The Read API is optimized for performance and can be cached aggressively since
@@ -84,11 +175,12 @@ This query returns only published products - customers never see drafts or unpub
 
 ## Preview API
 
-The **Preview API** returns the latest revision of content, whether published or draft.
+The **Preview API** is essentially like the Read API, except it can show draft content too. It returns the latest revision of content, whether published or draft.
 
 ### Purpose
 
 The Preview API is designed for:
+
 - Preview functionality in your application
 - Seeing content changes before publishing
 - Editorial workflows
@@ -99,26 +191,24 @@ The Preview API is designed for:
 - ✅ Latest revision (published OR draft)
 - ✅ Unpublished entries
 - ✅ All content, regardless of status
+- ✅ Draft reference fields (unlike Read API which shows `null` for unpublished references)
+
+### Response Structure
+
+The Preview API returns data with:
+
+- **User-defined fields** in the `values` object
+- **System fields** at the top level
+- **No `meta` field** - Similar to Read API
+- **Reference fields** can query nested `values` from referenced entries (e.g., `category { id, values { name } }`), and return complete data even if the referenced entry is unpublished
 
 ### Example Use Case
 
-Your content editors want to preview how a new product will look on the website before publishing it. Your app has a "Preview Mode" that uses the Preview API.
+Your content editors want to preview how a new product will look on the website before publishing it. Your app has a "Preview Mode" that switches to the Preview API, allowing editors to see unpublished content and unpublished references as they'll appear once everything is published.
 
-<CodeBlock
-  language="graphql"
-  filename="Example Query"
-  code={`query GetProduct($id: ID!) {
-  getProduct(where: { id: $id }) {
-    data {
-      name
-      price
-      description
-    }
-  }
-}`}
-/>
+**Key Difference from Read API:**
 
-When queried via the Preview API, this returns the latest revision even if it's a draft.
+The Preview API will show unpublished references as complete objects with their data, while the Read API returns `null` for those same references. This allows editors to preview how content will look with all relationships in place before publishing.
 
 <Callout type="info" title="Preview Mode Pattern">
   A common pattern is to build a "Preview Mode" toggle in your application that
@@ -135,84 +225,26 @@ When queried via the Preview API, this returns the latest revision even if it's 
 - ❌ Public-facing production content
 - ❌ High-traffic public pages
 
-## Manage API
-
-The **Manage API** provides full CRUD operations and access to all revisions.
-
-### Purpose
-
-The Manage API is designed for:
-- Content management operations
-- Creating, updating, and deleting content
-- Accessing all revisions
-- Publishing and unpublishing
-- Admin interfaces
-
-### What It Returns
-
-- ✅ All revisions of all entries
-- ✅ Full revision history
-- ✅ Draft and published content
-- ✅ Metadata (created by, modified date, etc.)
-
-### What It Can Do
-
-Unlike Read and Preview APIs (which are read-only), the Manage API supports:
-- **Mutations** - Create, update, delete operations
-- **Publishing** - Publish and unpublish content
-- **Revision management** - Access and restore previous revisions
-- **Advanced filtering** - More powerful query options
-
-### Example Use Case
-
-The Webiny Admin application uses the Manage API to let editors create, edit, and publish content.
-
-<CodeBlock
-  language="graphql"
-  filename="Example Mutation"
-  code={`mutation CreateProduct($data: ProductInput!) {
-  createProduct(data: $data) {
-    data {
-      id
-      name
-      meta {
-        status
-      }
-    }
-    error {
-      message
-    }
-  }
-}`}
-/>
-
-<Callout type="warning" title="Security Sensitive">
-  The Manage API is powerful and should be protected! Never expose it to
-  unauthenticated users. It's typically used only by authenticated admin users.
-</Callout>
-
-### When to Use Manage API
-
-- ✅ Admin interfaces and dashboards
-- ✅ Content management systems
-- ✅ Authenticated backend operations
-- ✅ Bulk operations and migrations
-- ❌ Public-facing applications
-- ❌ Unauthenticated users
-
 ## API Comparison
 
 Here's a quick comparison of the three APIs:
 
-| Feature | Read API | Preview API | Manage API |
-|---------|----------|-------------|------------|
-| Returns published content | Yes | Yes | Yes |
-| Returns draft content | No | Yes | Yes |
-| Returns all revisions | No | No | Yes |
-| Supports mutations | No | No | Yes |
-| Authentication required | Optional | Recommended | Required |
-| Caching friendly | High | Low | No |
-| Use case | Production apps | Preview modes | Admin interfaces |
+| Feature                      | Manage API       | Read API        | Preview API   |
+| ---------------------------- | ---------------- | --------------- | ------------- |
+| Returns published content    | Yes              | Yes             | Yes           |
+| Returns draft content        | Yes              | No              | Yes           |
+| Returns all revisions        | Yes              | No              | No            |
+| Supports mutations           | Yes              | No              | No            |
+| Includes `meta` field        | Yes              | No              | No            |
+| Shows unpublished references | Yes              | No              | Yes           |
+| Authentication required      | Yes              | Yes             | Yes           |
+| Caching friendly             | No               | High            | Low           |
+| Use case                     | Admin interfaces | Production apps | Preview modes |
+
+<Callout type="warning">
+  All three API types require authentication via API keys. You'll learn how to
+  create and use API keys in Lesson 7: Reading Records via the API.
+</Callout>
 
 ## Best Practices
 
@@ -220,127 +252,112 @@ Here's a quick comparison of the three APIs:
 
 Don't use the Manage API when the Read API would suffice. Each API is optimized for its specific purpose.
 
-❌ **Don't do this:**
+For public content on your website, use the **Read API**, not the Manage API. The Read API is faster, cacheable, and designed for public consumption.
 
-<CodeBlock
-  language="typescript"
-  code={`// Using Manage API for public content
-const products = await manageApi.listProducts();`}
-/>
+### 2. Implement Preview Mode Correctly
 
-✅ **Do this instead:**
-
-<CodeBlock
-  language="typescript"
-  code={`// Using Read API for public content
-const products = await readApi.listProducts();`}
-/>
-
-### 2. Secure the Manage API
-
-Always require authentication for the Manage API. Use API tokens or user authentication.
-
-✅ **Good practice:**
-
-<CodeBlock
-  language="typescript"
-  code={`const client = new GraphQLClient(MANAGE_API_URL, {
-  headers: {
-    Authorization: \`Bearer \${apiToken}\`
-  }
-});`}
-/>
-
-### 3. Implement Preview Mode Correctly
-
-When implementing preview functionality:
-
-<CodeBlock
-  language="typescript"
-  code={`// Check if preview mode is enabled (e.g., via query parameter)
-const isPreview = searchParams.get('preview') === 'true';
-
-// Use appropriate API
-const apiUrl = isPreview ? PREVIEW_API_URL : READ_API_URL;
-
-// Fetch content
-const product = await fetchProduct(apiUrl, productId);`}
-/>
+When implementing preview functionality, use a conditional approach that switches between Read and Preview APIs based on whether the user is in preview mode.
 
 <Callout type="hint" title="Preview Mode Security">
   Preview mode should be protected! Use authentication or preview tokens to
   ensure only authorized users can preview unpublished content.
 </Callout>
 
-### 4. Cache Read API Responses
+### 3. Cache Read API Responses
 
-Since the Read API only returns published content, you can cache responses aggressively:
+Since the Read API only returns published content, you can cache responses aggressively. Consider using CDN caching, browser caching, or application-level caching for optimal performance.
 
-<CodeBlock
-  language="typescript"
-  code={`// Cache for 1 hour since content is stable
-const response = await fetch(READ_API_URL, {
-  next: { revalidate: 3600 }
-});`}
-/>
+### 4. Don't Cache Preview or Manage APIs
 
-### 5. Don't Cache Preview or Manage APIs
+Preview and Manage APIs return dynamic content that changes frequently. Avoid caching these responses as they need to reflect the latest state of your content.
 
-Preview and Manage APIs return dynamic content. Don't cache these responses:
+## Reference Fields Across APIs
 
-❌ **Don't cache these APIs:**
+Reference fields behave differently across the three APIs:
 
-<CodeBlock
-  language="typescript"
-  code={`// Bad - preview content changes frequently
-cache: 'force-cache' // DON'T DO THIS with Preview/Manage APIs`}
-/>
+### Manage API
 
-## Reference Fields and APIs
+- Returns reference metadata: `id`, `entryId`, `modelId`
+- **Cannot** query nested `values` from referenced entries
+- Can access `meta.revisions` to see all revisions of the reference
+- Shows all references regardless of publish status
+- Designed for administrative operations, not nested data retrieval
 
-Reference fields behave differently across APIs:
+**Example:**
 
-### Read API - Shallow References
-
-The Read API returns references as IDs by default for performance:
-
-<CodeBlock
-  language="graphql"
-  code={`{
-  getProduct(where: { id: "123" }) {
-    data {
-      name
-      category {
-        id  # Just the ID
-      }
+```graphql
+category {
+  id
+  entryId
+  modelId
+  meta {
+    revisions {
+      id
     }
   }
-}`}
-/>
+}
+```
 
-To get the full object, you need to explicitly query for it:
+### Read API
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  getProduct(where: { id: "123" }) {
-    data {
-      name
-      category {
-        id
-        name
-        slug
-      }
-    }
+- **Can** query nested `values` from referenced entries
+- Returns `null` for unpublished references
+- Only shows references to published entries
+- Optimized for retrieving complete nested data
+
+**Example:**
+
+```graphql
+category {
+  id
+  values {
+    name
+    slug
   }
-}`}
-/>
+}
+```
 
-### Manage API - Deep Resolution
+### Preview API
 
-The Manage API can resolve references more deeply and provides more options for traversing relationships.
+- **Can** query nested `values` from referenced entries
+- Returns complete reference data including unpublished entries
+- Shows the latest revision of referenced content
+- Allows editors to preview content with all relationships intact
 
-We'll explore this in detail in the next lesson when we use the API Playground.
+**Example:**
+
+```graphql
+category {
+  id
+  values {
+    name
+    slug
+  }
+}
+```
+
+## Summary
+
+Webiny provides three specialized GraphQL APIs:
+
+- **Manage API** - Full CRUD operations, all revisions, admin only
+- **Read API** - Published content only, optimized for production
+- **Preview API** - Latest revisions (draft or published), for preview modes
+
+**Key takeaways:**
+
+- Start with Manage API in the Admin to understand the full data structure
+- Use Read API for all public-facing applications
+- Use Preview API only for preview/staging functionality
+- All APIs require authentication via API keys
+- Cache Read API responses, not Preview or Manage
+- Implement preview modes with proper security
+- References resolve differently across APIs
+
+In the next two lessons, you'll learn how to:
+
+- Use the **API Playground** to test and explore these APIs (Lesson 6)
+- Create **API keys** and fetch data from your applications (Lesson 7)
 
 <Quiz
   question="Which API should you use for displaying published products on your public e-commerce website?"
@@ -354,20 +371,3 @@ We'll explore this in detail in the next lesson when we use the API Playground.
   explanation="Correct! The Read API is specifically designed for public-facing applications. It only returns published content, is optimized for performance, and can be cached aggressively. The Manage API should be protected and used only for admin operations, while the Preview API is for preview modes, not production content."
   hint="Think about which API is optimized for performance and public access."
 />
-
-## Summary
-
-Webiny provides three specialized GraphQL APIs:
-
-- **Read API** - Published content only, optimized for production
-- **Preview API** - Latest revisions (draft or published), for preview modes
-- **Manage API** - Full CRUD operations, all revisions, admin only
-
-**Key takeaways:**
-- Use the right API for the right job
-- Secure the Manage API with authentication
-- Cache Read API responses, not Preview or Manage
-- Implement preview modes with proper security
-- References resolve differently across APIs
-
-In the next lesson, we'll explore the Webiny API Playground, where you can test queries and learn how these APIs work in practice.

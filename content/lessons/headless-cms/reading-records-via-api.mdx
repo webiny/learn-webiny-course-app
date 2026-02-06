@@ -1,0 +1,841 @@
+---
+title: "Reading Records via the API"
+description: "Learn how to query content using the API Playground and understand the differences between Manage, Read, and Preview APIs."
+order: 7
+---
+
+# Reading Records via the API
+
+In this lesson, you'll use the API Playground to read and explore content from your Product and Product Category models.
+
+<ChapterOverview
+  items={[
+    { icon: "code", text: "Write GraphQL queries to fetch content." },
+    {
+      icon: "filter_alt",
+      text: "Filter, sort, and search for specific records.",
+    },
+    { icon: "link", text: "Handle reference fields across different APIs." },
+  ]}
+/>
+
+**Prerequisites:**
+
+- Completed Lesson 3 (Creating a Content Model via UI)
+- Completed Lesson 4 (Creating a Content Model via Code)
+- Completed Lesson 5 (Understanding Different HCMS APIs)
+- Completed Lesson 6 (Webiny API Playground)
+
+## Before You Begin
+
+Make sure you have:
+
+1. **Created at least one Product Category** via the Webiny Admin
+2. **Created at least one Product** that references a category
+3. **Published both entries** so they appear in the Read API
+
+<Callout type="hint">
+  If you haven't created any content yet, go to the Webiny Admin → Headless CMS
+  → Product Categories and Products to create and publish a few test entries.
+</Callout>
+
+## Your First Query: Listing All Products
+
+Let's start by fetching all published products using the **Read API**.
+
+Open the **API Playground** and switch to the **Headless CMS - Read API** tab. In the Query Editor (left panel), write this query:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts {
+    data {
+      id
+      entryId
+      values {
+        name
+        sku
+        description
+        price
+      }
+    }
+    error {
+      message
+      code
+      data
+    }
+  }
+}`}
+/>
+
+<Callout type="info">
+  Notice we've included the `error` field in the query. As mentioned in Lesson
+  6, this is a best practice for list queries - it helps you catch and debug
+  issues if anything goes wrong.
+</Callout>
+
+Click the **Play button (▶)** or press **Ctrl+Enter** (Windows/Linux) / **Cmd+Enter** (Mac) to execute the query.
+
+You'll see a response in the **Response Panel** (center panel) similar to this:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "id": "676d123456789#0001",
+          "entryId": "676d123456789",
+          "values": {
+            "name": "Laptop Pro 15",
+            "sku": "LAP-PRO-15",
+            "description": "High-performance laptop with 15-inch display",
+            "price": 1299.99
+          }
+        },
+        {
+          "id": "676d987654321#0001",
+          "entryId": "676d987654321",
+          "values": {
+            "name": "Wireless Mouse",
+            "sku": "MOU-WRL-01",
+            "description": "Ergonomic wireless mouse",
+            "price": 29.99
+          }
+        }
+      ],
+      "error": null
+    }
+  }
+}`}
+/>
+
+When there are no errors, the `error` field will be `null` as shown above.
+
+<Callout type="info">
+  The **Read API** only returns **published** content. If you created entries
+  but haven't published them yet, they won't appear in this response.
+</Callout>
+
+If an error occurs (for example, due to invalid filtering), you'll see details in the `error` field:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": null,
+      "error": {
+        "message": "Invalid field name in where clause",
+        "code": "INVALID_FIELD",
+        "data": {
+          "field": "values_invalidField"
+        }
+      }
+    }
+  }
+}`}
+/>
+
+### GraphQL-Level Errors vs Webiny-Level Errors
+
+It's important to understand that the `error` field inside the query result is for **Webiny-specific errors** (like invalid filters, missing entries, permission issues, etc.).
+
+However, **GraphQL-level errors** (syntax errors, type mismatches, invalid arguments) are returned differently - in a top-level `errors` array, not inside the query result.
+
+For example, if you pass an invalid type to an argument:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(where: { id: [] }) {
+    data {
+      id
+      entryId
+      values {
+        name
+        sku
+        description
+        price
+      }
+    }
+    error {
+      message
+      code
+      data
+    }
+  }
+}`}
+/>
+
+You'll get a **GraphQL validation error** at the top level:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "errors": [
+    {
+      "message": "ID cannot represent a non-string and non-integer value: []",
+      "locations": [
+        {
+          "line": 2,
+          "column": 28
+        }
+      ]
+    }
+  ]
+}`}
+/>
+
+<Callout type="warning">
+  Notice the difference: - **GraphQL errors**: Top-level `"errors"` array
+  (plural) - these are validation/syntax errors caught by GraphQL before Webiny
+  processes the query - **Webiny errors**: Inside the query result as `"error"`
+  field (singular) - these are business logic errors from Webiny itself
+</Callout>
+
+## Fetching a Single Record
+
+To fetch a specific product by its `entryId`, use the `getProduct` query:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  getProduct(where: { entryId: "676d123456789" }) {
+    data {
+      id
+      entryId
+      values {
+        name
+        sku
+        description
+        price
+      }
+    }
+    error {
+      message
+      code
+      data
+    }
+  }
+}`}
+/>
+
+<Callout type="hint">
+  Replace `"676d123456789"` with an actual `entryId` from your products. You can
+  get entry IDs from the `listProducts` query response or from the Webiny Admin
+  UI.
+</Callout>
+
+### What If the Entry Doesn't Exist?
+
+If you query for an `entryId` that doesn't exist, the `data` will be `null` and the `error` field will contain details:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "getProduct": {
+      "data": null,
+      "error": {
+        "message": "Entry was not found!",
+        "code": "Cms/Entry/NotFound",
+        "data": null
+      }
+    }
+  }
+}`}
+/>
+
+This is why including the `error` field is important - it helps you understand why a query returned no data.
+
+## Working with Reference Fields
+
+Now comes the important part: **how different APIs handle reference fields**. This is where Manage API differs significantly from Read and Preview APIs.
+
+### Read API: Access Nested Values
+
+In the **Read API** (and **Preview API**), you can query **nested values** from referenced entries. Let's fetch products with their category details:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts {
+    data {
+      id
+      entryId
+      values {
+        name
+        sku
+        description
+        category {
+          id
+          values {
+            name
+          }
+        }
+      }
+    }
+  }
+}`}
+/>
+
+Notice how we can access `category.values.name` - the actual field values from the referenced Product Category entry. The response includes the full category data:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "data": {
+    "listProducts": {
+      "data": [
+        {
+          "id": "676d123456789#0001",
+          "entryId": "676d123456789",
+          "values": {
+            "name": "Laptop Pro 15",
+            "sku": "LAP-PRO-15",
+            "description": "High-performance laptop",
+            "category": {
+              "id": "676d111111111#0001",
+              "values": {
+                "name": "Electronics"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}`}
+/>
+
+### Manage API: Metadata Only
+
+Now switch to the **Headless CMS - Manage API** tab and try a similar query:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts {
+    data {
+      id
+      entryId
+      values {
+        name
+        sku
+        description
+        category {
+          id
+          entryId
+          modelId
+        }
+      }
+    }
+  }
+}`}
+/>
+
+**Key difference**: In the Manage API, you can only query:
+
+- `id` - The full revision ID
+- `entryId` - The entry identifier
+- `modelId` - The content model identifier
+
+You **cannot** access `category.values` in the Manage API. If you try, you'll get an error.
+
+<Callout type="warning">
+  **Manage API reference limitation**: The Manage API only returns metadata for
+  referenced entries. To get the actual field values, you need to make a
+  separate query using the referenced `entryId`.
+</Callout>
+
+### Why This Difference Exists
+
+- **Read/Preview APIs** are designed for **content delivery** - they optimize for fetching complete, nested data structures for display
+- **Manage API** is designed for **content management** - it focuses on CRUD operations and revision control, where you primarily need entry references, not full nested data
+
+<Callout type="info">
+  You can still access the `meta` field on references in the Manage API to get revision information. For example: `category { id, entryId, meta { revisions { id } } }`
+</Callout>
+
+## Filtering Records
+
+You can filter records using the `where` parameter. Let's find all products with a price greater than or equal to 100:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    where: {
+      values: {
+        price_gte: 100
+      }
+    }
+  ) {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+    error {
+      message
+    }
+  }
+}`}
+/>
+
+### Common Filter Operators
+
+The filter syntax uses field names with operator suffixes inside the `values` object. Available operators depend on the field type:
+
+**For Number Fields (like `price`):**
+
+| Operator  | Meaning               | Example                    |
+| --------- | --------------------- | -------------------------- |
+| `_eq`     | Equals                | `price_eq: 99.99`          |
+| `_not`    | Not equals            | `price_not: 0`             |
+| `_in`     | In array              | `price_in: [29.99, 49.99]` |
+| `_not_in` | Not in array          | `price_not_in: [0]`        |
+| `_lt`     | Less than             | `price_lt: 100`            |
+| `_lte`    | Less than or equal    | `price_lte: 100`           |
+| `_gt`     | Greater than          | `price_gt: 50`             |
+| `_gte`    | Greater than or equal | `price_gte: 50`            |
+
+**For Text Fields (like `name`, `sku`, `description`):**
+
+| Operator          | Meaning            | Example                                |
+| ----------------- | ------------------ | -------------------------------------- |
+| (no suffix)       | Equals             | `name: "Laptop Pro 15"`                |
+| `_not`            | Not equals         | `name_not: "Old Product"`              |
+| `_in`             | In array           | `sku_in: ["LAP-PRO-15", "MOU-WRL-01"]` |
+| `_not_in`         | Not in array       | `sku_not_in: ["OLD-SKU"]`              |
+| `_contains`       | Contains substring | `name_contains: "Laptop"`              |
+| `_not_contains`   | Doesn't contain    | `name_not_contains: "Old"`             |
+| `_startsWith`     | Starts with        | `sku_startsWith: "LAP"`                |
+| `_not_startsWith` | Doesn't start with | `sku_not_startsWith: "OLD"`            |
+
+<Callout type="info">
+  **Note**: Comparison operators like `_gt`, `_gte`, `_lt`, `_lte` are **only
+  available for number fields**. Text fields use string-specific operators like
+  `_contains` and `_startsWith` instead.
+</Callout>
+
+<Callout type="hint">
+  Use the **DOCS panel** in the API Playground to explore all available filters
+  for your specific content models. Search for `ProductListWhereInput` to see
+  all filter options. You can also use **auto-complete** (Ctrl+Space /
+  Cmd+Space) inside the `values: {}` object to see available operators for each
+  field.
+</Callout>
+
+### Combining Multiple Filters
+
+You can combine multiple filters in the `where` clause:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    where: {
+      values: {
+        price_gte: 50
+        price_lte: 500
+        name_contains: "Pro"
+      }
+    }
+  ) {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+  }
+}`}
+/>
+
+This finds products where:
+
+- Price is between 50 and 500
+- Name contains "Pro"
+
+## Sorting Records
+
+Use the `sort` parameter to order results:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    sort: [values_price_ASC]
+  ) {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+  }
+}`}
+/>
+
+### Sort Options
+
+- **`values_price_ASC`** - Sort by price, ascending (low to high)
+- **`values_price_DESC`** - Sort by price, descending (high to low)
+- **`values_name_ASC`** - Sort by name alphabetically
+- **`createdOn_DESC`** - Sort by creation date, newest first
+- **`lastPublishedOn_DESC`** - Sort by last published date, newest first
+
+### Sorting by Multiple Fields
+
+You can sort by multiple fields - results are sorted by the first field, then ties are broken by the second field, and so on:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    sort: [values_name_ASC, values_price_ASC, createdOn_DESC]
+    where: {
+      values: {
+        price_gt: 100
+        price_lt: 200
+      }
+    }
+  ) {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+    error {
+      message
+    }
+  }
+}`}
+/>
+
+This query:
+
+1. **Filters** products with price between 100 and 200
+2. **Sorts** by name (A-Z), then by price (low to high), then by creation date (newest first)
+3. **Includes** error field for debugging
+
+## Searching Records
+
+The `search` parameter allows full-text search across your content:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    search: "laptop"
+  ) {
+    data {
+      id
+      values {
+        name
+        description
+      }
+    }
+  }
+}`}
+/>
+
+This searches for "laptop" across all searchable fields in the Product model (like name, description, SKU).
+
+<Callout type="info">
+  The `search` parameter performs a full-text search across fields marked as
+  searchable in your content model definition. It's more powerful than
+  `_contains` filters because it searches multiple fields simultaneously.
+</Callout>
+
+## Combining Filter, Sort, and Search
+
+You can combine all these parameters in a single query:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    where: {
+      values: {
+        price_gte: 50
+      }
+    }
+    sort: [values_price_DESC]
+    search: "pro"
+  ) {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+    error {
+      message
+    }
+  }
+}`}
+/>
+
+This query:
+
+1. **Filters** products with price >= 50
+2. **Searches** for "pro" across searchable fields
+3. **Sorts** results by price (highest first)
+4. **Includes** error field for debugging
+
+## Pagination
+
+For large datasets, use pagination to limit results:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    limit: 10
+  ) {
+    data {
+      id
+      values {
+        name
+      }
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}`}
+/>
+
+The `meta` object provides pagination information:
+
+- **`cursor`** - Use this value in the `after` parameter to fetch the next page
+- **`hasMoreItems`** - `true` if there are more items to fetch
+- **`totalCount`** - Total number of items across all pages
+
+### Fetching the Next Page
+
+To get the next page of results, use the `cursor` from the previous response:
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts(
+    limit: 10
+    after: "WyIyMDI0LTAxLTE1VDEyOjM0OjU2LjAwMFoiXQ=="
+  ) {
+    data {
+      id
+      values {
+        name
+      }
+    }
+    meta {
+      cursor
+      hasMoreItems
+      totalCount
+    }
+  }
+}`}
+/>
+
+<Callout type="hint">
+  The `cursor` is an opaque string - you don't need to understand its format.
+  Just pass the cursor value from the previous response to the `after`
+  parameter.
+</Callout>
+
+## Using Query Variables
+
+Instead of hardcoding values in your queries, you can use **variables** for reusability and better organization.
+
+### Step 1: Define the Query with Variables
+
+In the Query Editor, write:
+
+<CodeBlock
+  language="graphql"
+  code={`query GetProduct($entryId: ID!) {
+  getProduct(where: { entryId: $entryId }) {
+    data {
+      id
+      entryId
+      values {
+        name
+        price
+      }
+    }
+    error {
+      message
+    }
+  }
+}`}
+/>
+
+### Step 2: Add Variables
+
+Click the **QUERY VARIABLES** tab at the bottom of the playground and add:
+
+<CodeBlock
+  language="json"
+  code={`{
+  "entryId": "676d123456789"
+}`}
+/>
+
+### Step 3: Execute
+
+Press the Play button. The variable value will be substituted into the query automatically.
+
+<Callout type="success">
+  Using variables makes queries more maintainable and prevents GraphQL injection
+  attacks. It's a best practice, especially when building applications.
+</Callout>
+
+## Best Practices
+
+### 1. Always Include the Error Field
+
+<CodeBlock
+  language="graphql"
+  code={`{
+  listProducts {
+    data { ... }
+    error {
+      message
+      code
+    }
+  }
+}`}
+/>
+
+### 2. Request Only the Fields You Need
+
+<CodeBlock
+  language="graphql"
+  code={`# ❌ Bad: Requesting too many fields
+{
+  listProducts {
+    data {
+      id
+      entryId
+      createdOn
+      modifiedOn
+      savedOn
+      createdBy { ... }
+      ownedBy { ... }
+      values {
+        name
+        sku
+        description
+        price
+        inventory
+        images
+        specifications
+      }
+    }
+  }
+}
+
+# ✅ Good: Only request what you need
+
+{
+listProducts {
+data {
+id
+values {
+name
+price
+}
+}
+}
+}`}
+/>
+
+### 3. Use Variables for Dynamic Values
+
+<CodeBlock
+  language="graphql"
+  code={`# ❌ Bad: Hardcoded value
+{
+  getProduct(where: { entryId: "676d123456789" }) {
+    data { ... }
+  }
+}
+
+# ✅ Good: Use variables
+
+query GetProduct($entryId: ID!) {
+getProduct(where: { entryId: $entryId }) {
+data { ... }
+}
+}`}
+/>
+
+### 4. Use the Right API for Your Use Case
+
+- **Read API** → Production websites (published content only)
+- **Preview API** → Preview environments (all content including drafts)
+- **Manage API** → Admin interfaces (CRUD operations)
+
+### 5. Explore with the DOCS Panel
+
+Before writing queries, use the **DOCS panel** to discover:
+
+- Available fields
+- Filter options
+- Sort options
+- Required vs optional parameters
+
+## Summary
+
+In this lesson, you learned how to:
+
+- ✅ Write queries in the API Playground to fetch records
+- ✅ Include the `error` field in list queries for better error handling
+- ✅ Understand the **critical difference** between Manage API and Read/Preview API for reference fields:
+  - **Manage API**: Only returns `id`, `entryId`, `modelId` for references
+  - **Read/Preview API**: Can access nested `values` from references
+- ✅ Filter records using `where` with various operators
+- ✅ Sort records using the `sort` parameter
+- ✅ Search across multiple fields using the `search` parameter
+- ✅ Implement pagination with `limit`, `after`, and `meta`
+- ✅ Use query variables for reusable queries
+- ✅ Understand when to use Read API vs Preview API
+
+<Callout type="success">
+  The API Playground is your best tool for learning and experimenting with
+  Webiny's GraphQL APIs. Use it frequently to test queries before implementing
+  them in your applications!
+</Callout>
+
+In the next lesson, we'll explore a real Next.js application and see how to integrate these queries into your frontend code.
+
+<Quiz
+  question="In the Manage API, what can you access from a reference field?"
+  options={[
+    "The values object with all field data",
+    "Only id, entryId, and modelId",
+    "Only the name field",
+    "Everything including meta.revisions",
+  ]}
+  correctAnswer={2}
+  explanation="Correct! The Manage API only returns metadata for reference fields: id, entryId, and modelId. To get actual field values, you need to use the Read or Preview API, or make a separate query."
+  hint="Think about what the screenshots showed - Manage API can't access nested values."
+/>
+
+---
+
+**Next lesson**: [Learn Webiny Next.js App](/lessons/headless-cms/learn-webiny-nextjs-app) - See how to use these APIs in a real application.
