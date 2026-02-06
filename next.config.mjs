@@ -1,4 +1,7 @@
 import createMDX from "@next/mdx";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -16,9 +19,11 @@ const withMDX = createMDX({
   options: {
     remarkPlugins: [
       // Strip frontmatter from rendered content
-      "remark-frontmatter",
+      require.resolve("remark-frontmatter"),
       // Enable GitHub Flavored Markdown (tables, strikethrough, etc.)
-      "remark-gfm",
+      require.resolve("remark-gfm"),
+      // Expose frontmatter as props
+      require.resolve("remark-mdx-frontmatter"),
     ],
     rehypePlugins: [],
   },
