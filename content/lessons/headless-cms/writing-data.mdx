@@ -6,20 +6,17 @@ order: 9
 
 # Writing Data
 
-<ChapterOverview>
-
 In the previous lesson, you learned how to read data from Webiny using the Read API. Now it's time to learn how to write data back to Webiny!
 
 In this lesson, you'll build a contact form that allows users to submit their information, which will be stored in your Webiny Headless CMS.
 
-You'll learn:
-
-- How to create a content model for form submissions (via UI or code)
-- The difference between Read API and Manage API
-- How to create API keys with write-only permissions
-- How to write GraphQL mutations (not just queries)
-- How to use Next.js Server Actions for secure data submission
-- How to build a form with proper validation and error handling
+<ChapterOverview
+  items={[
+    { icon: "edit", text: "Write data using GraphQL mutations." },
+    { icon: "lock", text: "Securely submit data with Server Actions." },
+    { icon: "assignment_turned_in", text: "Validate forms and handle errors." },
+  ]}
+/>
 
 **What you'll build:**
 
@@ -36,8 +33,6 @@ A contact form page at `/contact` that:
 - Completed Lesson 8 (Next.js app setup)
 - Your Next.js app running locally
 - Access to Webiny Admin
-
-</ChapterOverview>
 
 ## Introduction
 
@@ -289,13 +284,30 @@ export default [
 ];`}
 />
 
-### Step 5: Deploy the Changes
+### Step 5: Apply the Changes
+
+To apply the changes, you can either deploy the project or use watch mode.
+
+#### Option 1: Deploy
 
 Deploy your Webiny project to apply the changes:
 
-<CodeBlock language="bash" code={`yarn webiny deploy --env dev`} />
+<CodeBlock language="bash" code={`yarn webiny deploy`} />
 
 Wait for the deployment to complete (this may take a few minutes).
+
+#### Option 2: Use Watch Mode (Faster for Development)
+
+<CodeBlock language="bash" code={`yarn webiny watch api`} />
+
+If you're using watch mode, the changes will be automatically deployed and visible in the Admin UI when you refresh. You can access the Admin either locally (via `yarn webiny watch admin`) or through your deployed Admin app (CloudFront URL).
+
+<Callout type="info" title="Watch Mode">
+  Watch mode is ideal during development as it automatically redeploys your API
+  changes without manual deployment. Since we're only changing backend API code
+  with these extensions, your Admin app (whether local or deployed) will pick up
+  the changes after a refresh.
+</Callout>
 
 ### Step 6: Verify in Webiny Admin
 
@@ -687,6 +699,7 @@ setFormData((prev) => ({
 };
 
 return (
+
 <main className="min-h-screen p-8">
 <div className="max-w-2xl mx-auto">
 <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
@@ -908,6 +921,7 @@ products = [];
 }
 
 return (
+
 <main className="min-h-screen p-8">
 <div className="max-w-4xl mx-auto">
 <div className="flex justify-between items-center mb-8">

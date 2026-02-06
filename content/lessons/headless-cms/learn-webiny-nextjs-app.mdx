@@ -6,16 +6,15 @@ order: 8
 
 # Learn Webiny Next.js App
 
-<ChapterOverview>
+In this lesson, you'll build a real Next.js application that fetches and displays products from your Webiny Headless CMS.
 
-In this lesson, you'll build a real Next.js application that fetches and displays products from your Webiny Headless CMS. You'll learn:
-
-- How to create API keys with proper permissions
-- How to securely store API credentials
-- How to write a reusable API client for Webiny
-- How to fetch data from Webiny in Next.js Server Components
-- How to use Static Site Generation (SSG) for optimal performance
-- How to display CMS content with proper error handling
+<ChapterOverview
+  items={[
+    { icon: "vpn_key", text: "Create and secure API keys." },
+    { icon: "api", text: "Build a reusable API client." },
+    { icon: "speed", text: "Fetch data using Static Site Generation (SSG)." },
+  ]}
+/>
 
 **What you'll build:**
 
@@ -27,8 +26,6 @@ A product listing homepage that fetches products from Webiny at build time and d
 - At least 2-3 published products in your Webiny CMS
 - Node.js 18+ and npm/yarn installed
 - Basic understanding of React and Next.js
-
-</ChapterOverview>
 
 ## Introduction
 
@@ -434,6 +431,7 @@ products = [];
 }
 
 return (
+
 <main className="min-h-screen p-8">
 <div className="max-w-4xl mx-auto">
 <h1 className="text-4xl font-bold mb-8">Our Products</h1>

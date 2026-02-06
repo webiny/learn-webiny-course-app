@@ -6,25 +6,24 @@ order: 6
 
 # Webiny API Playground
 
-<ChapterOverview>
-
 In this lesson, you'll learn about the Webiny API Playground - an interactive GraphQL IDE that allows you to explore and test your Headless CMS APIs without writing any frontend code.
 
-**What you'll learn:**
-
-- What the API Playground is and why it's useful
-- How to access the API Playground
-- How to explore the GraphQL schema
-- How to write and execute queries
-- How to work with different API types (Read, Preview, Manage)
+<ChapterOverview
+  items={[
+    {
+      icon: "explore",
+      text: "Explore the API Playground interface and schema.",
+    },
+    { icon: "code", text: "Write and execute GraphQL queries and mutations." },
+    { icon: "layers", text: "Work with Read, Preview, and Manage APIs." },
+  ]}
+/>
 
 **Prerequisites:**
 
 - Completed Lesson 3 (Creating a Content Model via UI)
 - Completed Lesson 4 (Creating a Content Model via Code)
 - Completed Lesson 5 (Understanding Different HCMS APIs)
-
-</ChapterOverview>
 
 ## What is the API Playground?
 
@@ -84,6 +83,13 @@ This is where you write your GraphQL queries and mutations. It features:
 - **Auto-completion** (press Ctrl+Space or Cmd+Space)
 - **Inline error detection**
 - **Line numbers** for easy reference
+
+<Callout type="warning">
+  **Note:** Your queries and results are **not saved persistently**. If you
+  refresh the page or navigate away from the API Playground, your work will be
+  lost. Make sure to copy any important queries to a local file if you need to
+  save them.
+</Callout>
 
 ### 2. Response Panel (Center Panel)
 
