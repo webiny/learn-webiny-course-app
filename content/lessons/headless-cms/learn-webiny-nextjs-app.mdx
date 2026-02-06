@@ -12,7 +12,7 @@ In this lesson, you'll build a real Next.js application that fetches and display
   items={[
     { icon: "vpn_key", text: "Create and secure API keys." },
     { icon: "api", text: "Build a reusable API client." },
-    { icon: "speed", text: "Fetch data using Static Site Generation (SSG)." },
+    { icon: "speed", text: "Fetch data using Static Site Generation (SSG)." }
   ]}
 />
 
@@ -41,8 +41,8 @@ In this lesson, we'll create a simple product listing page that fetches data fro
 This lesson establishes the foundation for the next lessons where we'll add a contact form (Lesson 9), implement lifecycle events (Lesson 10), and more!
 
 <Callout type="info">
-  We'll be building on this same Next.js application throughout lessons 8-12, so
-  each lesson adds new functionality to the same codebase.
+  We'll be building on this same Next.js application throughout lessons 8-12, so each lesson adds
+  new functionality to the same codebase.
 </Callout>
 
 ## Project Setup
@@ -53,20 +53,18 @@ First, let's set up the Next.js project.
 
 Clone the starter repository and install dependencies:
 
-<CodeBlock
-  language="bash"
-  code={`git clone https://github.com/webiny/learn-webiny-nextjs-app.git
+```bash title="Terminal"
+git clone https://github.com/webiny/learn-webiny-nextjs-app.git
 cd learn-webiny-nextjs-app
-npm install`}
-/>
+npm install
+```
 
 ### Step 2: Explore the Project Structure
 
 The starter project has a basic Next.js 16 setup with TypeScript and Tailwind CSS:
 
-<CodeBlock
-  language="text"
-  code={`learn-webiny-nextjs-app/
+```text title="Project Structure"
+learn-webiny-nextjs-app/
 ├── app/
 │   ├── layout.tsx        # Root layout
 │   ├── page.tsx          # Homepage (minimal starter)
@@ -79,20 +77,21 @@ The starter project has a basic Next.js 16 setup with TypeScript and Tailwind CS
 ├── .gitignore
 ├── package.json
 ├── tsconfig.json
-└── tailwind.config.ts`}
-/>
+└── tailwind.config.ts
+```
 
 ### Step 3: Run the Development Server
 
 Start the dev server to confirm everything works:
 
-<CodeBlock language="bash" code={`npm run dev`} />
+```bash title="Terminal"
+npm run dev
+```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. You should see a simple page with "Our Products" heading - that's your starting point!
 
 <Callout type="success">
-  Keep the dev server running while you work. It will auto-reload when you make
-  changes.
+  Keep the dev server running while you work. It will auto-reload when you make changes.
 </Callout>
 
 ## Finding Your API URL
@@ -101,7 +100,9 @@ Before we can connect to Webiny, we need to find the API URL.
 
 Open a terminal in your **Webiny project directory** (not the Next.js app) and run:
 
-<CodeBlock language="bash" code={`yarn webiny info`} />
+```bash title="Terminal"
+yarn webiny info
+```
 
 You'll see output similar to this:
 
@@ -113,16 +114,15 @@ You'll see output similar to this:
 
 Look for the **Headless CMS - Read API** URL in the output. It will look something like:
 
-<CodeBlock
-  language="text"
-  code={`https://d1ud9w3i9i7d77.cloudfront.net/cms/read`}
-/>
+```text title="Example API URL"
+https://d1ud9w3i9i7d77.cloudfront.net/cms/read
+```
 
 Copy this URL - you'll need it in the next step.
 
 <Callout type="hint">
-  We covered this in Lesson 5, but here's a quick reminder: The Read API only
-  returns published content, which is perfect for a public product listing page.
+  We covered this in Lesson 5, but here's a quick reminder: The Read API only returns published
+  content, which is perfect for a public product listing page.
 </Callout>
 
 ## Creating an API Key
@@ -170,18 +170,17 @@ Configure the permissions as follows:
 />
 
 <Callout type="info">
-  We're giving the API key access to only the Read API because that's all we
-  need for displaying published products. This follows the **principle of least
-  privilege** - only grant the permissions you actually need. In Lesson 9, we'll
-  expand this API key's permissions to include the Manage API for writing data.
+  We're giving the API key access to only the Read API because that's all we need for displaying
+  published products. This follows the **principle of least privilege** - only grant the permissions
+  you actually need. In Lesson 9, we'll expand this API key's permissions to include the Manage API
+  for writing data.
 </Callout>
 
 <Callout type="hint">
-  **Note:** Advanced permissions like "Content Model Groups", "Content Models",
-  and "Primary Actions" are only available with the Advanced Access Control
-  Layer (AACL), which requires a Business plan or higher. With the open-source
-  version of Webiny, selecting "Read" API access gives full read access to all
-  content.
+  **Note:** Advanced permissions like "Content Model Groups", "Content Models", and "Primary
+  Actions" are only available with the Advanced Access Control Layer (AACL), which requires a
+  Business plan or higher. With the open-source version of Webiny, selecting "Read" API access gives
+  full read access to all content.
 </Callout>
 
 ### Step 5: Save and Copy the Token
@@ -197,8 +196,8 @@ Configure the permissions as follows:
 />
 
 <Callout type="warning">
-  Keep your API token secure! Anyone with this token can access your Webiny CMS
-  data according to the permissions you've set.
+  Keep your API token secure! Anyone with this token can access your Webiny CMS data according to
+  the permissions you've set.
 </Callout>
 
 ## Setting Up Environment Variables
@@ -209,11 +208,10 @@ Now let's store the API URL and token securely.
 
 In your **Next.js project** (not the Webiny project), create a new file called `.env.local` in the root directory:
 
-<CodeBlock
-  language="bash"
-  code={`WEBINY_API_TOKEN=your-api-token-here
-WEBINY_READ_API_URL=https://your-url.cloudfront.net/cms/read`}
-/>
+```bash title=".env.local"
+WEBINY_API_TOKEN=your-api-token-here
+WEBINY_READ_API_URL=https://your-url.cloudfront.net/cms/read
+```
 
 Replace:
 
@@ -228,9 +226,8 @@ Environment variables are only loaded when the dev server starts, so you need to
 2. Start it again: `npm run dev`
 
 <Callout type="warning">
-  Never commit `.env.local` to version control! It's already included in
-  `.gitignore` by default, but always double-check before committing. API tokens
-  should remain secret.
+  Never commit `.env.local` to version control! It's already included in `.gitignore` by default,
+  but always double-check before committing. API tokens should remain secret.
 </Callout>
 
 ## Creating TypeScript Types
@@ -239,9 +236,8 @@ Let's create TypeScript interfaces for the data we'll be working with.
 
 Create a new file `lib/types.ts`:
 
-<CodeBlock
-  language="typescript"
-  code={`export interface Product {
+```typescript title="lib/types.ts"
+export interface Product {
   id: string;
   entryId: string;
   values: {
@@ -280,8 +276,8 @@ export interface WebinyListResponse<T> {
 export interface WebinyResponse<T> {
   data: T | null;
   error: WebinyError | null;
-}`}
-/>
+}
+```
 
 These interfaces match the structure of data returned by Webiny's Read API. Notice how:
 
@@ -296,60 +292,56 @@ Now let's create a reusable API client for communicating with Webiny.
 
 Create a new file `lib/webiny.ts`:
 
-<CodeBlock
-  language="typescript"
-  code={`import type { Product, WebinyListResponse } from "./types";
+```ts title="lib/webiny.ts"
+import type { Product, WebinyListResponse } from "./types";
 
 const API_URL = process.env.WEBINY_READ_API_URL!;
 const API_TOKEN = process.env.WEBINY_API_TOKEN!;
 
 if (!API_URL || !API_TOKEN) {
-throw new Error(
-"Missing required environment variables: WEBINY_READ_API_URL and WEBINY_API_TOKEN"
-);
+  throw new Error(
+    "Missing required environment variables: WEBINY_READ_API_URL and WEBINY_API_TOKEN"
+  );
 }
 
 interface GraphQLResponse<T> {
-data?: T;
-errors?: Array<{
-message: string;
-locations?: Array<{ line: number; column: number }>;
-}>;
+  data?: T;
+  errors?: Array<{
+    message: string;
+    locations?: Array<{ line: number; column: number }>;
+  }>;
 }
 
-async function fetchWebiny<T>(
-query: string,
-variables?: Record<string, unknown>
-): Promise<T> {
-const response = await fetch(API_URL, {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-Authorization: API_TOKEN,
-},
-body: JSON.stringify({ query, variables }),
-});
+async function fetchWebiny<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: API_TOKEN
+    },
+    body: JSON.stringify({ query, variables })
+  });
 
-if (!response.ok) {
-throw new Error(\`HTTP error! status: \${response.status}\`);
-}
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
 
-const result: GraphQLResponse<T> = await response.json();
+  const result: GraphQLResponse<T> = await response.json();
 
-// Check for GraphQL-level errors (syntax, validation, etc.)
-if (result.errors) {
-throw new Error(\`GraphQL error: \${result.errors[0].message}\`);
-}
+  // Check for GraphQL-level errors (syntax, validation, etc.)
+  if (result.errors) {
+    throw new Error(`GraphQL error: ${result.errors[0].message}`);
+  }
 
-if (!result.data) {
-throw new Error("No data returned from GraphQL query");
-}
+  if (!result.data) {
+    throw new Error("No data returned from GraphQL query");
+  }
 
-return result.data;
+  return result.data;
 }
 
 export async function getProducts(): Promise<Product[]> {
-  const LIST_PRODUCTS_QUERY = /* GraphQL */ \`
+  const LIST_PRODUCTS_QUERY = /* GraphQL */ `
     query ListProducts {
       listProducts {
         data {
@@ -368,22 +360,20 @@ export async function getProducts(): Promise<Product[]> {
         }
       }
     }
-  \`;
+  `;
 
-const response = await fetchWebiny<{
-listProducts: WebinyListResponse<Product>;
-}>(LIST_PRODUCTS_QUERY);
+  const response = await fetchWebiny<{
+    listProducts: WebinyListResponse<Product>;
+  }>(LIST_PRODUCTS_QUERY);
 
-// Check for Webiny-level errors (business logic errors)
-if (response.listProducts.error) {
-throw new Error(
-\`Webiny error: \${response.listProducts.error.message}\`
-);
+  // Check for Webiny-level errors (business logic errors)
+  if (response.listProducts.error) {
+    throw new Error(`Webiny error: ${response.listProducts.error.message}`);
+  }
+
+  return response.listProducts.data;
 }
-
-return response.listProducts.data;
-}`}
-/>
+```
 
 Let's break down what this code does:
 
@@ -403,9 +393,9 @@ Let's break down what this code does:
    - Returns array of products
 
 <Callout type="info">
-  Remember from Lesson 7: There are two types of errors: - **GraphQL errors**
-  (top-level `errors` array) - syntax/validation issues - **Webiny errors**
-  (inside `error` field) - business logic issues Our API client handles both!
+  Remember from Lesson 7: There are two types of errors: - **GraphQL errors** (top-level `errors`
+  array) - syntax/validation issues - **Webiny errors** (inside `error` field) - business logic
+  issues Our API client handles both!
 </Callout>
 
 ## Fetching Data in the Homepage
@@ -414,27 +404,25 @@ Now let's use our API client to fetch products and display them!
 
 Update `app/page.tsx`:
 
-<CodeBlock
-  language="typescript"
-  code={`import { getProducts } from "@/lib/webiny";
+```tsx title="app/page.tsx"
+import { getProducts } from "@/lib/webiny";
 import type { Product } from "@/lib/types";
 
 export default async function HomePage() {
   let products: Product[];
   let error: string | null = null;
 
-try {
-products = await getProducts();
-} catch (err) {
-error = err instanceof Error ? err.message : "Failed to fetch products";
-products = [];
-}
+  try {
+    products = await getProducts();
+  } catch (err) {
+    error = err instanceof Error ? err.message : "Failed to fetch products";
+    products = [];
+  }
 
-return (
-
-<main className="min-h-screen p-8">
-<div className="max-w-4xl mx-auto">
-<h1 className="text-4xl font-bold mb-8">Our Products</h1>
+  return (
+    <main className="min-h-screen p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8">Our Products</h1>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded mb-6">
@@ -451,16 +439,14 @@ return (
 
         {products.length > 0 && (
           <div className="space-y-6">
-            {products.map((product) => (
+            {products.map(product => (
               <div
                 key={product.id}
                 className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
               >
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-2xl font-semibold">{product.values.name}</h2>
-                  <span className="text-2xl font-bold text-blue-600">
-                    \${product.values.price}
-                  </span>
+                  <span className="text-2xl font-bold text-blue-600">${product.values.price}</span>
                 </div>
                 <p className="text-gray-600 mb-3">{product.values.description}</p>
                 <p className="text-sm text-gray-500">SKU: {product.values.sku}</p>
@@ -474,10 +460,9 @@ return (
         </div>
       </div>
     </main>
-
-);
-}`}
-/>
+  );
+}
+```
 
 Let's understand what's happening here:
 
@@ -495,8 +480,8 @@ Let's understand what's happening here:
    - SKU (small text)
 
 <Callout type="success">
-  This is a Server Component, which means it runs on the server (or at build
-  time). The Webiny API is called during the build process, not in the browser!
+  This is a Server Component, which means it runs on the server (or at build time). The Webiny API
+  is called during the build process, not in the browser!
 </Callout>
 
 ## Testing in Development
@@ -513,33 +498,35 @@ Now let's see SSG (Static Site Generation) in action!
 
 Run the build command:
 
-<CodeBlock language="bash" code={`npm run build`} />
+```bash title="Terminal"
+npm run build
+```
 
 You should see output similar to this:
 
-<CodeBlock
-  language="text"
-  code={`Route (app)                              Size     First Load JS
+```text title="Build Output"
+Route (app)                              Size     First Load JS
 ┌ ○ /                                    5.2 kB         87.3 kB
 └ ○ /favicon.ico                         0 B                0 B
 
-○ (Static) prerendered as static content`}
-/>
+○ (Static) prerendered as static content
+```
 
 The `○ (Static)` indicator means the page was **statically generated** at build time. This is exactly what we want!
 
 ### Step 2: Start the Production Server
 
-<CodeBlock language="bash" code={`npm start`} />
+```bash title="Terminal"
+npm start
+```
 
 ### Step 3: Test the Production Build
 
 Open [http://localhost:3000](http://localhost:3000) again. The page should load instantly because it's serving pre-built HTML with embedded product data!
 
 <Callout type="info">
-  In production, the Webiny API is called only once during `npm run build`.
-  Users get instant page loads because the HTML is already generated with all
-  product data included.
+  In production, the Webiny API is called only once during `npm run build`. Users get instant page
+  loads because the HTML is already generated with all product data included.
 </Callout>
 
 ## How Static Site Generation Works
@@ -652,8 +639,8 @@ In the next lesson (**Writing Data**), we'll add a contact form to this applicat
 
 <Callout type="success">
   Want to see the complete code? Check out the [completed example
-  repository](https://github.com/webiny/learn-webiny-nextjs-app/tree/completed)
-  on the `completed` branch.
+  repository](https://github.com/webiny/learn-webiny-nextjs-app/tree/completed) on the `completed`
+  branch.
 </Callout>
 
 <Quiz
@@ -662,7 +649,7 @@ In the next lesson (**Writing Data**), we'll add a contact form to this applicat
     "On every page load",
     "Once at build time",
     "Only on the first visit",
-    "Every 60 seconds",
+    "Every 60 seconds"
   ]}
   correctAnswer={2}
   explanation="Correct! SSG fetches data during 'npm run build' and embeds it into static HTML. The API is not called on each page load, making the page extremely fast to load."

@@ -13,9 +13,9 @@ In this lesson, you'll use the API Playground to read and explore content from y
     { icon: "code", text: "Write GraphQL queries to fetch content." },
     {
       icon: "filter_alt",
-      text: "Filter, sort, and search for specific records.",
+      text: "Filter, sort, and search for specific records."
     },
-    { icon: "link", text: "Handle reference fields across different APIs." },
+    { icon: "link", text: "Handle reference fields across different APIs." }
   ]}
 />
 
@@ -35,8 +35,8 @@ Make sure you have:
 3. **Published both entries** so they appear in the Read API
 
 <Callout type="hint">
-  If you haven't created any content yet, go to the Webiny Admin → Headless CMS
-  → Product Categories and Products to create and publish a few test entries.
+  If you haven't created any content yet, go to the Webiny Admin → Headless CMS → Product Categories
+  and Products to create and publish a few test entries.
 </Callout>
 
 ## Your First Query: Listing All Products
@@ -45,9 +45,8 @@ Let's start by fetching all published products using the **Read API**.
 
 Open the **API Playground** and switch to the **Headless CMS - Read API** tab. In the Query Editor (left panel), write this query:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts {
     data {
       id
@@ -65,22 +64,20 @@ Open the **API Playground** and switch to the **Headless CMS - Read API** tab. I
       data
     }
   }
-}`}
-/>
+}
+```
 
 <Callout type="info">
-  Notice we've included the `error` field in the query. As mentioned in Lesson
-  6, this is a best practice for list queries - it helps you catch and debug
-  issues if anything goes wrong.
+  Notice we've included the `error` field in the query. As mentioned in Lesson 6, this is a best
+  practice for list queries - it helps you catch and debug issues if anything goes wrong.
 </Callout>
 
 Click the **Play button (▶)** or press **Ctrl+Enter** (Windows/Linux) / **Cmd+Enter** (Mac) to execute the query.
 
 You'll see a response in the **Response Panel** (center panel) similar to this:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "data": {
     "listProducts": {
       "data": [
@@ -108,21 +105,20 @@ You'll see a response in the **Response Panel** (center panel) similar to this:
       "error": null
     }
   }
-}`}
-/>
+}
+```
 
 When there are no errors, the `error` field will be `null` as shown above.
 
 <Callout type="info">
-  The **Read API** only returns **published** content. If you created entries
-  but haven't published them yet, they won't appear in this response.
+  The **Read API** only returns **published** content. If you created entries but haven't published
+  them yet, they won't appear in this response.
 </Callout>
 
 If an error occurs (for example, due to invalid filtering), you'll see details in the `error` field:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "data": {
     "listProducts": {
       "data": null,
@@ -135,8 +131,8 @@ If an error occurs (for example, due to invalid filtering), you'll see details i
       }
     }
   }
-}`}
-/>
+}
+```
 
 ### GraphQL-Level Errors vs Webiny-Level Errors
 
@@ -146,9 +142,8 @@ However, **GraphQL-level errors** (syntax errors, type mismatches, invalid argum
 
 For example, if you pass an invalid type to an argument:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts(where: { id: [] }) {
     data {
       id
@@ -166,14 +161,13 @@ For example, if you pass an invalid type to an argument:
       data
     }
   }
-}`}
-/>
+}
+```
 
 You'll get a **GraphQL validation error** at the top level:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "errors": [
     {
       "message": "ID cannot represent a non-string and non-integer value: []",
@@ -185,23 +179,22 @@ You'll get a **GraphQL validation error** at the top level:
       ]
     }
   ]
-}`}
-/>
+}
+```
 
 <Callout type="warning">
-  Notice the difference: - **GraphQL errors**: Top-level `"errors"` array
-  (plural) - these are validation/syntax errors caught by GraphQL before Webiny
-  processes the query - **Webiny errors**: Inside the query result as `"error"`
-  field (singular) - these are business logic errors from Webiny itself
+  Notice the difference: - **GraphQL errors**: Top-level `"errors"` array (plural) - these are
+  validation/syntax errors caught by GraphQL before Webiny processes the query - **Webiny errors**:
+  Inside the query result as `"error"` field (singular) - these are business logic errors from
+  Webiny itself
 </Callout>
 
 ## Fetching a Single Record
 
 To fetch a specific product by its `entryId`, use the `getProduct` query:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   getProduct(where: { entryId: "676d123456789" }) {
     data {
       id
@@ -219,22 +212,20 @@ To fetch a specific product by its `entryId`, use the `getProduct` query:
       data
     }
   }
-}`}
-/>
+}
+```
 
 <Callout type="hint">
-  Replace `"676d123456789"` with an actual `entryId` from your products. You can
-  get entry IDs from the `listProducts` query response or from the Webiny Admin
-  UI.
+  Replace `"676d123456789"` with an actual `entryId` from your products. You can get entry IDs from
+  the `listProducts` query response or from the Webiny Admin UI.
 </Callout>
 
 ### What If the Entry Doesn't Exist?
 
 If you query for an `entryId` that doesn't exist, the `data` will be `null` and the `error` field will contain details:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "data": {
     "getProduct": {
       "data": null,
@@ -245,8 +236,8 @@ If you query for an `entryId` that doesn't exist, the `data` will be `null` and 
       }
     }
   }
-}`}
-/>
+}
+```
 
 This is why including the `error` field is important - it helps you understand why a query returned no data.
 
@@ -258,9 +249,8 @@ Now comes the important part: **how different APIs handle reference fields**. Th
 
 In the **Read API** (and **Preview API**), you can query **nested values** from referenced entries. Let's fetch products with their category details:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts {
     data {
       id
@@ -278,14 +268,13 @@ In the **Read API** (and **Preview API**), you can query **nested values** from 
       }
     }
   }
-}`}
-/>
+}
+```
 
 Notice how we can access `category.values.name` - the actual field values from the referenced Product Category entry. The response includes the full category data:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "data": {
     "listProducts": {
       "data": [
@@ -307,16 +296,15 @@ Notice how we can access `category.values.name` - the actual field values from t
       ]
     }
   }
-}`}
-/>
+}
+```
 
 ### Manage API: Metadata Only
 
 Now switch to the **Headless CMS - Manage API** tab and try a similar query:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts {
     data {
       id
@@ -333,8 +321,8 @@ Now switch to the **Headless CMS - Manage API** tab and try a similar query:
       }
     }
   }
-}`}
-/>
+}
+```
 
 **Key difference**: In the Manage API, you can only query:
 
@@ -345,9 +333,8 @@ Now switch to the **Headless CMS - Manage API** tab and try a similar query:
 You **cannot** access `category.values` in the Manage API. If you try, you'll get an error.
 
 <Callout type="warning">
-  **Manage API reference limitation**: The Manage API only returns metadata for
-  referenced entries. To get the actual field values, you need to make a
-  separate query using the referenced `entryId`.
+  **Manage API reference limitation**: The Manage API only returns metadata for referenced entries.
+  To get the actual field values, you need to make a separate query using the referenced `entryId`.
 </Callout>
 
 ### Why This Difference Exists
@@ -363,16 +350,9 @@ You **cannot** access `category.values` in the Manage API. If you try, you'll ge
 
 You can filter records using the `where` parameter. Let's find all products with a price greater than or equal to 100:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    where: {
-      values: {
-        price_gte: 100
-      }
-    }
-  ) {
+```graphql
+{
+  listProducts(where: { values: { price_gte: 100 } }) {
     data {
       id
       values {
@@ -384,8 +364,8 @@ You can filter records using the `where` parameter. Let's find all products with
       message
     }
   }
-}`}
-/>
+}
+```
 
 ### Common Filter Operators
 
@@ -418,35 +398,24 @@ The filter syntax uses field names with operator suffixes inside the `values` ob
 | `_not_startsWith` | Doesn't start with | `sku_not_startsWith: "OLD"`            |
 
 <Callout type="info">
-  **Note**: Comparison operators like `_gt`, `_gte`, `_lt`, `_lte` are **only
-  available for number fields**. Text fields use string-specific operators like
-  `_contains` and `_startsWith` instead.
+  **Note**: Comparison operators like `_gt`, `_gte`, `_lt`, `_lte` are **only available for number
+  fields**. Text fields use string-specific operators like `_contains` and `_startsWith` instead.
 </Callout>
 
 <Callout type="hint">
-  Use the **DOCS panel** in the API Playground to explore all available filters
-  for your specific content models. Search for `ProductListWhereInput` to see
-  all filter options. You can also use **auto-complete** (Ctrl+Space /
-  Cmd+Space) inside the `values: {}` object to see available operators for each
-  field.
+  Use the **DOCS panel** in the API Playground to explore all available filters for your specific
+  content models. Search for `ProductListWhereInput` to see all filter options. You can also use
+  **auto-complete** (Ctrl+Space / Cmd+Space) inside the `values: {}` object to see available
+  operators for each field.
 </Callout>
 
 ### Combining Multiple Filters
 
 You can combine multiple filters in the `where` clause:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    where: {
-      values: {
-        price_gte: 50
-        price_lte: 500
-        name_contains: "Pro"
-      }
-    }
-  ) {
+```graphql
+{
+  listProducts(where: { values: { price_gte: 50, price_lte: 500, name_contains: "Pro" } }) {
     data {
       id
       values {
@@ -455,8 +424,8 @@ You can combine multiple filters in the `where` clause:
       }
     }
   }
-}`}
-/>
+}
+```
 
 This finds products where:
 
@@ -467,12 +436,9 @@ This finds products where:
 
 Use the `sort` parameter to order results:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    sort: [values_price_ASC]
-  ) {
+```graphql
+{
+  listProducts(sort: [values_price_ASC]) {
     data {
       id
       values {
@@ -481,8 +447,8 @@ Use the `sort` parameter to order results:
       }
     }
   }
-}`}
-/>
+}
+```
 
 ### Sort Options
 
@@ -496,17 +462,11 @@ Use the `sort` parameter to order results:
 
 You can sort by multiple fields - results are sorted by the first field, then ties are broken by the second field, and so on:
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts(
     sort: [values_name_ASC, values_price_ASC, createdOn_DESC]
-    where: {
-      values: {
-        price_gt: 100
-        price_lt: 200
-      }
-    }
+    where: { values: { price_gt: 100, price_lt: 200 } }
   ) {
     data {
       id
@@ -519,8 +479,8 @@ You can sort by multiple fields - results are sorted by the first field, then ti
       message
     }
   }
-}`}
-/>
+}
+```
 
 This query:
 
@@ -532,12 +492,9 @@ This query:
 
 The `search` parameter allows full-text search across your content:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    search: "laptop"
-  ) {
+```graphql
+{
+  listProducts(search: "laptop") {
     data {
       id
       values {
@@ -546,33 +503,24 @@ The `search` parameter allows full-text search across your content:
       }
     }
   }
-}`}
-/>
+}
+```
 
 This searches for "laptop" across all searchable fields in the Product model (like name, description, SKU).
 
 <Callout type="info">
-  The `search` parameter performs a full-text search across fields marked as
-  searchable in your content model definition. It's more powerful than
-  `_contains` filters because it searches multiple fields simultaneously.
+  The `search` parameter performs a full-text search across fields marked as searchable in your
+  content model definition. It's more powerful than `_contains` filters because it searches multiple
+  fields simultaneously.
 </Callout>
 
 ## Combining Filter, Sort, and Search
 
 You can combine all these parameters in a single query:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    where: {
-      values: {
-        price_gte: 50
-      }
-    }
-    sort: [values_price_DESC]
-    search: "pro"
-  ) {
+```graphql
+{
+  listProducts(where: { values: { price_gte: 50 } }, sort: [values_price_DESC], search: "pro") {
     data {
       id
       values {
@@ -584,8 +532,8 @@ You can combine all these parameters in a single query:
       message
     }
   }
-}`}
-/>
+}
+```
 
 This query:
 
@@ -598,12 +546,9 @@ This query:
 
 For large datasets, use pagination to limit results:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    limit: 10
-  ) {
+```graphql
+{
+  listProducts(limit: 10) {
     data {
       id
       values {
@@ -616,8 +561,8 @@ For large datasets, use pagination to limit results:
       totalCount
     }
   }
-}`}
-/>
+}
+```
 
 The `meta` object provides pagination information:
 
@@ -629,13 +574,9 @@ The `meta` object provides pagination information:
 
 To get the next page of results, use the `cursor` from the previous response:
 
-<CodeBlock
-  language="graphql"
-  code={`{
-  listProducts(
-    limit: 10
-    after: "WyIyMDI0LTAxLTE1VDEyOjM0OjU2LjAwMFoiXQ=="
-  ) {
+```graphql
+{
+  listProducts(limit: 10, after: "WyIyMDI0LTAxLTE1VDEyOjM0OjU2LjAwMFoiXQ==") {
     data {
       id
       values {
@@ -648,13 +589,12 @@ To get the next page of results, use the `cursor` from the previous response:
       totalCount
     }
   }
-}`}
-/>
+}
+```
 
 <Callout type="hint">
-  The `cursor` is an opaque string - you don't need to understand its format.
-  Just pass the cursor value from the previous response to the `after`
-  parameter.
+  The `cursor` is an opaque string - you don't need to understand its format. Just pass the cursor
+  value from the previous response to the `after` parameter.
 </Callout>
 
 ## Using Query Variables
@@ -665,9 +605,8 @@ Instead of hardcoding values in your queries, you can use **variables** for reus
 
 In the Query Editor, write:
 
-<CodeBlock
-  language="graphql"
-  code={`query GetProduct($entryId: ID!) {
+```graphql
+query GetProduct($entryId: ID!) {
   getProduct(where: { entryId: $entryId }) {
     data {
       id
@@ -681,36 +620,34 @@ In the Query Editor, write:
       message
     }
   }
-}`}
-/>
+}
+```
 
 ### Step 2: Add Variables
 
 Click the **QUERY VARIABLES** tab at the bottom of the playground and add:
 
-<CodeBlock
-  language="json"
-  code={`{
+```json
+{
   "entryId": "676d123456789"
-}`}
-/>
+}
+```
 
 ### Step 3: Execute
 
 Press the Play button. The variable value will be substituted into the query automatically.
 
 <Callout type="success">
-  Using variables makes queries more maintainable and prevents GraphQL injection
-  attacks. It's a best practice, especially when building applications.
+  Using variables makes queries more maintainable and prevents GraphQL injection attacks. It's a
+  best practice, especially when building applications.
 </Callout>
 
 ## Best Practices
 
 ### 1. Always Include the Error Field
 
-<CodeBlock
-  language="graphql"
-  code={`{
+```graphql
+{
   listProducts {
     data { ... }
     error {
@@ -718,14 +655,13 @@ Press the Play button. The variable value will be substituted into the query aut
       code
     }
   }
-}`}
-/>
+}
+```
 
 ### 2. Request Only the Fields You Need
 
-<CodeBlock
-  language="graphql"
-  code={`# ❌ Bad: Requesting too many fields
+```graphql
+# ❌ Bad: Requesting too many fields
 {
   listProducts {
     data {
@@ -761,14 +697,13 @@ price
 }
 }
 }
-}`}
-/>
+}
+```
 
 ### 3. Use Variables for Dynamic Values
 
-<CodeBlock
-  language="graphql"
-  code={`# ❌ Bad: Hardcoded value
+```graphql
+# ❌ Bad: Hardcoded value
 {
   getProduct(where: { entryId: "676d123456789" }) {
     data { ... }
@@ -781,8 +716,8 @@ query GetProduct($entryId: ID!) {
 getProduct(where: { entryId: $entryId }) {
 data { ... }
 }
-}`}
-/>
+}
+```
 
 ### 4. Use the Right API for Your Use Case
 
@@ -816,9 +751,8 @@ In this lesson, you learned how to:
 - ✅ Understand when to use Read API vs Preview API
 
 <Callout type="success">
-  The API Playground is your best tool for learning and experimenting with
-  Webiny's GraphQL APIs. Use it frequently to test queries before implementing
-  them in your applications!
+  The API Playground is your best tool for learning and experimenting with Webiny's GraphQL APIs.
+  Use it frequently to test queries before implementing them in your applications!
 </Callout>
 
 In the next lesson, we'll explore a real Next.js application and see how to integrate these queries into your frontend code.
@@ -829,7 +763,7 @@ In the next lesson, we'll explore a real Next.js application and see how to inte
     "The values object with all field data",
     "Only id, entryId, and modelId",
     "Only the name field",
-    "Everything including meta.revisions",
+    "Everything including meta.revisions"
   ]}
   correctAnswer={2}
   explanation="Correct! The Manage API only returns metadata for reference fields: id, entryId, and modelId. To get actual field values, you need to use the Read or Preview API, or make a separate query."
