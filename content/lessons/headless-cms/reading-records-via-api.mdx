@@ -734,6 +734,98 @@ Before writing queries, use the **DOCS panel** to discover:
 - Sort options
 - Required vs optional parameters
 
+## Using the Webiny SDK
+
+While the API Playground uses GraphQL, in your JavaScript/TypeScript applications, you'll use the **Webiny SDK**. This library provides a convenient way to interact with the Headless CMS without writing raw GraphQL queries.
+
+First, you'll need to install the SDK (this is already included in the starter kit):
+
+```bash
+npm install @webiny/sdk
+```
+
+Then, initialize the SDK:
+
+```typescript
+import { WebinySdk } from "@webiny/sdk";
+
+const sdk = new WebinySdk({
+  apiToken: "YOUR_API_TOKEN",
+  apiHost: "https://your-api-url.com",
+  apiTenant: "root" // or your specific tenant
+});
+```
+
+Here's how the SDK methods map to the GraphQL operations you've just learned:
+
+### Listing Entries
+
+Equivalent to `listProducts`:
+
+```typescript
+const response = await sdk.cms.listEntries({
+  modelId: "product",
+  fields: ["values.name", "values.description", "values.price", "values.sku"],
+  // Optional parameters
+  limit: 10
+});
+```
+
+### Getting a Single Entry
+
+Equivalent to `getProduct`:
+
+```typescript
+const response = await sdk.cms.getEntry({
+  modelId: "product",
+  id: "676d123456789" // entryId or full ID
+});
+```
+
+### Filtering
+
+Equivalent to `where` clause:
+
+```typescript
+const response = await sdk.cms.listEntries({
+  modelId: "product",
+  where: {
+    price_gte: 100,
+    name_contains: "Pro"
+  }
+});
+```
+
+<Callout type="info">
+  The SDK simplifies the `where` structure. You don't need to wrap fields in a `values` object -
+  simply pass the field name and operator directly.
+</Callout>
+
+### Sorting
+
+Equivalent to `sort` parameter:
+
+```typescript
+const response = await sdk.cms.listEntries({
+  modelId: "product",
+  sort: {
+    price: "desc",
+    name: "asc"
+  }
+});
+```
+
+### Searching
+
+Equivalent to `search` parameter:
+
+```typescript
+const response = await sdk.cms.listEntries({
+  modelId: "product",
+  search: "laptop"
+});
+```
+
 ## Summary
 
 In this lesson, you learned how to:

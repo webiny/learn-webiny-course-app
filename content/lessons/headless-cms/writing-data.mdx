@@ -1,6 +1,6 @@
 ---
 title: "Writing Data"
-description: "Create a contact form that submits data to Webiny Headless CMS using mutations and the Manage API."
+description: "Create a contact form that submits data to Webiny Headless CMS using the Webiny SDK and the Manage API."
 order: 9
 ---
 
@@ -12,7 +12,7 @@ In this lesson, you'll build a contact form that allows users to submit their in
 
 <ChapterOverview
   items={[
-    { icon: "edit", text: "Write data using GraphQL mutations." },
+    { icon: "edit", text: "Write data using the Webiny SDK." },
     { icon: "lock", text: "Securely submit data with Server Actions." },
     { icon: "assignment_turned_in", text: "Validate forms and handle errors." }
   ]}
@@ -396,25 +396,26 @@ Look for the **Headless CMS - Manage API** URL. It will look like:
 https://d1ud9w3i9i7d77.cloudfront.net/cms/manage
 ```
 
+The host is the domain part: `https://d1ud9w3i9i7d77.cloudfront.net`. This should match what you already have in `WEBINY_API_HOST`.
+
 ### Step 2: Update .env.local
 
-Open your `.env.local` file in the Next.js app and add the Manage API URL:
+In the previous lesson, we added `WEBINY_API_HOST` to our environment variables. This is used for both reading and writing data, so we don't need to add separate variables for the Manage API!
+
+Your `.env.local` should look like this:
 
 ```bash
-# API Token (works for both Read and Manage APIs)
+# API Token (needs both Read and Manage permissions)
 WEBINY_API_TOKEN=your-api-token-here
 
-# API Endpoints
-
-WEBINY_READ_API_URL=https://your-url.cloudfront.net/cms/read
-WEBINY_MANAGE_API_URL=https://your-url.cloudfront.net/cms/manage
+# API Host
+WEBINY_API_HOST=https://your-url.cloudfront.net
+# WEBINY_API_TENANT=root  # Only needed for multi-tenancy setups
 ```
 
-Replace `https://your-url.cloudfront.net/cms/manage` with your actual Manage API URL.
-
 <Callout type="success">
-  Notice we're using the **same token** (`WEBINY_API_TOKEN`) for both APIs! This works because we
-  updated the API key permissions to include both Read and Manage access.
+  Because we're using the SDK, we just need the base **API Host** and the SDK handles the endpoints
+  internally. The tenant defaults to `"root"` when not specified.
 </Callout>
 
 ### Step 3: Restart Dev Server
@@ -455,139 +456,68 @@ export interface ContactFormData {
   email: string;
   message: string;
 }
-
-// Mutation response type
-export interface CreateContactSubmissionResponse {
-  createContactSubmission: {
-    data: ContactSubmission | null;
-    error: WebinyError | null;
-  };
-}
 ```
 
 ## Creating the Mutation Function
 
-Now let's add a function to submit contact form data to Webiny.
+Now let's add a function to submit contact form data to Webiny using the SDK.
 
-Create a new file `lib/mutations.ts`:
+We'll reuse the same SDK instance from `lib/webiny.ts`, but we also need to export it from there first.
+
+Update `lib/webiny.ts` to export the SDK:
+
+```typescript title="lib/webiny.ts"
+import { WebinySdk } from "@webiny/sdk";
+
+const API_HOST = process.env.WEBINY_API_HOST!;
+const API_TOKEN = process.env.WEBINY_API_TOKEN!;
+const API_TENANT = process.env.WEBINY_API_TENANT || "root";
+
+if (!API_HOST || !API_TOKEN) {
+  throw new Error("Missing required environment variables: WEBINY_API_HOST and WEBINY_API_TOKEN");
+}
+
+// Initialize and export the SDK
+export const sdk = new WebinySdk({
+  apiToken: API_TOKEN,
+  apiHost: API_HOST,
+  apiTenant: API_TENANT
+});
+```
+
+Now create a new file `lib/mutations.ts`:
 
 ```typescript
-import type {
-  ContactFormData,
-  CreateContactSubmissionResponse,
-} from "./types";
+import { sdk } from "./webiny";
+import type { ContactFormData, ContactSubmission } from "./types";
 
-const MANAGE_API_URL = process.env.WEBINY_MANAGE_API_URL!;
-const API_TOKEN = process.env.WEBINY_API_TOKEN!;
-
-if (!MANAGE_API_URL || !API_TOKEN) {
-throw new Error(
-"Missing required environment variables: WEBINY_MANAGE_API_URL and WEBINY_API_TOKEN"
-);
-}
-
-interface GraphQLResponse<T> {
-data?: T;
-errors?: Array<{
-message: string;
-locations?: Array<{ line: number; column: number }>;
-}>;
-}
-
-async function fetchWebinyMutation<T>(
-query: string,
-variables?: Record<string, unknown>
-): Promise<T> {
-const response = await fetch(MANAGE_API_URL, {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-Authorization: API_TOKEN,
-},
-body: JSON.stringify({ query, variables }),
-});
-
-if (!response.ok) {
-throw new Error(\`HTTP error! status: \${response.status}\`);
-}
-
-const result: GraphQLResponse<T> = await response.json();
-
-// Check for GraphQL-level errors
-if (result.errors) {
-throw new Error(\`GraphQL error: \${result.errors[0].message}\`);
-}
-
-if (!result.data) {
-throw new Error("No data returned from GraphQL mutation");
-}
-
-return result.data;
-}
-
-export async function createContactSubmission(
-  data: ContactFormData
-): Promise<ContactSubmission> {
-  const CREATE_CONTACT_SUBMISSION_MUTATION = /* GraphQL */ \`
-    mutation CreateContactSubmission($data: ContactSubmissionInput!) {
-      createContactSubmission(data: $data) {
-        data {
-          id
-          entryId
-          values {
-            name
-            email
-            message
-            submittedAt
-          }
-        }
-        error {
-          message
-          code
-          data
-        }
-      }
+export async function createContactSubmission(data: ContactFormData): Promise<ContactSubmission> {
+  // Use SDK to create a new entry
+  const response = await sdk.cms.createEntry({
+    modelId: "contactSubmission",
+    values: {
+      name: data.name,
+      email: data.email,
+      message: data.message,
+      submittedAt: new Date().toISOString()
     }
-  \`;
+  });
 
-const response = await fetchWebinyMutation<CreateContactSubmissionResponse>(
-CREATE_CONTACT_SUBMISSION_MUTATION,
-{
-data: {
-name: data.name,
-email: data.email,
-message: data.message,
-submittedAt: new Date().toISOString(),
-},
-}
-);
+  if (response.error) {
+    throw new Error(response.error.message || "Failed to create contact submission");
+  }
 
-// Check for Webiny-level errors
-if (response.createContactSubmission.error) {
-throw new Error(
-response.createContactSubmission.error.message ||
-"Failed to create contact submission"
-);
-}
+  if (!response.data) {
+    throw new Error("No data returned from createContactSubmission");
+  }
 
-if (!response.createContactSubmission.data) {
-throw new Error("No data returned from createContactSubmission");
-}
-
-return response.createContactSubmission.data;
+  return response.data as unknown as ContactSubmission;
 }
 ```
 
-**Key differences from queries:**
-
-1. **Mutation keyword:** Uses `mutation` instead of `query`
-2. **Variables:** Passes data via `$data` variable
-3. **Input type:** Uses `ContactSubmissionInput!` (generated by Webiny)
-4. **Operation:** Creates new data instead of fetching
-
 <Callout type="info">
-  The mutation structure follows the same error handling pattern as queries: check for GraphQL
-  errors (top-level), then Webiny errors (in the `error` field).
+  We're reusing the same SDK instance from `lib/webiny.ts`, which means we only configure the
+  connection once and use it throughout the app!
 </Callout>
 
 ## Creating the Server Action
@@ -866,13 +796,13 @@ Let's review what happens when a user submits the form:
    - Runs securely on the server
    - API tokens never exposed to client
 
-3. **Server Action calls mutation** (`createContactSubmission`)
+3. **Server Action calls SDK function** (`createContactSubmission`)
 
    - Connects to Webiny Manage API
-   - Sends GraphQL mutation
-   - Passes form data as variables
+   - Uses SDK to create entry
+   - Passes form data as values
 
-4. **Webiny processes mutation**
+4. **Webiny processes request**
 
    - Validates data against content model
    - Creates new ContactSubmission entry
@@ -944,7 +874,7 @@ Now users can easily navigate between the product listing and contact form!
 
 **Solution:**
 
-1. Verify both `WEBINY_MANAGE_API_URL` and `WEBINY_API_TOKEN` are in `.env.local`
+1. Verify both `WEBINY_API_HOST` and `WEBINY_API_TOKEN` are in `.env.local`
 2. Restart your dev server after adding new environment variables
 3. Check for typos in variable names
 
@@ -966,9 +896,9 @@ Now users can easily navigate between the product listing and contact form!
 **Solution:**
 
 1. Check you're looking at the correct Webiny environment
-2. Verify the mutation is using the correct content model ID (`contactSubmission`)
+2. Verify the SDK call is using the correct content model ID (`contactSubmission`)
 3. Check Webiny Admin filters - you might be filtering out new entries
-4. Look at the network tab to see the actual mutation response
+4. Look at the network tab to see the actual API response
 
 ### TypeScript Errors
 
@@ -989,7 +919,7 @@ In this lesson, you learned how to:
 - ✅ Create a content model for form submissions (ContactSubmission)
 - ✅ Understand the difference between Read API and Manage API
 - ✅ Create API keys with write permissions
-- ✅ Write GraphQL mutations (not just queries)
+- ✅ Write data to the CMS using the SDK
 - ✅ Use Next.js Server Actions for secure server-side operations
 - ✅ Build a form with validation, loading states, and feedback
 - ✅ Handle both GraphQL-level and Webiny-level errors
@@ -1006,7 +936,7 @@ In the next lesson (**Lifecycle Events**), we'll add a lifecycle hook that valid
 </Callout>
 
 <Quiz
-  question="Why do we use Server Actions instead of calling the mutation directly from the client component?"
+  question="Why do we use Server Actions instead of calling the SDK directly from the client component?"
   options={[
     "Server Actions are faster",
     "To keep API tokens secure on the server",

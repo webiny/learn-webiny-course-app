@@ -38,6 +38,8 @@ In this lesson, we'll create a simple product listing page that fetches data fro
 - Users get **instant page loads** with no API calls
 - Perfect for product catalogs that don't change every second
 
+Instead of writing raw GraphQL queries like you did in the API Playground, we'll use the **Webiny SDK** (`@webiny/sdk`). The SDK is a TypeScript library that provides a simple, type-safe interface for interacting with Webiny's APIs - no need to write GraphQL manually!
+
 This lesson establishes the foundation for the next lessons where we'll add a contact form (Lesson 9), implement lifecycle events (Lesson 10), and more!
 
 <Callout type="info">
@@ -99,9 +101,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. You should 
   Keep the dev server running while you work. It will auto-reload when you make changes.
 </Callout>
 
-## Finding Your API URL
+## Finding Your API Host
 
-Before we can connect to Webiny, we need to find the API URL.
+Before we can connect to Webiny, we need to find the API Host URL.
 
 Open a terminal in your **Webiny project directory** (not the Next.js app) and run:
 
@@ -121,6 +123,12 @@ Look for the **Headless CMS - Read API** URL in the output. It will look somethi
 
 ```text title="Example API URL"
 https://d1ud9w3i9i7d77.cloudfront.net/cms/read
+```
+
+We need the **host** part of this URL (the domain). In this example, it would be:
+
+```text
+https://d1ud9w3i9i7d77.cloudfront.net
 ```
 
 Copy this URL - you'll need it in the next step.
@@ -215,13 +223,20 @@ In your **Next.js project** (not the Webiny project), create a new file called `
 
 ```bash title=".env.local"
 WEBINY_API_TOKEN=your-api-token-here
-WEBINY_READ_API_URL=https://your-url.cloudfront.net/cms/read
+WEBINY_API_HOST=https://your-url.cloudfront.net
+# WEBINY_API_TENANT=root  # Only needed for multi-tenancy setups
 ```
 
 Replace:
 
 - `your-api-token-here` with the token you copied in the previous step
-- `https://your-url.cloudfront.net/cms/read` with your actual Read API URL
+- `https://your-url.cloudfront.net` with your actual API Host URL
+
+<Callout type="hint">
+  The `WEBINY_API_TENANT` variable is commented out because we're using the default single-tenant
+  setup. If you're working with a multi-tenant Webiny instance, uncomment this line and set it to
+  your tenant ID.
+</Callout>
 
 ### Step 2: Restart the Dev Server
 
@@ -293,135 +308,66 @@ These interfaces match the structure of data returned by Webiny's Read API. Noti
 
 ## Creating the API Client
 
-Now let's create a reusable API client for communicating with Webiny.
+Now let's create a reusable API client for communicating with Webiny. We'll use the **Webiny SDK** which makes interacting with the CMS much simpler than writing raw fetch requests.
 
 Create a new file `lib/webiny.ts`:
 
 ```ts title="lib/webiny.ts"
-import type { Product, WebinyListResponse } from "./types";
+import { WebinySdk } from "@webiny/sdk";
 
-const API_URL = process.env.WEBINY_READ_API_URL!;
+const API_HOST = process.env.WEBINY_API_HOST!;
 const API_TOKEN = process.env.WEBINY_API_TOKEN!;
+const API_TENANT = process.env.WEBINY_API_TENANT || "root";
 
-if (!API_URL || !API_TOKEN) {
-  throw new Error(
-    "Missing required environment variables: WEBINY_READ_API_URL and WEBINY_API_TOKEN"
-  );
+if (!API_HOST || !API_TOKEN) {
+  throw new Error("Missing required environment variables: WEBINY_API_HOST and WEBINY_API_TOKEN");
 }
 
-interface GraphQLResponse<T> {
-  data?: T;
-  errors?: Array<{
-    message: string;
-    locations?: Array<{ line: number; column: number }>;
-  }>;
-}
-
-async function fetchWebiny<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: API_TOKEN
-    },
-    body: JSON.stringify({ query, variables })
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  const result: GraphQLResponse<T> = await response.json();
-
-  // Check for GraphQL-level errors (syntax, validation, etc.)
-  if (result.errors) {
-    throw new Error(`GraphQL error: ${result.errors[0].message}`);
-  }
-
-  if (!result.data) {
-    throw new Error("No data returned from GraphQL query");
-  }
-
-  return result.data;
-}
-
-export async function getProducts(): Promise<Product[]> {
-  const LIST_PRODUCTS_QUERY = /* GraphQL */ `
-    query ListProducts {
-      listProducts {
-        data {
-          id
-          entryId
-          values {
-            name
-            description
-            price
-            sku
-          }
-        }
-        error {
-          message
-          code
-        }
-      }
-    }
-  `;
-
-  const response = await fetchWebiny<{
-    listProducts: WebinyListResponse<Product>;
-  }>(LIST_PRODUCTS_QUERY);
-
-  // Check for Webiny-level errors (business logic errors)
-  if (response.listProducts.error) {
-    throw new Error(`Webiny error: ${response.listProducts.error.message}`);
-  }
-
-  return response.listProducts.data;
-}
+// Initialize and export the SDK
+export const sdk = new WebinySdk({
+  apiToken: API_TOKEN,
+  apiHost: API_HOST,
+  apiTenant: API_TENANT
+});
 ```
 
 Let's break down what this code does:
 
-1. **Environment Variables:** Loads the API URL and token from `.env.local`
-2. **Error Checking:** Throws an error if environment variables are missing
-3. **fetchWebiny Function:** Generic function that:
-   - Makes a POST request to Webiny
-   - Adds authentication headers
-   - Handles HTTP errors
-   - Handles GraphQL-level errors (syntax, validation)
-   - Returns typed data
-4. **getProducts Function:**
-   - Defines the GraphQL query with `/* GraphQL */` comment for syntax highlighting
-   - Same query we used in Lesson 7!
-   - Calls `fetchWebiny` with proper types
-   - Handles Webiny-level errors (from the `error` field)
-   - Returns array of products
+1.  **Environment Variables:** Loads the API Host, token, and tenant.
+2.  **SDK Initialization:** We initialize `WebinySdk` with the host, token, and tenant.
+3.  **Export:** We export the SDK instance so it can be used throughout the application.
 
 <Callout type="info">
-  Remember from Lesson 7: There are two types of errors: - **GraphQL errors** (top-level `errors`
-  array) - syntax/validation issues - **Webiny errors** (inside `error` field) - business logic
-  issues Our API client handles both!
+  The SDK handles all the complexity of GraphQL queries, authentication headers, and error parsing
+  for you!
 </Callout>
 
 ## Fetching Data in the Homepage
 
-Now let's use our API client to fetch products and display them!
+Now let's use the SDK to fetch products and display them!
 
 Update `app/page.tsx`:
 
 ```tsx title="app/page.tsx"
-import { getProducts } from "@/lib/webiny";
+import { sdk } from "@/lib/webiny";
 import type { Product } from "@/lib/types";
 
 export default async function HomePage() {
-  let products: Product[];
+  let products: Product[] = [];
+  let totalCount = 0;
   let error: string | null = null;
 
   try {
-    products = await getProducts();
+    const response = await sdk.cms.listEntries<Product>({
+      modelId: "product",
+      fields: ["values.name", "values.description", "values.price", "values.sku"],
+      sort: { lastPublishedOn: "desc" }
+    });
+
+    products = response.data;
+    totalCount = response.meta.totalCount;
   } catch (err) {
     error = err instanceof Error ? err.message : "Failed to fetch products";
-    products = [];
   }
 
   return (
@@ -461,7 +407,7 @@ export default async function HomePage() {
         )}
 
         <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>Total products: {products.length}</p>
+          <p>Total products: {totalCount}</p>
         </div>
       </div>
     </main>
@@ -471,9 +417,9 @@ export default async function HomePage() {
 
 Let's understand what's happening here:
 
-1. **Async Server Component:** The component is `async`, which allows us to use `await` directly
-2. **Fetch Products:** We call `getProducts()` from our API client
-3. **Error Handling:** We wrap the fetch in a try/catch to handle any errors gracefully
+1. **Import SDK:** We import the `sdk` instance from our `lib/webiny.ts` file
+2. **Fetch Products:** We call `sdk.cms.listEntries()` with the model ID and sort options
+3. **Error Handling:** We check for errors in the response and handle exceptions gracefully
 4. **Conditional Rendering:**
    - Show error message if fetch failed
    - Show "no products" message if the array is empty
@@ -494,6 +440,12 @@ Let's understand what's happening here:
 Save all your files and check your browser at [http://localhost:3000](http://localhost:3000).
 
 You should see your products displayed! If you don't see products or see an error, check the troubleshooting section below.
+
+<Image
+  src="/images/headless-cms/nextjs-app-homepage.png"
+  alt="Next.js homepage displaying a product card with Wireless Headphones, price $199.99, description, SKU, and total products count"
+  caption="The homepage successfully displaying product data fetched from Webiny CMS"
+/>
 
 ## Building for Production
 
@@ -541,7 +493,7 @@ Let's understand what just happened:
 1. **Build Time:** When you ran `npm run build`:
 
    - Next.js executed your Server Component
-   - The `getProducts()` function called Webiny's Read API
+   - The `sdk.cms.listEntries()` function called Webiny's Read API
    - Products were fetched from your CMS
    - The response was embedded into static HTML
    - HTML was saved to disk
@@ -556,7 +508,7 @@ Let's understand what just happened:
 3. **Updating Content:**
    - If you publish new products in Webiny, they won't appear immediately
    - You need to rebuild the app: `npm run build`
-   - Or use Incremental Static Regeneration (ISR) - covered in advanced topics
+   - This ensures your static site always has the latest content
 
 **Why use SSG for a product catalog?**
 
@@ -572,56 +524,94 @@ For most product catalogs, having content that's a few minutes or hours old is p
 
 ### "Missing required environment variables" Error
 
-**Problem:** The app crashes with an error about missing environment variables.
+**Problem:** The app crashes on startup with an error message about missing `WEBINY_API_HOST` or `WEBINY_API_TOKEN`.
 
 **Solution:**
 
-1. Verify `.env.local` exists in your project root (not in a subdirectory)
-2. Check that both `WEBINY_READ_API_URL` and `WEBINY_API_TOKEN` are set
-3. Restart your dev server: `Ctrl+C` then `npm run dev`
+1. Verify `.env.local` exists in your project root directory (same level as `package.json`)
+2. Check that both `WEBINY_API_HOST` and `WEBINY_API_TOKEN` are set with valid values
+3. Make sure there are no extra spaces around the `=` sign in `.env.local`
+4. Restart your dev server: Press `Ctrl+C` (or `Cmd+C` on Mac), then run `npm run dev` again
 
 ### "Unauthorized" or "403 Forbidden" Error
 
-**Problem:** API returns an authentication error.
+**Problem:** The browser shows an error about unauthorized access or forbidden requests.
 
 **Solution:**
 
-1. Check your API token is copied correctly in `.env.local`
-2. Verify the API key has **Read API** permission enabled
-3. Make sure you're using the **Read API URL** (ends with `/cms/read`)
-4. Try creating a new API key and updating `.env.local`
+1. Double-check your API token is copied correctly in `.env.local` (no extra spaces or missing characters)
+2. Verify the API key has **Read API** permission enabled in Webiny Admin → Settings → API Keys
+3. Confirm you're using the correct **API Host URL** - it should be just the domain (e.g., `https://xxx.cloudfront.net`), not including `/cms/read`
+4. If the problem persists, create a new API key in Webiny Admin and update your `.env.local` file
 
 ### "No products found" Message
 
-**Problem:** The page loads but shows "No products found".
+**Problem:** The page loads successfully but shows "No products found. Make sure you have published products in your Webiny CMS."
 
 **Solution:**
 
-1. Verify you have products **published** in Webiny (not just saved as drafts)
-2. Check you're using the Read API (only returns published content)
-3. Verify your API key has permission to access the Product model
-4. Test the query in the API Playground (Lesson 6) to confirm it works
+1. Verify you have at least one product **published** in Webiny (not just saved as a draft)
+   - Go to Webiny Admin → Headless CMS → Products
+   - Check that the product status shows "Published"
+2. The Read API only returns published content - drafts won't appear
+3. Verify your API key has permission to read the Product model
+4. Test the API in the API Playground (Lesson 7) to confirm products are accessible
 
-### GraphQL Syntax Error
+### TypeScript Errors About SDK Types
 
-**Problem:** Error message about GraphQL syntax.
+**Problem:** TypeScript shows errors like "Property 'cms' does not exist on type..." or similar type errors.
 
 **Solution:**
 
-1. Check for typos in your GraphQL query in `lib/webiny.ts`
-2. Make sure field names match your Product model exactly
-3. Copy the query from Lesson 7's API Playground where it worked
+1. Ensure `@webiny/sdk` is installed: Run `npm install @webiny/sdk`
+2. Restart your TypeScript server in VS Code: Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows/Linux), then type "TypeScript: Restart TS Server"
+3. If errors persist, delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
 
-### Build Fails
+### SDK Initialization Error
+
+**Problem:** Error message like "Failed to initialize Webiny SDK" or SDK-related runtime errors.
+
+**Solution:**
+
+1. Verify `WEBINY_API_HOST` is a valid URL in `.env.local` (must start with `https://`)
+2. Check that you're not including the API path - use `https://xxx.cloudfront.net` NOT `https://xxx.cloudfront.net/cms/read`
+3. Ensure `@webiny/sdk` is properly installed: Check `package.json` dependencies
+4. Restart the dev server after making any `.env.local` changes
+
+### Network or Connection Errors
+
+**Problem:** Error messages about network failures, timeouts, or connection refused.
+
+**Solution:**
+
+1. Check your internet connection
+2. Verify your Webiny instance is running (if using local development)
+3. Try accessing your API Host URL in a browser to confirm it's reachable
+4. Check if there are any firewall or VPN issues blocking the connection
+5. If using Webiny Cloud, verify your project is deployed and active
+
+### Products Display Incorrectly
+
+**Problem:** Products load but some fields are missing or show as `undefined`.
+
+**Solution:**
+
+1. Verify the `fields` parameter in `sdk.cms.listEntries()` matches your actual field names
+2. Check that your `Product` TypeScript interface matches the structure of your content model
+3. Ensure all products have the required fields filled in (name, description, price, sku)
+4. Use the API Playground to inspect the actual response structure
+
+### Build Fails in Production
 
 **Problem:** `npm run build` fails with an error.
 
 **Solution:**
 
-1. Verify your API URL and token are correct
-2. Check your internet connection (build needs to reach Webiny API)
-3. Look at the error message - it will tell you what failed
-4. Test in development mode first (`npm run dev`)
+1. Verify your `.env.local` values are correct - the build process needs to fetch data
+2. Check your internet connection (the build needs to reach the Webiny API)
+3. Read the error message carefully - it will indicate what failed (e.g., network error, missing model, etc.)
+4. Test in development mode first: `npm run dev` should work before building
+5. Ensure your Webiny API is accessible from your build environment (CI/CD, Vercel, etc. may need environment variables configured)
 
 ## Summary
 
