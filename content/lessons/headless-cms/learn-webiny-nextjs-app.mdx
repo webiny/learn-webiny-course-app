@@ -252,7 +252,7 @@ Environment variables are only loaded when the dev server starts, so you need to
 
 ## Creating TypeScript Types
 
-Let's create TypeScript interfaces for the data we'll be working with.
+Let's create a TypeScript interface for the Product data structure.
 
 Create a new file `lib/types.ts`:
 
@@ -267,44 +267,17 @@ export interface Product {
     sku: string;
   };
 }
-
-export interface ProductCategory {
-  id: string;
-  entryId: string;
-  values: {
-    name: string;
-    slug: string;
-  };
-}
-
-export interface WebinyError {
-  message: string;
-  code?: string;
-  data?: Record<string, unknown>;
-}
-
-export interface WebinyListResponse<T> {
-  data: T[];
-  error: WebinyError | null;
-  meta?: {
-    cursor: string | null;
-    hasMoreItems: boolean;
-    totalCount: number;
-  };
-}
-
-export interface WebinyResponse<T> {
-  data: T | null;
-  error: WebinyError | null;
-}
 ```
 
-These interfaces match the structure of data returned by Webiny's Read API. Notice how:
+This interface matches the structure of product entries returned by Webiny's CMS. Notice how:
 
-- User-defined fields are inside the `values` object
+- User-defined fields (name, description, price, sku) are inside the `values` object
 - System fields like `id` and `entryId` are at the top level
-- We have an `error` field (best practice from Lesson 6!)
-- We have separate interfaces for list responses and single-item responses
+
+<Callout type="hint">
+  The Webiny SDK uses TypeScript generics, so we can pass this `Product` type to SDK methods and get
+  full type safety!
+</Callout>
 
 ## Creating the API Client
 
