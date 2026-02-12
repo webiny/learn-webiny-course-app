@@ -46,16 +46,13 @@ Common use cases for writing data:
 - Newsletter signups
 - Form builders
 
-**Why use the Manage API?**
-
-The Read API is read-only. To create, update, or delete content, you need the **Manage API**. This separation is intentional for security:
-
-- Read API: Public-facing, can be cached, read-only
-- Manage API: More powerful, requires stricter permissions
+In this lesson, we'll use the **Webiny SDK** to create new contact form submissions. The SDK handles all the complexity of communicating with Webiny's APIs - you just call simple methods like `sdk.cms.createEntry()`.
 
 <Callout type="info">
-  In this lesson, we'll use the Manage API to **create** new contact form submissions. We'll explore
-  updating and deleting in later lessons.
+  **Behind the scenes:** When you create, update, or delete entries using the SDK, it uses Webiny's
+  **Manage API**. The Read API (which we used in Lesson 8) is read-only, while the Manage API allows
+  full CRUD operations. The SDK automatically routes your requests to the correct API based on the
+  method you call.
 </Callout>
 
 ## Creating the ContactSubmission Content Model
@@ -129,17 +126,10 @@ Add the following fields to your model:
   - Min length: 10
   - Max length: 1000
 
-#### 4. Submitted At Field
-
-- **Field Type:** Date/Time
-- **Label:** `Submitted At`
-- **Field ID:** `submittedAt`
-- **Settings:**
-  - ✅ Set current date/time on creation
-
 <Callout type="hint">
-  The "Submitted At" field will automatically record when the form was submitted. This is useful for
-  sorting and filtering submissions.
+  **No timestamp field needed!** Webiny automatically tracks creation time in the `createdOn` meta
+  field for every entry. You can use this for sorting and filtering submissions without creating a
+  custom field.
 </Callout>
 
 ### Step 4: Configure Model Settings
@@ -173,29 +163,29 @@ Open your **Webiny project directory** (not the Next.js app) in your code editor
 Create a new file in your Webiny project:
 
 ```text
-extensions/contactSubmissionModel.ts
+extensions/ContactSubmissionModel.ts
 ```
 
 <Callout type="hint">
   The `extensions` folder is where all content model definitions live. You should already have
-  `productModel.ts` and `productCategoryModel.ts` there from earlier lessons.
+  `ProductModel.ts` and `ProductCategoryModel.ts` there from earlier lessons.
 </Callout>
 
 ### Step 3: Define the Model
 
-Add the following code to `contactSubmissionModel.ts`:
+Add the following code to `ContactSubmissionModel.ts`:
 
-```ts title="asd"
-import { ModelFactory } from "@webiny/api-headless-cms";
+```ts title="extensions/ContactSubmissionModel.ts"
+import { ModelFactory } from "webiny/api/cms/model";
 
 export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
 
 class ContactSubmissionModelImpl implements ModelFactory.Interface {
-  execute(builder: ModelFactory.Builder) {
+  async execute(builder: ModelFactory.Builder) {
     return [
       builder
         .public()
-        .modelId(CONTACT * SUBMISSION_MODEL_ID)
+        .modelId(CONTACT_SUBMISSION_MODEL_ID)
         .name("Contact Submission")
         .description("Stores contact form submissions from the website")
         .group("ungrouped")
@@ -208,15 +198,15 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
             .required("Name is required")
             .minLength(2)
             .maxLength(100)
-            .placeholderText("Enter your full name"),
+            .helpText("Enter your full name"),
           email: fields
             .text()
             .renderer("text-input")
             .label("Email")
             .helpText("Email address for contact")
             .required("Email is required")
-            .validation("^[a-zA-Z0-9.*%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")
-            .placeholderText("your.email@example.com"),
+            .email()
+            .helpText("Enter a valid email address"),
           message: fields
             .longText()
             .renderer("long-text-text-area")
@@ -225,14 +215,9 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
             .required("Message is required")
             .minLength(10)
             .maxLength(1000)
-            .placeholderText("Enter your message..."),
-          submittedAt: fields
-            .dateTime()
-            .renderer("date-time-input")
-            .label("Submitted At")
-            .helpText("Timestamp when the form was submitted")
+            .helpText("Enter your message...")
         }))
-        .layout([["name", "email"], ["message"], ["submittedAt"]])
+        .layout([["name", "email"], ["message"]])
         .titleFieldId("name")
         .descriptionFieldId("message")
         .singularApiName("ContactSubmission")
@@ -250,66 +235,58 @@ export const ContactSubmissionModel = ModelFactory.createImplementation({
 **Key parts of this code:**
 
 1. **Model ID:** `contactSubmission` - used in GraphQL API
-2. **Fields:** Define all four fields with validation
-3. **Layout:** How fields appear in the UI (`[["name", "email"], ["message"], ["submittedAt"]]`)
+2. **Fields:** Define three fields (name, email, message) with validation
+3. **Layout:** How fields appear in the UI (`[["name", "email"], ["message"]]`)
 4. **Title Field:** `name` - used for display in lists
 5. **Description Field:** `message` - shows preview
 6. **API Names:** `ContactSubmission` (singular), `ContactSubmissions` (plural)
 
+<Callout type="info">
+  **No timestamp field needed!** Webiny automatically adds meta fields like `createdOn`,
+  `modifiedOn`, `savedOn`, `lastPublishedOn`, and many others to every entry. For this contact form,
+  we'll rely on `createdOn` to track when submissions were created. Since contact form submissions
+  will remain in draft status (not published), `createdOn` is the appropriate field to use.
+</Callout>
+
 ### Step 4: Register the Model
 
-Open the main extensions file:
+Open `webiny.config.tsx` in the root of your Webiny project and register the extension:
 
-```text
-extensions/index.ts
+```tsx title="webiny.config.tsx"
+import React from "react";
+import { Api, Infra } from "webiny/extensions";
+import { Cognito } from "@webiny/cognito";
+
+export const Extensions = () => {
+  return (
+    <>
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Cognito />
+
+      {/* Existing extensions... */}
+      <Api.Extension src={"/extensions/ProductModel.ts"} />
+      <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
+
+      {/* Register our Contact Submission model */}
+      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+    </>
+  );
+};
 ```
 
-Import and export your new model:
+### Step 5: Deploy Your Changes
 
-```typescript
-// Existing imports...
-import { ProductModel } from "./productModel";
-import { ProductCategoryModel } from "./productCategoryModel";
-
-// Add this import
-import { ContactSubmissionModel } from "./contactSubmissionModel";
-
-export default [
-  // Existing models
-  ProductModel,
-  ProductCategoryModel,
-
-  // Add this
-  ContactSubmissionModel
-];
-```
-
-### Step 5: Apply the Changes
-
-To apply the changes, you can either deploy the project or use watch mode.
-
-#### Option 1: Deploy
-
-Deploy your Webiny project to apply the changes:
+Deploy your Webiny project to apply the new content model:
 
 ```bash
-yarn webiny deploy
+yarn webiny deploy api --env dev
 ```
 
-Wait for the deployment to complete (this may take a few minutes).
+Or if you're already running watch mode, the changes will be picked up automatically.
 
-#### Option 2: Use Watch Mode (Faster for Development)
-
-```bash
-yarn webiny watch api
-```
-
-If you're using watch mode, the changes will be automatically deployed and visible in the Admin UI when you refresh. You can access the Admin either locally (via `yarn webiny watch admin`) or through your deployed Admin app (CloudFront URL).
-
-<Callout type="info" title="Watch Mode">
-  Watch mode is ideal during development as it automatically redeploys your API changes without
-  manual deployment. Since we're only changing backend API code with these extensions, your Admin
-  app (whether local or deployed) will pick up the changes after a refresh.
+<Callout type="hint">
+  If you need a refresher on deployment and watch mode, check back to Lesson 4 where we covered
+  these workflows in detail.
 </Callout>
 
 ### Step 6: Verify in Webiny Admin
@@ -317,19 +294,14 @@ If you're using watch mode, the changes will be automatically deployed and visib
 1. Open **Webiny Admin**
 2. Go to **Headless CMS** → **Models**
 3. You should see **Contact Submission** in the list
+4. Click **Content** in the left sidebar to expand it
+5. Under **Ungrouped**, you should now see **Contact Submission** as a content menu item
+
+![Contact Submissions view in Webiny Admin](/images/headless-cms/contact-submissions-admin.png)
 
 <Callout type="success">
-  Your ContactSubmission content model is now deployed and ready to use! The code approach makes it
-  easy to version control and deploy across environments.
+  Your ContactSubmission content model is now deployed and ready to use!
 </Callout>
-
-**Benefits of the code approach:**
-
-- ✅ Version controlled (committed to git)
-- ✅ Reproducible across environments
-- ✅ Can be reviewed in pull requests
-- ✅ TypeScript type safety
-- ✅ Easy to update and redeploy
 
 ---
 
@@ -368,6 +340,15 @@ Configure the permissions to include both Read and Manage:
   create ContactSubmission entries with this key.
 </Callout>
 
+<Callout type="info">
+  **Alternative Approach:** Another security pattern is to use **two separate API keys**: -
+  **Read-only key** for the public website (used in client-side code if needed) - **Write-enabled
+  key** for the server only (used in Server Actions, never exposed to client) This way, even if the
+  read-only key is exposed publicly, it cannot write data. The write-enabled key stays secure on the
+  server. However, for this tutorial, we'll use a single API key with both permissions since all API
+  calls happen server-side through Server Actions.
+</Callout>
+
 ### Step 4: Save Changes
 
 Click **Save API Key** to update the permissions.
@@ -378,76 +359,23 @@ Click **Save API Key** to update the permissions.
   want to regenerate it for security reasons.
 </Callout>
 
-## Update Environment Variables
-
-Add the Manage API URL to your Next.js app. We'll reuse the same API token from Lesson 8.
-
-### Step 1: Find Your Manage API URL
-
-In your **Webiny project directory**, run:
-
-```bash
-yarn webiny info
-```
-
-Look for the **Headless CMS - Manage API** URL. It will look like:
-
-```text
-https://d1ud9w3i9i7d77.cloudfront.net/cms/manage
-```
-
-The host is the domain part: `https://d1ud9w3i9i7d77.cloudfront.net`. This should match what you already have in `WEBINY_API_HOST`.
-
-### Step 2: Update .env.local
-
-In the previous lesson, we added `WEBINY_API_HOST` to our environment variables. This is used for both reading and writing data, so we don't need to add separate variables for the Manage API!
-
-Your `.env.local` should look like this:
-
-```bash
-# API Token (needs both Read and Manage permissions)
-WEBINY_API_TOKEN=your-api-token-here
-
-# API Host
-WEBINY_API_HOST=https://your-url.cloudfront.net
-# WEBINY_API_TENANT=root  # Only needed for multi-tenancy setups
-```
-
-<Callout type="success">
-  Because we're using the SDK, we just need the base **API Host** and the SDK handles the endpoints
-  internally. The tenant defaults to `"root"` when not specified.
-</Callout>
-
-### Step 3: Restart Dev Server
-
-Stop and restart your dev server to load the new environment variables:
-
-```bash
-npm run dev
-```
-
-<Callout type="warning">
-  Never commit `.env.local` to version control! The Manage API token has write permissions and
-  should be kept secret.
-</Callout>
-
 ## Creating TypeScript Types for Contact Submission
 
 Let's add types for our contact form data.
 
 Update `lib/types.ts` and add the following interfaces:
 
-```typescript
+```typescript title="lib/types.ts"
 // Add to existing types.ts file
 
 export interface ContactSubmission {
   id: string;
   entryId: string;
+  createdOn: string; // ISO date string - Webiny meta field
   values: {
     name: string;
     email: string;
     message: string;
-    submittedAt: string; // ISO date string
   };
 }
 
@@ -458,87 +386,35 @@ export interface ContactFormData {
 }
 ```
 
-## Creating the Mutation Function
-
-Now let's add a function to submit contact form data to Webiny using the SDK.
-
-We'll reuse the same SDK instance from `lib/webiny.ts`, but we also need to export it from there first.
-
-Update `lib/webiny.ts` to export the SDK:
-
-```typescript title="lib/webiny.ts"
-import { WebinySdk } from "@webiny/sdk";
-
-const API_HOST = process.env.WEBINY_API_HOST!;
-const API_TOKEN = process.env.WEBINY_API_TOKEN!;
-const API_TENANT = process.env.WEBINY_API_TENANT || "root";
-
-if (!API_HOST || !API_TOKEN) {
-  throw new Error("Missing required environment variables: WEBINY_API_HOST and WEBINY_API_TOKEN");
-}
-
-// Initialize and export the SDK
-export const sdk = new WebinySdk({
-  apiToken: API_TOKEN,
-  apiHost: API_HOST,
-  apiTenant: API_TENANT
-});
-```
-
-Now create a new file `lib/mutations.ts`:
-
-```typescript
-import { sdk } from "./webiny";
-import type { ContactFormData, ContactSubmission } from "./types";
-
-export async function createContactSubmission(data: ContactFormData): Promise<ContactSubmission> {
-  // Use SDK to create a new entry
-  const response = await sdk.cms.createEntry({
-    modelId: "contactSubmission",
-    values: {
-      name: data.name,
-      email: data.email,
-      message: data.message,
-      submittedAt: new Date().toISOString()
-    }
-  });
-
-  if (response.error) {
-    throw new Error(response.error.message || "Failed to create contact submission");
-  }
-
-  if (!response.data) {
-    throw new Error("No data returned from createContactSubmission");
-  }
-
-  return response.data as unknown as ContactSubmission;
-}
-```
-
-<Callout type="info">
-  We're reusing the same SDK instance from `lib/webiny.ts`, which means we only configure the
-  connection once and use it throughout the app!
-</Callout>
-
 ## Creating the Server Action
 
 Next.js Server Actions allow us to securely call server-side code from client components.
 
+We'll use the same SDK instance from `lib/webiny.ts` that we created in Lesson 8. The SDK is already exported and configured with our API credentials, so we can import it directly.
+
 Create a new file `app/actions/submitContact.ts`:
 
-```typescript
+```typescript title="app/actions/submitContact.ts"
 "use server";
 
-import { createContactSubmission } from "@/lib/mutations";
-import type { ContactFormData } from "@/lib/types";
+import { sdk } from "@/lib/webiny";
+import type { ContactFormData, ContactSubmission } from "@/lib/types";
 
 export async function submitContactForm(formData: ContactFormData) {
   try {
-    const submission = await createContactSubmission(formData);
+    const response = await sdk.cms.createEntry<ContactSubmission>({
+      modelId: "contactSubmission",
+      data: {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message
+      },
+      fields: ["id"]
+    });
 
     return {
       success: true,
-      data: submission
+      data: response.data
     };
   } catch (error) {
     console.error("Failed to submit contact form:", error);
@@ -561,13 +437,18 @@ export async function submitContactForm(formData: ContactFormData) {
 
 The `"use server"` directive tells Next.js this code runs only on the server.
 
+<Callout type="info">
+  Just like in Lesson 8 where we called the SDK directly in `page.tsx`, we're calling the SDK
+  directly in the Server Action. This keeps the code simple and all in one place!
+</Callout>
+
 ## Creating the Contact Form Page
 
 Now let's build the actual contact form that users will interact with.
 
 Create a new file `app/contact/page.tsx`:
 
-```typescript
+```tsx title="app/contact/page.tsx"
 "use client";
 
 import { useState } from "react";
@@ -578,7 +459,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
-    message: "",
+    message: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -586,10 +467,10 @@ export default function ContactPage() {
     message: string;
   }>({ type: null, message: "" });
 
-const handleSubmit = async (e: React.FormEvent) => {
-e.preventDefault();
-setIsSubmitting(true);
-setSubmitStatus({ type: null, message: "" });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: "" });
 
     const result = await submitContactForm(formData);
 
@@ -598,44 +479,37 @@ setSubmitStatus({ type: null, message: "" });
     if (result.success) {
       setSubmitStatus({
         type: "success",
-        message: "Thank you! Your message has been sent successfully.",
+        message: "Thank you! Your message has been sent successfully."
       });
       // Reset form
       setFormData({ name: "", email: "", message: "" });
     } else {
       setSubmitStatus({
         type: "error",
-        message: result.error || "Something went wrong. Please try again.",
+        message: result.error || "Something went wrong. Please try again."
       });
     }
+  };
 
-};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
-const handleChange = (
-e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-) => {
-setFormData((prev) => ({
-...prev,
-[e.target.name]: e.target.value,
-}));
-};
-
-return (
-
-<main className="min-h-screen p-8">
-<div className="max-w-2xl mx-auto">
-<h1 className="text-4xl font-bold mb-4">Contact Us</h1>
-<p className="text-gray-600 mb-8">
-Have a question? Send us a message and we'll get back to you soon.
-</p>
+  return (
+    <main className="min-h-screen p-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
+        <p className="text-gray-600 mb-8">
+          Have a question? Send us a message and we'll get back to you soon.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Field */}
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
               Name *
             </label>
             <input
@@ -655,10 +529,7 @@ Have a question? Send us a message and we'll get back to you soon.
 
           {/* Email Field */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email *
             </label>
             <input
@@ -676,10 +547,7 @@ Have a question? Send us a message and we'll get back to you soon.
 
           {/* Message Field */}
           <div>
-            <label
-              htmlFor="message"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
               Message *
             </label>
             <textarea
@@ -695,9 +563,7 @@ Have a question? Send us a message and we'll get back to you soon.
               placeholder="Enter your message..."
               disabled={isSubmitting}
             />
-            <p className="text-sm text-gray-500 mt-1">
-              {formData.message.length}/1000 characters
-            </p>
+            <p className="text-sm text-gray-500 mt-1">{formData.message.length}/1000 characters</p>
           </div>
 
           {/* Status Messages */}
@@ -726,8 +592,7 @@ Have a question? Send us a message and we'll get back to you soon.
         </form>
       </div>
     </main>
-
-);
+  );
 }
 ```
 
@@ -796,10 +661,10 @@ Let's review what happens when a user submits the form:
    - Runs securely on the server
    - API tokens never exposed to client
 
-3. **Server Action calls SDK function** (`createContactSubmission`)
+3. **Server Action uses SDK** (`sdk.cms.createEntry()`)
 
    - Connects to Webiny Manage API
-   - Uses SDK to create entry
+   - Creates new ContactSubmission entry
    - Passes form data as values
 
 4. **Webiny processes request**
@@ -826,41 +691,46 @@ Let's add a link to the contact page from the homepage.
 
 Update `app/page.tsx`:
 
-```typescript
-import { getProducts } from "@/lib/webiny";
+```tsx
+import { sdk } from "@/lib/webiny";
 import type { Product } from "@/lib/types";
 import Link from "next/link";
 
 export default async function HomePage() {
-  let products: Product[];
+  let products: Product[] = [];
+  let totalCount = 0;
   let error: string | null = null;
 
-try {
-products = await getProducts();
-} catch (err) {
-error = err instanceof Error ? err.message : "Failed to fetch products";
-products = [];
-}
+  try {
+    const response = await sdk.cms.listEntries<Product>({
+      modelId: "product",
+      fields: ["values.name", "values.description", "values.price", "values.sku"],
+      sort: { lastPublishedOn: "desc" }
+    });
 
-return (
+    products = response.data;
+    totalCount = response.meta.totalCount;
+  } catch (err) {
+    error = err instanceof Error ? err.message : "Failed to fetch products";
+  }
 
-<main className="min-h-screen p-8">
-<div className="max-w-4xl mx-auto">
-<div className="flex justify-between items-center mb-8">
-<h1 className="text-4xl font-bold">Our Products</h1>
-<Link
+  return (
+    <main className="min-h-screen p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Our Products</h1>
+          <Link
             href="/contact"
             className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
           >
-Contact Us
-</Link>
-</div>
+            Contact Us
+          </Link>
+        </div>
 
         {/* Rest of your existing code... */}
       </div>
     </main>
-
-);
+  );
 }
 ```
 

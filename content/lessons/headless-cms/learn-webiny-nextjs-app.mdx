@@ -265,14 +265,29 @@ export interface Product {
     description: string;
     price: number;
     sku: string;
+    category?: {
+      id: string;
+      entryId: string;
+    };
+  };
+}
+
+export interface ProductCategory {
+  id: string;
+  entryId: string;
+  values: {
+    name: string;
+    slug: string;
   };
 }
 ```
 
 This interface matches the structure of product entries returned by Webiny's CMS. Notice how:
 
-- User-defined fields (name, description, price, sku) are inside the `values` object
+- User-defined fields (name, description, price, sku, category) are inside the `values` object
 - System fields like `id` and `entryId` are at the top level
+- The `category` field is optional (marked with `?`) since not all products may have a category assigned
+- Reference fields (like `category`) only contain `id` and `entryId` by default - we'll need to request the full category data if we want the name and slug
 
 <Callout type="hint">
   The Webiny SDK uses TypeScript generics, so we can pass this `Product` type to SDK methods and get
@@ -333,7 +348,18 @@ export default async function HomePage() {
   try {
     const response = await sdk.cms.listEntries<Product>({
       modelId: "product",
-      fields: ["values.name", "values.description", "values.price", "values.sku"],
+      fields: [
+        "id",
+        "entryId",
+        "values.name",
+        "values.description",
+        "values.price",
+        "values.sku",
+        "values.category.id",
+        "values.category.entryId",
+        "values.category.values.name",
+        "values.category.values.slug"
+      ],
       sort: { lastPublishedOn: "desc" }
     });
 
@@ -369,7 +395,14 @@ export default async function HomePage() {
                 className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h2 className="text-2xl font-semibold">{product.values.name}</h2>
+                  <div>
+                    <h2 className="text-2xl font-semibold">{product.values.name}</h2>
+                    {product.values.category && (
+                      <span className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                        {product.values.category.values.name}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-2xl font-bold text-blue-600">${product.values.price}</span>
                 </div>
                 <p className="text-gray-600 mb-3">{product.values.description}</p>
@@ -391,14 +424,20 @@ export default async function HomePage() {
 Let's understand what's happening here:
 
 1. **Import SDK:** We import the `sdk` instance from our `lib/webiny.ts` file
-2. **Fetch Products:** We call `sdk.cms.listEntries()` with the model ID and sort options
-3. **Error Handling:** We check for errors in the response and handle exceptions gracefully
-4. **Conditional Rendering:**
+2. **Fetch Products:** We call `sdk.cms.listEntries()` with the model ID, fields, and sort options
+3. **Fields Parameter:** We explicitly request:
+   - System fields: `id`, `entryId`
+   - Product fields: `values.name`, `values.description`, `values.price`, `values.sku`
+   - Category reference fields: `values.category.id`, `values.category.entryId`
+   - Category nested fields: `values.category.values.name`, `values.category.values.slug`
+4. **Error Handling:** We check for errors and handle exceptions gracefully
+5. **Conditional Rendering:**
    - Show error message if fetch failed
    - Show "no products" message if the array is empty
    - Show product list if we have products
-5. **Product Display:** For each product we show:
+6. **Product Display:** For each product we show:
    - Name (heading)
+   - Category badge (if available) - shown as a blue pill/tag
    - Price (formatted with dollar sign)
    - Description
    - SKU (small text)
@@ -416,8 +455,8 @@ You should see your products displayed! If you don't see products or see an erro
 
 <Image
   src="/images/headless-cms/nextjs-app-homepage.png"
-  alt="Next.js homepage displaying a product card with Wireless Headphones, price $199.99, description, SKU, and total products count"
-  caption="The homepage successfully displaying product data fetched from Webiny CMS"
+  alt="Next.js homepage displaying a product card with Wireless Headphones, Electronics category badge, price $199.99, description, and SKU"
+  caption="The homepage successfully displaying product data with category badge fetched from Webiny CMS"
 />
 
 ## Building for Production
