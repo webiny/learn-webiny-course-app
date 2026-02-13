@@ -297,7 +297,11 @@ Or if you're already running watch mode, the changes will be picked up automatic
 4. Click **Content** in the left sidebar to expand it
 5. Under **Ungrouped**, you should now see **Contact Submission** as a content menu item
 
-![Contact Submissions view in Webiny Admin](/images/headless-cms/contact-submissions-admin.png)
+<Image
+  src="/images/headless-cms/contact-submission-sidebar.png"
+  alt="Webiny Admin sidebar showing Contact Submission menu item under Ungrouped content section"
+  caption="Contact Submission appears in the sidebar under Content → Ungrouped"
+/>
 
 <Callout type="success">
   Your ContactSubmission content model is now deployed and ready to use!
@@ -328,26 +332,17 @@ Configure the permissions to include both Read and Manage:
    - ❌ Preview (unchecked - not needed)
    - ✅ **Manage** (checked - NEW! This allows writing data)
 
-<Callout type="warning">
-  **Important:** We're giving this API key access to the Manage API, which is more powerful than the
-  Read API. In production, you should restrict this key to only the ContactSubmission model and only
-  CREATE operations. However, without AACL (Business plan), we can only control the API type level.
-</Callout>
+### Understanding API Key Security
 
-<Callout type="hint">
-  **Security Best Practice:** Even though we can't restrict to specific models without AACL, we'll
-  only use the Manage API for contact form submissions in our code. In your Server Action, only
-  create ContactSubmission entries with this key.
-</Callout>
+By enabling the Manage API, this key can now create, update, and delete **all entries across all content models**. It can even manage the models and groups themselves - not just the data within them.
 
-<Callout type="info">
-  **Alternative Approach:** Another security pattern is to use **two separate API keys**: -
-  **Read-only key** for the public website (used in client-side code if needed) - **Write-enabled
-  key** for the server only (used in Server Actions, never exposed to client) This way, even if the
-  read-only key is exposed publicly, it cannot write data. The write-enabled key stays secure on the
-  server. However, for this tutorial, we'll use a single API key with both permissions since all API
-  calls happen server-side through Server Actions.
-</Callout>
+For our use case, this isn't a major security concern because:
+
+- All API calls happen server-side (during the build step or in Server Actions)
+- The API key is stored in environment variables and never exposed to the browser
+- The key never gets deployed to the client-side JavaScript bundle
+
+However, if you need more granular control - such as restricting this key to only CREATE operations on the ContactSubmission model - you'll need Webiny's **Advanced Access Control Layer (AACL)**, which is available on the Business tier or higher. AACL lets you define precise permissions at the model and operation level, which is the best solution for production environments requiring strict access controls.
 
 ### Step 4: Save Changes
 
@@ -369,17 +364,6 @@ Update `lib/types.ts` and add the following interfaces:
 // Add to existing types.ts file
 
 export interface ContactSubmission {
-  id: string;
-  entryId: string;
-  createdOn: string; // ISO date string - Webiny meta field
-  values: {
-    name: string;
-    email: string;
-    message: string;
-  };
-}
-
-export interface ContactFormData {
   name: string;
   email: string;
   message: string;
@@ -398,33 +382,34 @@ Create a new file `app/actions/submitContact.ts`:
 "use server";
 
 import { sdk } from "@/lib/webiny";
-import type { ContactFormData, ContactSubmission } from "@/lib/types";
+import type { ContactSubmission } from "@/lib/types";
 
-export async function submitContactForm(formData: ContactFormData) {
-  try {
-    const response = await sdk.cms.createEntry<ContactSubmission>({
-      modelId: "contactSubmission",
-      data: {
+export async function submitContactForm(formData: ContactSubmission) {
+  const result = await sdk.cms.createEntry<ContactSubmission>({
+    modelId: "contactSubmission",
+    fields: ["id"],
+    data: {
+      values: {
         name: formData.name,
         email: formData.email,
         message: formData.message
-      },
-      fields: ["id"]
-    });
+      }
+    }
+  });
 
+  if (result.isOk()) {
     return {
       success: true,
-      data: response.data
-    };
-  } catch (error) {
-    console.error("Failed to submit contact form:", error);
-
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to submit contact form. Please try again."
+      data: result.value
     };
   }
+
+  console.error("Failed to submit contact form:", result.error);
+
+  return {
+    success: false,
+    error: result.error.message
+  };
 }
 ```
 
@@ -436,6 +421,17 @@ export async function submitContactForm(formData: ContactFormData) {
 4. **Built-in:** Native Next.js feature (no extra libraries)
 
 The `"use server"` directive tells Next.js this code runs only on the server.
+
+**Understanding the Result Pattern:**
+
+Notice how we use the Result pattern here instead of try-catch:
+
+1. Call `sdk.cms.createEntry()` and get a `result` object
+2. Check if successful with `result.isOk()`
+3. If successful: return the data via `result.value`
+4. If failed: return the error via `result.error.message`
+
+This makes error handling explicit and type-safe - you can't forget to handle errors!
 
 <Callout type="info">
   Just like in Lesson 8 where we called the SDK directly in `page.tsx`, we're calling the SDK
@@ -452,11 +448,11 @@ Create a new file `app/contact/page.tsx`:
 "use client";
 
 import { useState } from "react";
-import { submitContactForm } from "@/actions/submitContact";
-import type { ContactFormData } from "@/lib/types";
+import { submitContactForm } from "@/app/actions/submitContact";
+import type { ContactSubmission } from "@/lib/types";
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState<ContactFormData>({
+  const [formData, setFormData] = useState<ContactSubmission>({
     name: "",
     email: "",
     message: ""
@@ -637,11 +633,23 @@ Click **Send Message**. You should see:
 3. After a moment, a green success message appears
 4. Form fields are cleared
 
+<Image
+  src="/images/headless-cms/contact-form-success.png"
+  alt="Contact form showing success message after submission with cleared form fields"
+  caption="The contact form successfully submitted with a green success message displayed"
+/>
+
 ### Step 4: Verify in Webiny Admin
 
 1. Open **Webiny Admin**
 2. Go to **Headless CMS** → **Contact Submissions**
 3. You should see your new submission!
+
+<Image
+  src="/images/headless-cms/contact-submission-in-admin.png"
+  alt="Webiny Admin showing Contact Submissions list with a new entry from John Doe"
+  caption="Your contact form submission appears in Webiny Admin with the submitted name, timestamp, and status"
+/>
 
 <Callout type="success">
   Congratulations! You've successfully written data to Webiny from your Next.js application!
@@ -666,15 +674,16 @@ Let's review what happens when a user submits the form:
    - Connects to Webiny Manage API
    - Creates new ContactSubmission entry
    - Passes form data as values
+   - Returns a Result object (not throwing errors)
 
 4. **Webiny processes request**
 
    - Validates data against content model
    - Creates new ContactSubmission entry
-   - Returns created entry or error
+   - Result object contains either success data or error
 
 5. **Response flows back**
-   - Server Action receives response
+   - Server Action checks result with `isOk()`
    - Returns success/error to Client Component
    - Form updates UI based on result
 
@@ -685,100 +694,73 @@ Let's review what happens when a user submits the form:
 - ✅ Webiny validates against content model schema
 - ✅ Limited API key permissions (Manage API only)
 
-## Adding Navigation
-
-Let's add a link to the contact page from the homepage.
-
-Update `app/page.tsx`:
-
-```tsx
-import { sdk } from "@/lib/webiny";
-import type { Product } from "@/lib/types";
-import Link from "next/link";
-
-export default async function HomePage() {
-  let products: Product[] = [];
-  let totalCount = 0;
-  let error: string | null = null;
-
-  try {
-    const response = await sdk.cms.listEntries<Product>({
-      modelId: "product",
-      fields: ["values.name", "values.description", "values.price", "values.sku"],
-      sort: { lastPublishedOn: "desc" }
-    });
-
-    products = response.data;
-    totalCount = response.meta.totalCount;
-  } catch (err) {
-    error = err instanceof Error ? err.message : "Failed to fetch products";
-  }
-
-  return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Our Products</h1>
-          <Link
-            href="/contact"
-            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Contact Us
-          </Link>
-        </div>
-
-        {/* Rest of your existing code... */}
-      </div>
-    </main>
-  );
-}
-```
-
-Now users can easily navigate between the product listing and contact form!
-
 ## Troubleshooting
 
-### "Missing required environment variables" Error
+### Contact Form Not Loading
 
-**Problem:** The app crashes with environment variable errors.
-
-**Solution:**
-
-1. Verify both `WEBINY_API_HOST` and `WEBINY_API_TOKEN` are in `.env.local`
-2. Restart your dev server after adding new environment variables
-3. Check for typos in variable names
-
-### "GraphQL error" or "Webiny error" When Submitting
-
-**Problem:** Form submission fails with an error.
+**Problem:** Navigating to `/contact` shows a 404 error or blank page.
 
 **Solution:**
 
-1. Check the API key has Manage API permissions
-2. Verify the API key token is correct in `.env.local`
-3. Make sure the ContactSubmission model exists in Webiny
-4. Check browser console and server logs for detailed error messages
+1. Verify you created the file at the correct path: `app/contact/page.tsx`
+2. Restart your Next.js dev server (`npm run dev`)
+3. Clear your browser cache and reload the page
 
-### Form Submits But Nothing Appears in Webiny
+### Form Submission Fails Silently
 
-**Problem:** Form shows success but no entry in Webiny Admin.
-
-**Solution:**
-
-1. Check you're looking at the correct Webiny environment
-2. Verify the SDK call is using the correct content model ID (`contactSubmission`)
-3. Check Webiny Admin filters - you might be filtering out new entries
-4. Look at the network tab to see the actual API response
-
-### TypeScript Errors
-
-**Problem:** TypeScript complains about types.
+**Problem:** Clicking "Send Message" shows no success or error message.
 
 **Solution:**
 
-1. Make sure you added all type definitions to `lib/types.ts`
-2. Check that imports match the exported interface names
-3. Verify the Server Action file has `"use server"` directive
+1. Open browser DevTools Console (F12) to check for JavaScript errors
+2. Check the Network tab for failed API requests
+3. Verify the Server Action is properly marked with `"use server"` directive
+4. Make sure `submitContactForm` is exported from `app/actions/submitContact.ts`
+
+### API Permission Errors
+
+**Problem:** Form submission returns an error like "Not authorized" or "Access denied".
+
+**Solution:**
+
+1. Verify your API key has **Manage API** permissions enabled (not just Read API)
+2. In Webiny Admin, go to **Settings** → **API Keys** → Edit your API key
+3. Ensure **Manage** is checked under GraphQL API Types
+4. Save the API key and try submitting the form again
+
+### Entries Not Appearing in Webiny Admin
+
+**Problem:** Form shows success but you can't find the submission in Webiny.
+
+**Solution:**
+
+1. Navigate to **Headless CMS** → **Contact Submissions** (not Models)
+2. Check if you're in the correct locale (default: "en-US")
+3. Remove any active filters in the content list view
+4. New entries are created in **draft** status - make sure you're not filtering to only show published entries
+
+### Model ID Mismatch Error
+
+**Problem:** Error says content model doesn't exist.
+
+**Solution:**
+
+1. Verify the model ID in your Server Action matches exactly: `contactSubmission`
+2. Check that the model was created successfully in Webiny Admin
+3. If you created the model via code, ensure it was deployed with `yarn webiny deploy api --env dev`
+4. Model IDs are case-sensitive - double-check capitalization
+
+### Environment Variables Not Working
+
+**Problem:** Server Action fails with SDK initialization errors.
+
+**Solution:**
+
+1. Verify `.env.local` exists in your Next.js project root
+2. Check that both `WEBINY_API_ENDPOINT` and `WEBINY_API_TOKEN` are set
+3. Restart your Next.js dev server after modifying `.env.local`
+4. Environment variables must not have quotes around the values
+5. Make sure there are no extra spaces before or after the values
 
 ## Summary
 
@@ -789,10 +771,10 @@ In this lesson, you learned how to:
 - ✅ Create a content model for form submissions (ContactSubmission)
 - ✅ Understand the difference between Read API and Manage API
 - ✅ Create API keys with write permissions
-- ✅ Write data to the CMS using the SDK
+- ✅ Write data to the CMS using the SDK with the Result pattern
 - ✅ Use Next.js Server Actions for secure server-side operations
 - ✅ Build a form with validation, loading states, and feedback
-- ✅ Handle both GraphQL-level and Webiny-level errors
+- ✅ Handle errors explicitly using the Result pattern
 - ✅ Test the complete data flow from form to CMS
 
 **What's Next?**

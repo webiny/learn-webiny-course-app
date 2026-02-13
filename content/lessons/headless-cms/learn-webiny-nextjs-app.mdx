@@ -40,6 +40,8 @@ In this lesson, we'll create a simple product listing page that fetches data fro
 
 Instead of writing raw GraphQL queries like you did in the API Playground, we'll use the **Webiny SDK** (`@webiny/sdk`). The SDK is a TypeScript library that provides a simple, type-safe interface for interacting with Webiny's APIs - no need to write GraphQL manually!
 
+The SDK uses a clean API with parameters like `token`, `endpoint`, and `tenant` to connect to your Webiny instance.
+
 This lesson establishes the foundation for the next lessons where we'll add a contact form (Lesson 9), implement lifecycle events (Lesson 10), and more!
 
 <Callout type="info">
@@ -101,9 +103,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. You should 
   Keep the dev server running while you work. It will auto-reload when you make changes.
 </Callout>
 
-## Finding Your API Host
+## Finding Your API Endpoint
 
-Before we can connect to Webiny, we need to find the API Host URL.
+Before we can connect to Webiny, we need to find the API endpoint URL.
 
 Open a terminal in your **Webiny project directory** (not the Next.js app) and run:
 
@@ -125,7 +127,7 @@ Look for the **Headless CMS - Read API** URL in the output. It will look somethi
 https://d1ud9w3i9i7d77.cloudfront.net/cms/read
 ```
 
-We need the **host** part of this URL (the domain). In this example, it would be:
+We need the **base URL** part (the domain). In this example, it would be:
 
 ```text
 https://d1ud9w3i9i7d77.cloudfront.net
@@ -223,14 +225,14 @@ In your **Next.js project** (not the Webiny project), create a new file called `
 
 ```bash title=".env.local"
 WEBINY_API_TOKEN=your-api-token-here
-WEBINY_API_HOST=https://your-url.cloudfront.net
+WEBINY_API_ENDPOINT=https://your-url.cloudfront.net
 # WEBINY_API_TENANT=root  # Only needed for multi-tenancy setups
 ```
 
 Replace:
 
 - `your-api-token-here` with the token you copied in the previous step
-- `https://your-url.cloudfront.net` with your actual API Host URL
+- `https://your-url.cloudfront.net` with your actual API endpoint URL
 
 <Callout type="hint">
   The `WEBINY_API_TENANT` variable is commented out because we're using the default single-tenant
@@ -257,37 +259,27 @@ Let's create a TypeScript interface for the Product data structure.
 Create a new file `lib/types.ts`:
 
 ```typescript title="lib/types.ts"
+import { CmsEntryData } from "@webiny/sdk";
+
 export interface Product {
-  id: string;
-  entryId: string;
-  values: {
-    name: string;
-    description: string;
-    price: number;
-    sku: string;
-    category?: {
-      id: string;
-      entryId: string;
-    };
-  };
+  name: string;
+  description: string;
+  price: number;
+  sku: string;
+  category?: CmsEntryData<ProductCategory>;
 }
 
 export interface ProductCategory {
-  id: string;
-  entryId: string;
-  values: {
-    name: string;
-    slug: string;
-  };
+  name: string;
+  slug: string;
 }
 ```
 
 This interface matches the structure of product entries returned by Webiny's CMS. Notice how:
 
-- User-defined fields (name, description, price, sku, category) are inside the `values` object
-- System fields like `id` and `entryId` are at the top level
+- All product fields (name, description, price, sku, category) are defined directly in the interface
 - The `category` field is optional (marked with `?`) since not all products may have a category assigned
-- Reference fields (like `category`) only contain `id` and `entryId` by default - we'll need to request the full category data if we want the name and slug
+- Reference fields (like `category`) are wrapped with `CmsEntryData<ProductCategory>` to match the SDK's structure, which includes `id`, `entryId`, and `values` wrapper
 
 <Callout type="hint">
   The Webiny SDK uses TypeScript generics, so we can pass this `Product` type to SDK methods and get
@@ -301,29 +293,34 @@ Now let's create a reusable API client for communicating with Webiny. We'll use 
 Create a new file `lib/webiny.ts`:
 
 ```ts title="lib/webiny.ts"
-import { WebinySdk } from "@webiny/sdk";
+import { Sdk } from "@webiny/sdk";
 
-const API_HOST = process.env.WEBINY_API_HOST!;
+const API_ENDPOINT = process.env.WEBINY_API_ENDPOINT!;
 const API_TOKEN = process.env.WEBINY_API_TOKEN!;
 const API_TENANT = process.env.WEBINY_API_TENANT || "root";
 
-if (!API_HOST || !API_TOKEN) {
-  throw new Error("Missing required environment variables: WEBINY_API_HOST and WEBINY_API_TOKEN");
+if (!API_ENDPOINT || !API_TOKEN) {
+  throw new Error(
+    "Missing required environment variables: WEBINY_API_ENDPOINT and WEBINY_API_TOKEN"
+  );
 }
 
 // Initialize and export the SDK
-export const sdk = new WebinySdk({
-  apiToken: API_TOKEN,
-  apiHost: API_HOST,
-  apiTenant: API_TENANT
+export const sdk = new Sdk({
+  token: API_TOKEN,
+  endpoint: API_ENDPOINT,
+  tenant: API_TENANT
 });
+
+// Export CmsEntryData type for use in components
+export type { CmsEntryData } from "@webiny/sdk";
 ```
 
 Let's break down what this code does:
 
-1.  **Environment Variables:** Loads the API Host, token, and tenant.
-2.  **SDK Initialization:** We initialize `WebinySdk` with the host, token, and tenant.
-3.  **Export:** We export the SDK instance so it can be used throughout the application.
+1.  **Environment Variables:** Loads the API endpoint, token, and tenant.
+2.  **SDK Initialization:** We initialize `Sdk` with the `token`, `endpoint`, and `tenant`.
+3.  **Exports:** We export both the SDK instance and the `CmsEntryData` type for use throughout the application.
 
 <Callout type="info">
   The SDK handles all the complexity of GraphQL queries, authentication headers, and error parsing
@@ -337,36 +334,35 @@ Now let's use the SDK to fetch products and display them!
 Update `app/page.tsx`:
 
 ```tsx title="app/page.tsx"
-import { sdk } from "@/lib/webiny";
+import { sdk, CmsEntryData } from "@/lib/webiny";
 import type { Product } from "@/lib/types";
 
 export default async function HomePage() {
-  let products: Product[] = [];
+  let products: CmsEntryData<Product>[] = [];
   let totalCount = 0;
   let error: string | null = null;
 
-  try {
-    const response = await sdk.cms.listEntries<Product>({
-      modelId: "product",
-      fields: [
-        "id",
-        "entryId",
-        "values.name",
-        "values.description",
-        "values.price",
-        "values.sku",
-        "values.category.id",
-        "values.category.entryId",
-        "values.category.values.name",
-        "values.category.values.slug"
-      ],
-      sort: { lastPublishedOn: "desc" }
-    });
+  const result = await sdk.cms.listEntries<Product>({
+    modelId: "product",
+    fields: [
+      "id",
+      "values.name",
+      "values.description",
+      "values.price",
+      "values.sku",
+      "values.category.id",
+      "values.category.values.name",
+      "values.category.values.slug"
+    ]
+    // Note: For fetching draft/unpublished content, you can use `preview: true`
+    // We won't cover this in this lesson, but it's useful for preview environments
+  });
 
-    products = response.data;
-    totalCount = response.meta.totalCount;
-  } catch (err) {
-    error = err instanceof Error ? err.message : "Failed to fetch products";
+  if (result.isOk()) {
+    products = result.value.data;
+    totalCount = result.value.meta.totalCount;
+  } else {
+    error = result.error.message;
   }
 
   return (
@@ -396,17 +392,17 @@ export default async function HomePage() {
               >
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h2 className="text-2xl font-semibold">{product.values.name}</h2>
-                    {product.values.category && (
+                    <h2 className="text-2xl font-semibold">{product.values!.name}</h2>
+                    {product.values!.category && (
                       <span className="inline-block mt-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
-                        {product.values.category.values.name}
+                        {product.values!.category!.values!.name}
                       </span>
                     )}
                   </div>
-                  <span className="text-2xl font-bold text-blue-600">${product.values.price}</span>
+                  <span className="text-2xl font-bold text-blue-600">${product.values!.price}</span>
                 </div>
-                <p className="text-gray-600 mb-3">{product.values.description}</p>
-                <p className="text-sm text-gray-500">SKU: {product.values.sku}</p>
+                <p className="text-gray-600 mb-3">{product.values!.description}</p>
+                <p className="text-sm text-gray-500">SKU: {product.values!.sku}</p>
               </div>
             ))}
           </div>
@@ -423,24 +419,35 @@ export default async function HomePage() {
 
 Let's understand what's happening here:
 
-1. **Import SDK:** We import the `sdk` instance from our `lib/webiny.ts` file
-2. **Fetch Products:** We call `sdk.cms.listEntries()` with the model ID, fields, and sort options
-3. **Fields Parameter:** We explicitly request:
-   - System fields: `id`, `entryId`
+1. **Import SDK and Types:** We import the `sdk` instance and `CmsEntryData` type from our `lib/webiny.ts` file, plus the `Product` type
+2. **Type Definition:** We use `CmsEntryData<Product>[]` which wraps our Product type with SDK's entry structure (includes `id`, `entryId`, and `values` wrapper)
+3. **Fetch Products:** We call `sdk.cms.listEntries()` with the model ID and fields - this returns a `Result` object
+4. **Result Pattern:** The SDK uses the Result pattern instead of throwing errors. We check if the result is successful using `result.isOk()`:
+   - If successful: access the data via `result.value.data` and metadata via `result.value.meta`
+   - If failed: access the error via `result.error.message`
+5. **Fields Parameter:** We explicitly request:
+   - System field: `id`
    - Product fields: `values.name`, `values.description`, `values.price`, `values.sku`
-   - Category reference fields: `values.category.id`, `values.category.entryId`
+   - Category reference field: `values.category.id`
    - Category nested fields: `values.category.values.name`, `values.category.values.slug`
-4. **Error Handling:** We check for errors and handle exceptions gracefully
-5. **Conditional Rendering:**
+6. **Preview Option:** By default, `listEntries()` only returns published content. If you need to fetch draft/unpublished entries (e.g., for preview environments), you can add `preview: true` to the options. We won't use this in this lesson.
+7. **Conditional Rendering:**
    - Show error message if fetch failed
    - Show "no products" message if the array is empty
    - Show product list if we have products
-6. **Product Display:** For each product we show:
+8. **Null-Safe Access:** We use `!` operator on `values` since we know the data exists (e.g., `product.values!.name`)
+9. **Product Display:** For each product we show:
    - Name (heading)
    - Category badge (if available) - shown as a blue pill/tag
    - Price (formatted with dollar sign)
    - Description
    - SKU (small text)
+
+<Callout type="info">
+  The SDK uses the **Result pattern** for error handling instead of throwing exceptions. This means
+  all operations return a `Result` object that you check with `isOk()` or `isErr()`. This approach
+  makes error handling more explicit and type-safe - you can't accidentally forget to handle errors!
+</Callout>
 
 <Callout type="success">
   This is a Server Component, which means it runs on the server (or at build time). The Webiny API
@@ -536,12 +543,12 @@ For most product catalogs, having content that's a few minutes or hours old is p
 
 ### "Missing required environment variables" Error
 
-**Problem:** The app crashes on startup with an error message about missing `WEBINY_API_HOST` or `WEBINY_API_TOKEN`.
+**Problem:** The app crashes on startup with an error message about missing `WEBINY_API_ENDPOINT` or `WEBINY_API_TOKEN`.
 
 **Solution:**
 
 1. Verify `.env.local` exists in your project root directory (same level as `package.json`)
-2. Check that both `WEBINY_API_HOST` and `WEBINY_API_TOKEN` are set with valid values
+2. Check that both `WEBINY_API_ENDPOINT` and `WEBINY_API_TOKEN` are set with valid values
 3. Make sure there are no extra spaces around the `=` sign in `.env.local`
 4. Restart your dev server: Press `Ctrl+C` (or `Cmd+C` on Mac), then run `npm run dev` again
 
@@ -553,7 +560,7 @@ For most product catalogs, having content that's a few minutes or hours old is p
 
 1. Double-check your API token is copied correctly in `.env.local` (no extra spaces or missing characters)
 2. Verify the API key has **Read API** permission enabled in Webiny Admin → Settings → API Keys
-3. Confirm you're using the correct **API Host URL** - it should be just the domain (e.g., `https://xxx.cloudfront.net`), not including `/cms/read`
+3. Confirm you're using the correct **API endpoint URL** - it should be just the domain (e.g., `https://xxx.cloudfront.net`), not including `/cms/read`
 4. If the problem persists, create a new API key in Webiny Admin and update your `.env.local` file
 
 ### "No products found" Message
@@ -585,7 +592,7 @@ For most product catalogs, having content that's a few minutes or hours old is p
 
 **Solution:**
 
-1. Verify `WEBINY_API_HOST` is a valid URL in `.env.local` (must start with `https://`)
+1. Verify `WEBINY_API_ENDPOINT` is a valid URL in `.env.local` (must start with `https://`)
 2. Check that you're not including the API path - use `https://xxx.cloudfront.net` NOT `https://xxx.cloudfront.net/cms/read`
 3. Ensure `@webiny/sdk` is properly installed: Check `package.json` dependencies
 4. Restart the dev server after making any `.env.local` changes
@@ -598,7 +605,7 @@ For most product catalogs, having content that's a few minutes or hours old is p
 
 1. Check your internet connection
 2. Verify your Webiny instance is running (if using local development)
-3. Try accessing your API Host URL in a browser to confirm it's reachable
+3. Try accessing your API endpoint URL in a browser to confirm it's reachable
 4. Check if there are any firewall or VPN issues blocking the connection
 5. If using Webiny Cloud, verify your project is deployed and active
 
@@ -634,6 +641,7 @@ In this lesson, you learned how to:
 - ✅ Create API keys with specific permissions (Read-only access)
 - ✅ Securely store API credentials using environment variables
 - ✅ Write a reusable API client with proper error handling
+- ✅ Use the Result pattern for type-safe error handling
 - ✅ Create TypeScript types for Webiny data structures
 - ✅ Fetch data from Webiny in Next.js Server Components
 - ✅ Use Static Site Generation (SSG) for optimal performance
