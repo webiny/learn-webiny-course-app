@@ -734,97 +734,71 @@ Before writing queries, use the **DOCS panel** to discover:
 - Sort options
 - Required vs optional parameters
 
-## Using the Webiny SDK
+## About the Webiny SDK
 
-While the API Playground uses GraphQL, in your JavaScript/TypeScript applications, you'll use the **Webiny SDK**. This library provides a convenient way to interact with the Headless CMS without writing raw GraphQL queries.
+The API Playground is excellent for learning GraphQL, exploring your schema, and testing queries before implementing them in your applications. However, when building real applications (like the Next.js app we'll create in the next lesson), you'll use the **Webiny SDK** instead of writing raw GraphQL queries.
 
-First, you'll need to install the SDK (this is already included in the starter kit):
+The Webiny SDK is a TypeScript library that provides:
 
-```bash
-npm install @webiny/sdk
-```
+- **Simple, intuitive methods** - No need to write GraphQL queries manually
+- **Type safety** - Full TypeScript support with generics
+- **Result pattern** - Explicit error handling without try-catch blocks
+- **Automatic API routing** - The SDK knows which API to use based on your operation
 
-Then, initialize the SDK:
+**Example of SDK vs GraphQL:**
 
-```typescript
-import { WebinySdk } from "@webiny/sdk";
+Instead of writing this GraphQL query:
 
-const sdk = new WebinySdk({
-  apiToken: "YOUR_API_TOKEN",
-  apiHost: "https://your-api-url.com",
-  apiTenant: "root" // or your specific tenant
-});
-```
-
-Here's how the SDK methods map to the GraphQL operations you've just learned:
-
-### Listing Entries
-
-Equivalent to `listProducts`:
-
-```typescript
-const response = await sdk.cms.listEntries({
-  modelId: "product",
-  fields: ["values.name", "values.description", "values.price", "values.sku"],
-  // Optional parameters
-  limit: 10
-});
-```
-
-### Getting a Single Entry
-
-Equivalent to `getProduct`:
-
-```typescript
-const response = await sdk.cms.getEntry({
-  modelId: "product",
-  id: "676d123456789" // entryId or full ID
-});
-```
-
-### Filtering
-
-Equivalent to `where` clause:
-
-```typescript
-const response = await sdk.cms.listEntries({
-  modelId: "product",
-  where: {
-    price_gte: 100,
-    name_contains: "Pro"
+```graphql
+{
+  listProducts {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
   }
-});
+}
 ```
 
-<Callout type="info">
-  The SDK simplifies the `where` structure. You don't need to wrap fields in a `values` object -
-  simply pass the field name and operator directly.
+You'll use the SDK like this:
+
+```typescript title="Webiny SDK Example"
+import { Sdk } from "@webiny/sdk";
+
+const sdk = new Sdk({
+  token: "YOUR_API_TOKEN",
+  endpoint: "https://your-api-url.cloudfront.net",
+  tenant: "root"
+});
+
+const result = await sdk.cms.listEntries({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"]
+});
+
+if (result.isOk()) {
+  const products = result.value.data;
+  console.log(`Found ${products.length} products`);
+} else {
+  console.error("Error:", result.error.message);
+}
+```
+
+<Callout type="success">
+  Don't worry about memorizing SDK syntax right now! In **Lesson 8 (Learn Webiny Next.js App)**,
+  you'll get hands-on experience building a real application with the SDK. For now, focus on
+  understanding GraphQL queries in the Playground - the concepts you learn here translate directly
+  to SDK usage.
 </Callout>
 
-### Sorting
-
-Equivalent to `sort` parameter:
-
-```typescript
-const response = await sdk.cms.listEntries({
-  modelId: "product",
-  sort: {
-    price: "desc",
-    name: "asc"
-  }
-});
-```
-
-### Searching
-
-Equivalent to `search` parameter:
-
-```typescript
-const response = await sdk.cms.listEntries({
-  modelId: "product",
-  search: "laptop"
-});
-```
+<Callout type="info">
+  **Why learn GraphQL first?** Understanding the underlying GraphQL queries helps you: - Debug
+  issues more effectively - Understand what the SDK is doing behind the scenes - Use the API
+  Playground to prototype and test before coding - Read API documentation and examples more easily
+</Callout>
 
 ## Summary
 
