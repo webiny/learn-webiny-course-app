@@ -59,7 +59,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
         .public({
           modelId: CONTACT_SUBMISSION_MODEL_ID,
           name: "Contact Submission",
-          group: "Ungrouped"
+          group: "ungrouped"
         })
         .description("Stores contact form submissions from the website")
         .fields(fields => ({
@@ -192,7 +192,7 @@ class ContactSubmissionHookImpl implements EntryBeforeCreateEventHandlerAbstract
   }
 }
 
-export const ContactSubmissionHook = EntryBeforeCreateEventHandlerAbstraction.createImplementation({
+export default EntryBeforeCreateEventHandlerAbstraction.createImplementation({
   implementation: ContactSubmissionHookImpl,
   dependencies: [Logger]
 });
