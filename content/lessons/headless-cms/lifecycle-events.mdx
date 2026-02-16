@@ -1,0 +1,282 @@
+---
+title: "Lifecycle Events"
+description: "Create an extension that triggers before the contact us data is written. It verifies if the provided email address is work email or personal and sets a flag into the contact us content entry."
+order: 10
+---
+
+# Lifecycle Events
+
+In this lesson, we'll explore how to hook into Webiny's lifecycle events to automate business logic. We'll create an event handler that automatically classifies contact form submissions as "Work" or "Personal" based on the email address.
+
+<ChapterOverview
+  items={[
+    { icon: "settings", text: "Understand Webiny Lifecycle Events." },
+    { icon: "code", text: "Create a backend extension to intercept data." },
+    { icon: "check_circle", text: "Automatically validate and modify content." }
+  ]}
+/>
+
+**What you'll build:**
+
+- A backend extension that listens for the `onBeforeCreate` event
+- Logic to check if an email is from a free provider (Gmail, Yahoo, etc.)
+- Automatic setting of an `emailType` field on the Contact Submission entry
+
+## Introduction to Lifecycle Events
+
+Webiny's Headless CMS triggers various events during the lifecycle of a content entry, such as:
+
+- `onBeforeCreate` / `onAfterCreate`
+- `onBeforeUpdate` / `onAfterUpdate`
+- `onBeforeDelete` / `onAfterDelete`
+- `onBeforePublish` / `onAfterPublish`
+
+These hooks allow you to intercept the process and execute custom logic. For example, you can:
+
+- Validate data before saving
+- Modify data (e.g., auto-calculate fields)
+- Trigger external systems (send emails, sync with CRM)
+- Enforce security policies
+
+In our case, we want to intercept the **creation** of a `ContactSubmission` to analyze the email address.
+
+## Step 1: Update the Content Model
+
+First, we need a field to store our classification. We'll add an `emailType` field to our `Contact Submission` model.
+
+If you created your model via code in the previous lesson, open `extensions/ContactSubmissionModel.ts` and add the new field.
+
+```ts title="extensions/ContactSubmissionModel.ts"
+// ... existing imports ...
+import { ModelFactory } from "webiny/api/cms/model";
+
+export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
+
+class ContactSubmissionModelImpl implements ModelFactory.Interface {
+  async execute(builder: ModelFactory.Builder) {
+    return [
+      builder
+        .public({
+          modelId: CONTACT_SUBMISSION_MODEL_ID,
+          name: "Contact Submission",
+          group: "Ungrouped"
+        })
+        .description("Stores contact form submissions from the website")
+        .fields(fields => ({
+          // ... existing fields (name, email, message) ...
+          name: fields
+            .text()
+            .renderer("text-input")
+            .label("Name")
+            .helpText("Full name of the person submitting the form")
+            .required("Name is required")
+            .minLength(2)
+            .maxLength(100)
+            .helpText("Enter your full name"),
+          email: fields
+            .text()
+            .renderer("text-input")
+            .label("Email")
+            .helpText("Email address for contact")
+            .required("Email is required")
+            .email()
+            .helpText("Enter a valid email address"),
+          message: fields
+            .longText()
+            .renderer("long-text-text-area")
+            .label("Message")
+            .helpText("Message content from the contact form")
+            .required("Message is required")
+            .minLength(10)
+            .maxLength(1000)
+            .helpText("Enter your message..."),
+
+          // NEW FIELD: Email Type
+          emailType: fields
+            .text()
+            .renderer("radio-buttons")
+            .label("Email Type")
+            .helpText("Automatically classified as Work or Personal")
+            .predefinedValues([
+              { label: "Work", value: "work" },
+              { label: "Personal", value: "personal" }
+            ])
+        }))
+        .layout([["name", "email"], ["message"], ["emailType"]])
+        .titleFieldId("name")
+        .descriptionFieldId("message")
+        .singularApiName("ContactSubmission")
+        .pluralApiName("ContactSubmissions")
+    ];
+  }
+}
+
+export const ContactSubmissionModel = ModelFactory.createImplementation({
+  implementation: ContactSubmissionModelImpl,
+  dependencies: []
+});
+```
+
+<Callout type="info">
+  **UI Approach:** If you prefer using the Admin UI: 1. Go to **Headless CMS > Models > Contact
+  Submission**. 2. Add a new **Text** field. 3. Set the Label to "Email Type" and Field ID to
+  `emailType`. 4. In the **Appearance** tab, select **Radio Buttons**. 5. In the **Predefined
+  Values** tab, add two options: "Work" (value: `work`) and "Personal" (value: `personal`).
+</Callout>
+
+<Image
+  src="/images/headless-cms/contact-submission-form-email-type.png"
+  alt="Contact Submission form in Webiny Admin showing the new Email Type radio buttons"
+  caption="The updated Contact Submission form with the new Email Type field"
+/>
+
+## Step 2: Create the Event Handler Extension
+
+Now let's create the extension that will contain our logic.
+
+Create a new file `extensions/ContactSubmissionHook.ts` in your Webiny project:
+
+```ts title="extensions/ContactSubmissionHook.ts"
+import { EntryBeforeCreateEventHandler as EntryBeforeCreateEventHandlerAbstraction } from "webiny/api/cms/entry";
+import { Logger } from "webiny/api/logger";
+
+// List of common free email providers
+const PERSONAL_EMAIL_DOMAINS = [
+  "gmail.com",
+  "yahoo.com",
+  "hotmail.com",
+  "outlook.com",
+  "aol.com",
+  "icloud.com",
+  "protonmail.com"
+];
+
+class ContactSubmissionHookImpl implements EntryBeforeCreateEventHandlerAbstraction.Interface {
+  public constructor(private logger: Logger.Interface) {}
+
+  public async handle(event: EntryBeforeCreateEventHandlerAbstraction.Event): Promise<void> {
+    const { payload, modelId } = event;
+
+    // 1. Check if this event is for our Contact Submission model
+    if (modelId !== "contactSubmission") {
+      return;
+    }
+
+    this.logger.info(`Processing contact submission for model: ${modelId}`);
+
+    // 2. Get the email from the payload
+    // Note: In Webiny CMS events, the entry data is typically in payload.values
+    const email = payload.values?.email as string;
+
+    if (!email) {
+      this.logger.warn("No email found in contact submission");
+      return;
+    }
+
+    // 3. Analyze the email domain
+    const domain = email.split("@")[1]?.toLowerCase();
+
+    let type = "work";
+    if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
+      type = "personal";
+    }
+
+    this.logger.info(`Classified email ${email} as ${type}`);
+
+    // 4. Update the entry with the classification
+    // We can directly modify the payload.values object to set data before it's saved
+    if (!payload.values) {
+      payload.values = {};
+    }
+    payload.values.emailType = type;
+  }
+}
+
+export const ContactSubmissionHook = EntryBeforeCreateEventHandlerAbstraction.createImplementation({
+  implementation: ContactSubmissionHookImpl,
+  dependencies: [Logger]
+});
+```
+
+**Key parts of the code:**
+
+1.  **Model Check**: We verify `modelId === "contactSubmission"` to ensure we only run this logic for our specific model.
+2.  **Domain Check**: We compare the email domain against a list of known free providers.
+3.  **Data Modification**: We verify and set `payload.values.emailType`. Since this is a `beforeCreate` hook, any changes to `payload` are persisted to the database.
+
+## Step 3: Register the Extension
+
+To make Webiny aware of our new extension, we need to register it in `webiny.config.tsx`.
+
+Open `webiny.config.tsx` in your project root and add the extension:
+
+```tsx title="webiny.config.tsx"
+// ... imports
+import { Api } from "webiny/extensions";
+
+export const Extensions = () => {
+  return (
+    <>
+      {/* ... other extensions ... */}
+
+      {/* Content Models */}
+      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+
+      {/* Lifecycle Events */}
+      <Api.Extension src={"/extensions/ContactSubmissionHook.ts"} />
+    </>
+  );
+};
+```
+
+## Step 4: Deploy Your Changes
+
+Deploy your Webiny project to apply the changes:
+
+```bash
+yarn webiny deploy api
+```
+
+Or if you're already running watch mode, the changes will be picked up automatically.
+
+<Callout type="hint">
+  If you need a refresher on deployment and watch mode, check back to Lesson 4 where we covered
+  these workflows in detail.
+</Callout>
+
+### Verification
+
+1.  Go to your Next.js app's contact form (`http://localhost:3000/contact`).
+2.  Submit a form with a **personal email** (e.g., `test@gmail.com`).
+3.  Submit another form with a **work email** (e.g., `test@company.com`).
+4.  Open **Webiny Admin > Headless CMS > Contact Submissions**.
+5.  Check the new entries. You should see the **Email Type** field automatically populated!
+
+<Image
+  src="/images/headless-cms/contact-submission-auto-populated.png"
+  alt="Webiny Admin showing Contact Submissions with Email Type field automatically selected as Work"
+  caption="The Email Type field is automatically set to 'Work' based on the email domain"
+/>
+
+## Summary
+
+You've successfully created a server-side extension that intercepts data before it's saved!
+
+In this lesson, you learned:
+
+- ✅ How to use `EntryBeforeCreateEventHandler`
+- ✅ How to filter events by `modelId`
+- ✅ How to modify entry data in the `beforeCreate` hook
+- ✅ How to register backend extensions
+
+**What's Next?**
+
+In the next lesson, we'll customize the **Data List** in the Admin UI to better display this new information and add a quick action button.
+
+<Quiz
+  question="If you wanted to send an email notification AFTER the entry is saved, which event would you use?"
+  options={["onBeforeCreate", "onAfterCreate", "onBeforePublish", "onEntrySaved"]}
+  correctAnswer={1}
+  explanation="Correct! onAfterCreate (or EntryAfterCreateEventHandler) is triggered after the data has been successfully persisted to the database, making it the perfect place for side effects like sending notifications."
+  hint="We need to ensure the data is saved before taking action."
+/>
