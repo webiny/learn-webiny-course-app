@@ -163,19 +163,19 @@ Open your **Webiny project directory** (not the Next.js app) in your code editor
 Create a new file in your Webiny project:
 
 ```text
-extensions/ContactSubmissionModel.ts
+extensions/contactSubmission/ContactSubmissionModel.ts
 ```
 
 <Callout type="hint">
-  The `extensions` folder is where all content model definitions live. You should already have
-  `ProductModel.ts` and `ProductCategoryModel.ts` there from earlier lessons.
+  We're organizing all Contact Submission-related code in a dedicated folder. This keeps related
+  extensions together and makes the codebase easier to maintain.
 </Callout>
 
 ### Step 3: Define the Model
 
 Add the following code to `ContactSubmissionModel.ts`:
 
-```ts title="extensions/ContactSubmissionModel.ts"
+```ts title="extensions/contactSubmission/ContactSubmissionModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
 const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
@@ -269,7 +269,7 @@ export const Extensions = () => {
       <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
 
       {/* Register our Contact Submission model */}
-      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+      <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionModel.ts"} />
     </>
   );
 };
@@ -661,24 +661,20 @@ Click **Send Message**. You should see:
 Let's review what happens when a user submits the form:
 
 1. **User fills out form** (Client Component: `app/contact/page.tsx`)
-
    - React state manages form data
    - HTML5 validation on submit
 
 2. **Form calls Server Action** (`submitContactForm`)
-
    - Runs securely on the server
    - API tokens never exposed to client
 
 3. **Server Action uses SDK** (`sdk.cms.createEntry()`)
-
    - Connects to Webiny Manage API
    - Creates new ContactSubmission entry
    - Passes form data as values
    - Returns a Result object (not throwing errors)
 
 4. **Webiny processes request**
-
    - Validates data against content model
    - Creates new ContactSubmission entry
    - Result object contains either success data or error

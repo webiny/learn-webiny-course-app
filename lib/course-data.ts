@@ -3,29 +3,29 @@
 // Lessons are auto-discovered from the file system
 // Run: npm run generate-course-data
 
-import { ChapterIconType } from "./chapter-icons";
-import { chapterMetadata } from "./chapter-metadata";
+import { ChapterIconType } from "./chapter-icons"
+import { chapterMetadata } from "./chapter-metadata"
 
 export interface Lesson {
-  id: string;
-  title: string;
-  slug: string;
+  id: string
+  title: string
+  slug: string
 }
 
 export interface Chapter {
-  id: string;
-  number: number;
-  title: string;
-  description: string;
-  icon: ChapterIconType;
-  lessons: Lesson[];
+  id: string
+  number: number
+  title: string
+  description: string
+  icon: ChapterIconType
+  lessons: Lesson[]
 }
 
 export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  chapters: Chapter[];
+  id: string
+  title: string
+  description: string
+  chapters: Chapter[]
 }
 
 export const courseData: Course = {
@@ -35,294 +35,290 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
-      id: "developing-with-webiny",
-      ...chapterMetadata["developing-with-webiny"],
-      lessons: [
-        {
-          id: "debugging-errors-best-practices",
-          title: "Debugging Errors & Best Practices",
-          slug: "developing-with-webiny/debugging-errors-best-practices"
-        },
-        {
-          id: "extensions",
-          title: "Extensions",
-          slug: "developing-with-webiny/extensions"
-        },
-        {
-          id: "local-development",
-          title: "Local Development",
-          slug: "developing-with-webiny/local-development"
-        },
-        {
-          id: "project-folder-structure",
-          title: "Project Folder Structure",
-          slug: "developing-with-webiny/project-folder-structure"
-        },
-        {
-          id: "whitelabel-extension",
-          title: "White-Label Extension",
-          slug: "developing-with-webiny/whitelabel-extension"
-        }
-      ]
+        id: "developing-with-webiny",
+        ...chapterMetadata["developing-with-webiny"],
+        lessons: [
+                  {
+                            "id": "debugging-errors-best-practices",
+                            "title": "Debugging Errors & Best Practices",
+                            "slug": "developing-with-webiny/debugging-errors-best-practices"
+                  },
+                  {
+                            "id": "extensions",
+                            "title": "Extensions",
+                            "slug": "developing-with-webiny/extensions"
+                  },
+                  {
+                            "id": "local-development",
+                            "title": "Local Development",
+                            "slug": "developing-with-webiny/local-development"
+                  },
+                  {
+                            "id": "project-folder-structure",
+                            "title": "Project Folder Structure",
+                            "slug": "developing-with-webiny/project-folder-structure"
+                  },
+                  {
+                            "id": "whitelabel-extension",
+                            "title": "White-Label Extension",
+                            "slug": "developing-with-webiny/whitelabel-extension"
+                  }
+        ]
     },
     {
-      id: "devops-best-practices",
-      ...chapterMetadata["devops-best-practices"],
-      lessons: [
-        {
-          id: "application-deployment-stacks",
-          title: "Application Deployment Stacks",
-          slug: "devops-best-practices/application-deployment-stacks"
-        },
-        {
-          id: "webiny-deployments",
-          title: "Deployment Environments",
-          slug: "devops-best-practices/webiny-deployments"
-        }
-      ]
+        id: "devops-best-practices",
+        ...chapterMetadata["devops-best-practices"],
+        lessons: [
+                  {
+                            "id": "application-deployment-stacks",
+                            "title": "Application Deployment Stacks",
+                            "slug": "devops-best-practices/application-deployment-stacks"
+                  },
+                  {
+                            "id": "webiny-deployments",
+                            "title": "Deployment Environments",
+                            "slug": "devops-best-practices/webiny-deployments"
+                  }
+        ]
     },
     {
-      id: "foundation",
-      ...chapterMetadata["foundation"],
-      lessons: [
-        {
-          id: "about",
-          title: "About Webiny",
-          slug: "foundation/about"
-        },
-        {
-          id: "infra-and-hosting",
-          title: "Infrastructure and Hosting",
-          slug: "foundation/infra-and-hosting"
-        },
-        {
-          id: "multi-tenancy",
-          title: "Multi-Tenancy",
-          slug: "foundation/multi-tenancy"
-        },
-        {
-          id: "webiny-apps",
-          title: "Webiny Applications",
-          slug: "foundation/webiny-apps"
-        },
-        {
-          id: "webiny-framework",
-          title: "Webiny Framework",
-          slug: "foundation/webiny-framework"
-        },
-        {
-          id: "webiny-parts",
-          title: "Parts that make Webiny",
-          slug: "foundation/webiny-parts"
-        }
-      ]
+        id: "foundation",
+        ...chapterMetadata["foundation"],
+        lessons: [
+                  {
+                            "id": "about",
+                            "title": "About Webiny",
+                            "slug": "foundation/about"
+                  },
+                  {
+                            "id": "infra-and-hosting",
+                            "title": "Infrastructure and Hosting",
+                            "slug": "foundation/infra-and-hosting"
+                  },
+                  {
+                            "id": "multi-tenancy",
+                            "title": "Multi-Tenancy",
+                            "slug": "foundation/multi-tenancy"
+                  },
+                  {
+                            "id": "webiny-apps",
+                            "title": "Webiny Applications",
+                            "slug": "foundation/webiny-apps"
+                  },
+                  {
+                            "id": "webiny-framework",
+                            "title": "Webiny Framework",
+                            "slug": "foundation/webiny-framework"
+                  },
+                  {
+                            "id": "webiny-parts",
+                            "title": "Parts that make Webiny",
+                            "slug": "foundation/webiny-parts"
+                  }
+        ]
     },
     {
-      id: "getting-started",
-      ...chapterMetadata["getting-started"],
-      lessons: [
-        {
-          id: "deploy-webiny",
-          title: "Deploy Webiny",
-          slug: "getting-started/deploy-webiny"
-        },
-        {
-          id: "installing-webiny",
-          title: "Installing Webiny",
-          slug: "getting-started/installing-webiny"
-        },
-        {
-          id: "upgrade-project",
-          title: "Upgrade Project",
-          slug: "getting-started/upgrade-project"
-        },
-        {
-          id: "webiny-cli-overview",
-          title: "Webiny CLI Overview",
-          slug: "getting-started/webiny-cli-overview"
-        }
-      ]
+        id: "getting-started",
+        ...chapterMetadata["getting-started"],
+        lessons: [
+                  {
+                            "id": "deploy-webiny",
+                            "title": "Deploy Webiny",
+                            "slug": "getting-started/deploy-webiny"
+                  },
+                  {
+                            "id": "installing-webiny",
+                            "title": "Installing Webiny",
+                            "slug": "getting-started/installing-webiny"
+                  },
+                  {
+                            "id": "upgrade-project",
+                            "title": "Upgrade Project",
+                            "slug": "getting-started/upgrade-project"
+                  },
+                  {
+                            "id": "webiny-cli-overview",
+                            "title": "Webiny CLI Overview",
+                            "slug": "getting-started/webiny-cli-overview"
+                  }
+        ]
     },
     {
-      id: "headless-cms",
-      ...chapterMetadata["headless-cms"],
-      lessons: [
-        {
-          id: "content-models-and-entries",
-          title: "Content Models and Content Entries",
-          slug: "headless-cms/content-models-and-entries"
-        },
-        {
-          id: "content-versioning",
-          title: "Content Versioning",
-          slug: "headless-cms/content-versioning"
-        },
-        {
-          id: "creating-content-model-via-code",
-          title: "Creating a Content Model via Code",
-          slug: "headless-cms/creating-content-model-via-code"
-        },
-        {
-          id: "creating-content-model-via-ui",
-          title: "Creating a Content Model via UI",
-          slug: "headless-cms/creating-content-model-via-ui"
-        },
-        {
-          id: "customize-data-list",
-          title: "Customize Data List",
-          slug: "headless-cms/customize-data-list"
-        },
-        {
-          id: "learn-webiny-nextjs-app",
-          title: "Learn Webiny Next.js App",
-          slug: "headless-cms/learn-webiny-nextjs-app"
-        },
-        {
-          id: "lifecycle-events",
-          title: "Lifecycle Events",
-          slug: "headless-cms/lifecycle-events"
-        },
-        {
-          id: "reading-records-via-api",
-          title: "Reading Records via the API",
-          slug: "headless-cms/reading-records-via-api"
-        },
-        {
-          id: "understanding-different-apis",
-          title: "Understanding Different HCMS APIs",
-          slug: "headless-cms/understanding-different-apis"
-        },
-        {
-          id: "webiny-api-playground",
-          title: "Webiny API Playground",
-          slug: "headless-cms/webiny-api-playground"
-        },
-        {
-          id: "writing-data",
-          title: "Writing Data",
-          slug: "headless-cms/writing-data"
-        }
-      ]
+        id: "headless-cms",
+        ...chapterMetadata["headless-cms"],
+        lessons: [
+                  {
+                            "id": "content-models-and-entries",
+                            "title": "Content Models and Content Entries",
+                            "slug": "headless-cms/content-models-and-entries"
+                  },
+                  {
+                            "id": "content-versioning",
+                            "title": "Content Versioning",
+                            "slug": "headless-cms/content-versioning"
+                  },
+                  {
+                            "id": "creating-content-model-via-code",
+                            "title": "Creating a Content Model via Code",
+                            "slug": "headless-cms/creating-content-model-via-code"
+                  },
+                  {
+                            "id": "creating-content-model-via-ui",
+                            "title": "Creating a Content Model via UI",
+                            "slug": "headless-cms/creating-content-model-via-ui"
+                  },
+                  {
+                            "id": "customize-data-list",
+                            "title": "Customize Data List",
+                            "slug": "headless-cms/customize-data-list"
+                  },
+                  {
+                            "id": "learn-webiny-nextjs-app",
+                            "title": "Learn Webiny Next.js App",
+                            "slug": "headless-cms/learn-webiny-nextjs-app"
+                  },
+                  {
+                            "id": "lifecycle-events",
+                            "title": "Lifecycle Events",
+                            "slug": "headless-cms/lifecycle-events"
+                  },
+                  {
+                            "id": "reading-records-via-api",
+                            "title": "Reading Records via the API",
+                            "slug": "headless-cms/reading-records-via-api"
+                  },
+                  {
+                            "id": "understanding-different-apis",
+                            "title": "Understanding Different HCMS APIs",
+                            "slug": "headless-cms/understanding-different-apis"
+                  },
+                  {
+                            "id": "webiny-api-playground",
+                            "title": "Webiny API Playground",
+                            "slug": "headless-cms/webiny-api-playground"
+                  },
+                  {
+                            "id": "writing-data",
+                            "title": "Writing Data",
+                            "slug": "headless-cms/writing-data"
+                  }
+        ]
     },
     {
-      id: "webiny-control-panel",
-      ...chapterMetadata["webiny-control-panel"],
-      lessons: [
-        {
-          id: "assigning-licenses",
-          title: "Assigning Licenses",
-          slug: "webiny-control-panel/assigning-licenses"
-        },
-        {
-          id: "structure-and-organization",
-          title: "Structure and Organization",
-          slug: "webiny-control-panel/structure-and-organization"
-        },
-        {
-          id: "usage-tracking",
-          title: "Usage tracking",
-          slug: "webiny-control-panel/usage-tracking"
-        },
-        {
-          id: "webiny-control-panel",
-          title: "Webiny Control Panel",
-          slug: "webiny-control-panel"
-        }
-      ]
+        id: "webiny-control-panel",
+        ...chapterMetadata["webiny-control-panel"],
+        lessons: [
+                  {
+                            "id": "assigning-licenses",
+                            "title": "Assigning Licenses",
+                            "slug": "webiny-control-panel/assigning-licenses"
+                  },
+                  {
+                            "id": "structure-and-organization",
+                            "title": "Structure and Organization",
+                            "slug": "webiny-control-panel/structure-and-organization"
+                  },
+                  {
+                            "id": "usage-tracking",
+                            "title": "Usage tracking",
+                            "slug": "webiny-control-panel/usage-tracking"
+                  },
+                  {
+                            "id": "webiny-control-panel",
+                            "title": "Webiny Control Panel",
+                            "slug": "webiny-control-panel"
+                  }
+        ]
     }
-  ]
-};
+],
+}
 
 export function getAllLessons(): Array<{ chapterId: string; lessonId: string; slug: string }> {
-  const lessons: Array<{ chapterId: string; lessonId: string; slug: string }> = [];
+  const lessons: Array<{ chapterId: string; lessonId: string; slug: string }> = []
 
-  courseData.chapters.forEach(chapter => {
-    chapter.lessons.forEach(lesson => {
+  courseData.chapters.forEach((chapter) => {
+    chapter.lessons.forEach((lesson) => {
       lessons.push({
         chapterId: chapter.id,
         lessonId: lesson.id,
-        slug: lesson.slug
-      });
-    });
-  });
+        slug: lesson.slug,
+      })
+    })
+  })
 
-  return lessons;
+  return lessons
 }
 
-export function getNextLesson(
-  currentSlug: string
-): { chapterId: string; lessonId: string; slug: string } | null {
-  const allLessons = getAllLessons();
-  const currentIndex = allLessons.findIndex(l => l.slug === currentSlug);
+export function getNextLesson(currentSlug: string): { chapterId: string; lessonId: string; slug: string } | null {
+  const allLessons = getAllLessons()
+  const currentIndex = allLessons.findIndex((l) => l.slug === currentSlug)
 
   if (currentIndex === -1 || currentIndex === allLessons.length - 1) {
-    return null;
+    return null
   }
 
-  return allLessons[currentIndex + 1];
+  return allLessons[currentIndex + 1]
 }
 
-export function getPreviousLesson(
-  currentSlug: string
-): { chapterId: string; lessonId: string; slug: string } | null {
-  const allLessons = getAllLessons();
-  const currentIndex = allLessons.findIndex(l => l.slug === currentSlug);
+export function getPreviousLesson(currentSlug: string): { chapterId: string; lessonId: string; slug: string } | null {
+  const allLessons = getAllLessons()
+  const currentIndex = allLessons.findIndex((l) => l.slug === currentSlug)
 
   if (currentIndex <= 0) {
-    return null;
+    return null
   }
 
-  return allLessons[currentIndex - 1];
+  return allLessons[currentIndex - 1]
 }
 
 export function getLessonBySlug(slug: string) {
   for (const chapter of courseData.chapters) {
-    const lesson = chapter.lessons.find(l => l.slug === slug);
+    const lesson = chapter.lessons.find((l) => l.slug === slug)
     if (lesson) {
-      return { chapter, lesson };
+      return { chapter, lesson }
     }
   }
-  return null;
+  return null
 }
 
 export function isLastLessonInChapter(slug: string): boolean {
-  const result = getLessonBySlug(slug);
-  if (!result) return false;
+  const result = getLessonBySlug(slug)
+  if (!result) return false
 
-  const { chapter, lesson } = result;
-  const lessonIndex = chapter.lessons.findIndex(l => l.id === lesson.id);
-  return lessonIndex === chapter.lessons.length - 1;
+  const { chapter, lesson } = result
+  const lessonIndex = chapter.lessons.findIndex((l) => l.id === lesson.id)
+  return lessonIndex === chapter.lessons.length - 1
 }
 
 export function getNextChapter(currentSlug: string): Chapter | null {
-  const result = getLessonBySlug(currentSlug);
-  if (!result) return null;
+  const result = getLessonBySlug(currentSlug)
+  if (!result) return null
 
-  const { chapter } = result;
-  const chapterIndex = courseData.chapters.findIndex(c => c.id === chapter.id);
+  const { chapter } = result
+  const chapterIndex = courseData.chapters.findIndex((c) => c.id === chapter.id)
 
   if (chapterIndex === -1 || chapterIndex === courseData.chapters.length - 1) {
-    return null;
+    return null
   }
 
-  return courseData.chapters[chapterIndex + 1];
+  return courseData.chapters[chapterIndex + 1]
 }
 
 export function getChapterById(chapterId: string): Chapter | null {
-  return courseData.chapters.find(c => c.id === chapterId) || null;
+  return courseData.chapters.find((c) => c.id === chapterId) || null
 }
 
 export function getLessonNumber(slug: string): number {
-  const allLessons = getAllLessons();
-  const index = allLessons.findIndex(l => l.slug === slug);
-  return index !== -1 ? index + 1 : 0;
+  const allLessons = getAllLessons()
+  const index = allLessons.findIndex((l) => l.slug === slug)
+  return index !== -1 ? index + 1 : 0
 }
 
 export function getLessonNumberInChapter(slug: string): number {
-  const result = getLessonBySlug(slug);
-  if (!result) return 0;
+  const result = getLessonBySlug(slug)
+  if (!result) return 0
 
-  const { chapter, lesson } = result;
-  const lessonIndex = chapter.lessons.findIndex(l => l.id === lesson.id);
-  return lessonIndex !== -1 ? lessonIndex + 1 : 0;
+  const { chapter, lesson } = result
+  const lessonIndex = chapter.lessons.findIndex((l) => l.id === lesson.id)
+  return lessonIndex !== -1 ? lessonIndex + 1 : 0
 }

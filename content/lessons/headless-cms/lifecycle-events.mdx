@@ -44,9 +44,9 @@ In our case, we want to intercept the **creation** of a `ContactSubmission` to a
 
 First, we need a field to store our classification. We'll add an `emailType` field to our `Contact Submission` model.
 
-If you created your model via code in the previous lesson, open `extensions/ContactSubmissionModel.ts` and add the new field.
+If you created your model via code in the previous lesson, open `extensions/contactSubmission/ContactSubmissionModel.ts` and add the new field.
 
-```ts title="extensions/ContactSubmissionModel.ts"
+```ts title="extensions/contactSubmission/ContactSubmissionModel.ts"
 // ... existing code ...
 
 // NEW FIELD: Email Type
@@ -78,9 +78,9 @@ emailType: fields
 
 Now let's create the extension that will contain our logic.
 
-Create a new file `extensions/ContactSubmissionHook.ts` in your Webiny project:
+Create a new file `extensions/contactSubmission/ContactSubmissionHook.ts` in your Webiny project:
 
-```ts title="extensions/ContactSubmissionHook.ts"
+```ts title="extensions/contactSubmission/ContactSubmissionHook.ts"
 import { EntryBeforeCreateEventHandler as EntryBeforeCreateEventHandlerAbstraction } from "webiny/api/cms/entry";
 import { Logger } from "webiny/api/logger";
 
@@ -164,10 +164,10 @@ export const Extensions = () => {
       {/* ... other extensions ... */}
 
       {/* Content Models */}
-      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+      <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionModel.ts"} />
 
       {/* Lifecycle Events */}
-      <Api.Extension src={"/extensions/ContactSubmissionHook.ts"} />
+      <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionHook.ts"} />
     </>
   );
 };
