@@ -734,6 +734,72 @@ Before writing queries, use the **DOCS panel** to discover:
 - Sort options
 - Required vs optional parameters
 
+## About the Webiny SDK
+
+The API Playground is excellent for learning GraphQL, exploring your schema, and testing queries before implementing them in your applications. However, when building real applications (like the Next.js app we'll create in the next lesson), you'll use the **Webiny SDK** instead of writing raw GraphQL queries.
+
+The Webiny SDK is a TypeScript library that provides:
+
+- **Simple, intuitive methods** - No need to write GraphQL queries manually
+- **Type safety** - Full TypeScript support with generics
+- **Result pattern** - Explicit error handling without try-catch blocks
+- **Automatic API routing** - The SDK knows which API to use based on your operation
+
+**Example of SDK vs GraphQL:**
+
+Instead of writing this GraphQL query:
+
+```graphql
+{
+  listProducts {
+    data {
+      id
+      values {
+        name
+        price
+      }
+    }
+  }
+}
+```
+
+You'll use the SDK like this:
+
+```typescript title="Webiny SDK Example"
+import { Sdk } from "@webiny/sdk";
+
+const sdk = new Sdk({
+  token: "YOUR_API_TOKEN",
+  endpoint: "https://your-api-url.cloudfront.net",
+  tenant: "root"
+});
+
+const result = await sdk.cms.listEntries({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"]
+});
+
+if (result.isOk()) {
+  const products = result.value.data;
+  console.log(`Found ${products.length} products`);
+} else {
+  console.error("Error:", result.error.message);
+}
+```
+
+<Callout type="success">
+  Don't worry about memorizing SDK syntax right now! In **Lesson 8 (Learn Webiny Next.js App)**,
+  you'll get hands-on experience building a real application with the SDK. For now, focus on
+  understanding GraphQL queries in the Playground - the concepts you learn here translate directly
+  to SDK usage.
+</Callout>
+
+<Callout type="info">
+  **Why learn GraphQL first?** Understanding the underlying GraphQL queries helps you: - Debug
+  issues more effectively - Understand what the SDK is doing behind the scenes - Use the API
+  Playground to prototype and test before coding - Read API documentation and examples more easily
+</Callout>
+
 ## Summary
 
 In this lesson, you learned how to:
