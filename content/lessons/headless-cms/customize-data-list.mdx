@@ -1,0 +1,156 @@
+---
+title: "Customize Data List"
+description: "Learn how to customize the Headless CMS data list by adding custom columns to display important information at a glance."
+order: 11
+---
+
+# Customize Data List
+
+In the previous lesson, we added an `emailType` field to our contact submissions and automatically populated it using a lifecycle event. However, to see this information in the Admin UI, you currently have to click into each record.
+
+In this lesson, we'll customize the **Contact Submission** data list to display the `email` and `emailType` directly in the list view.
+
+<ChapterOverview
+  items={[
+    { icon: "view_list", text: "Understand the Data List configuration." },
+    { icon: "code", text: "Create a React component to render custom columns." },
+    { icon: "extension", text: "Register the extension in your Admin app." }
+  ]}
+/>
+
+**What you'll build:**
+
+- A custom column to display the **Email** address
+- A custom column to display the **Email Type** (Business vs Personal) with custom formatting
+
+## Step 1: Create the Column Extension
+
+We'll create a new extension that defines how our custom columns should look and behave.
+
+Create a new file `extensions/EmailEntryListColumn.tsx` in your Webiny project:
+
+```tsx title="extensions/EmailEntryListColumn.tsx"
+import React from "react";
+import { ContentEntryListConfig } from "webiny/admin/cms/entry/list";
+
+// You can destructure config components to make the code more readable and easier to work with.
+const { Browser } = ContentEntryListConfig;
+
+export const EmailTypeCell = () => {
+  // You can destructure child methods to make the code more readable and easier to work with.
+  const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
+  // useTableRow() allows you to access the entire data of the current row.
+  const { row } = useTableRow<any>();
+
+  // isFolderRow() allows for custom rendering when the current row is a folder.
+  if (isFolderRow(row)) {
+    return <>{"-"}</>;
+  }
+
+  const emailType = row.data?.values.emailType;
+  return emailType === "work" ? <>{"Business"}</> : <>{"Personal"}</>;
+};
+
+const EmailTypeEntryListColumn = () => {
+  return (
+    <ContentEntryListConfig>
+      <Browser.Table.Column
+        name={"email"}
+        path={"values.email"}
+        header={"Email"}
+        modelIds={["contactSubmission"]}
+      />
+      <Browser.Table.Column
+        name={"emailType"}
+        header={"Email Type"}
+        modelIds={["contactSubmission"]}
+        cell={<EmailTypeCell />}
+      />
+    </ContentEntryListConfig>
+  );
+};
+
+export default EmailTypeEntryListColumn;
+```
+
+**Key parts of the code:**
+
+1.  **`ContentEntryListConfig`**: The main component for configuring the data list.
+2.  **`Browser.Table.Column`**: Defines a new column in the table.
+3.  **`modelIds={["contactSubmission"]}`**: Ensures these columns ONLY appear for the Contact Submission model.
+4.  **`path={"values.email"}`**: For simple fields, we can just specify the path to the data instead of writing a custom cell component!
+5.  **`cell`**: For custom rendering (like our Email Type), we provide a React component.
+
+## Step 2: Register the Extension
+
+Unlike the previous lessons where we registered backend extensions (API), this is a **frontend extension** (Admin).
+
+Open `webiny.config.tsx` in your project root and add the extension to the `<Admin>` section (or create it if it doesn't exist):
+
+```tsx title="webiny.config.tsx"
+// ... imports
+import { Admin, Api } from "webiny/extensions";
+
+export const Extensions = () => {
+  return (
+    <>
+      {/* ... existing API extensions ... */}
+      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+      <Api.Extension src={"/extensions/ContactSubmissionHook.ts"} />
+
+      {/* NEW: Admin App Extensions */}
+      <Admin.Extension src={"/extensions/EmailEntryListColumn.tsx"} />
+    </>
+  );
+};
+```
+
+## Step 3: Development with Watch Mode
+
+When developing Admin app extensions, you should have the following watch command running:
+
+```bash
+yarn webiny watch admin
+```
+
+If you're already running this command, your changes will be picked up automatically. You can access the Admin locally (usually at `http://localhost:3001`).
+
+<Callout type="hint">
+  If you need to deploy your changes to a live environment, you would use `yarn webiny deploy
+  admin`.
+</Callout>
+
+## Verification
+
+1.  Open your Webiny Admin app.
+2.  Navigate to **Headless CMS > Contact Submissions**.
+3.  You should now see two new columns: **Email** and **Email Type**!
+
+<Image
+  src="/images/headless-cms/custom-data-list.png"
+  alt="Webiny Admin showing Contact Submissions list with custom Email and Email Type columns"
+  caption="The Contact Submission list now displays Email and Email Type columns"
+/>
+
+## Summary
+
+You've successfully customized the Admin UI to display relevant business data!
+
+In this lesson, you learned:
+
+- ✅ How to create a React component for custom table cells
+- ✅ How to use `ContentEntryListConfig` to add columns
+- ✅ How to restrict columns to specific content models using `modelIds`
+- ✅ How to register frontend extensions in `webiny.config.tsx`
+
+**What's Next?**
+
+In the next lesson, we'll wrap up this module by exploring how to deploy your changes to a production environment.
+
+<Quiz
+  question="Which property ensures that your custom column only appears for a specific content model?"
+  options={["name", "header", "modelIds", "cell"]}
+  correctAnswer={3}
+  explanation="Correct! The modelIds property takes an array of model IDs. The column will only be rendered when viewing the list for those specific models."
+  hint="It's an array of strings that matches the ID of your content model."
+/>

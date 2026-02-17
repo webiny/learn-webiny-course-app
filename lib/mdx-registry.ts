@@ -44,6 +44,8 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
     import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
   "headless-cms/creating-content-model-via-ui": () =>
     import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
+  "headless-cms/customize-data-list": () =>
+    import("@/content/lessons/headless-cms/customize-data-list.mdx"),
   "headless-cms/learn-webiny-nextjs-app": () =>
     import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
   "headless-cms/lifecycle-events": () =>
@@ -302,6 +304,17 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Creating a Content Model via UI",
       description: "Learn how to create a Product content model through the Webiny Admin UI.",
       order: 3
+    },
+    chapter: "headless-cms"
+  },
+  {
+    slug: "headless-cms/customize-data-list",
+    import: () => import("@/content/lessons/headless-cms/customize-data-list.mdx"),
+    frontmatter: {
+      title: "Customize Data List",
+      description:
+        "Learn how to customize the Headless CMS data list by adding custom columns to display important information at a glance.",
+      order: 11
     },
     chapter: "headless-cms"
   },

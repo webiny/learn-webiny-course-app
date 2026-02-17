@@ -24,12 +24,12 @@ In this lesson, we'll explore how to hook into Webiny's lifecycle events to auto
 
 ## Introduction to Lifecycle Events
 
-Webiny's Headless CMS triggers various events during the lifecycle of a content entry, such as:
+Webiny's Headless CMS triggers various events during the lifecycle of a content entry. These are handled by specific interfaces in your code:
 
-- `onBeforeCreate` / `onAfterCreate`
-- `onBeforeUpdate` / `onAfterUpdate`
-- `onBeforeDelete` / `onAfterDelete`
-- `onBeforePublish` / `onAfterPublish`
+- `EntryBeforeCreateEventHandler` / `EntryAfterCreateEventHandler`
+- `EntryBeforeUpdateEventHandler` / `EntryAfterUpdateEventHandler`
+- `EntryBeforeDeleteEventHandler` / `EntryAfterDeleteEventHandler`
+- `EntryBeforePublishEventHandler` / `EntryAfterPublishEventHandler`
 
 These hooks allow you to intercept the process and execute custom logic. For example, you can:
 
@@ -68,35 +68,35 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Full name of the person submitting the form")
+            .help("Full name of the person submitting the form")
             .required("Name is required")
             .minLength(2)
             .maxLength(100)
-            .helpText("Enter your full name"),
+            .help("Enter your full name"),
           email: fields
             .text()
             .renderer("text-input")
             .label("Email")
-            .helpText("Email address for contact")
+            .help("Email address for contact")
             .required("Email is required")
             .email()
-            .helpText("Enter a valid email address"),
+            .help("Enter a valid email address"),
           message: fields
             .longText()
             .renderer("long-text-text-area")
             .label("Message")
-            .helpText("Message content from the contact form")
+            .help("Message content from the contact form")
             .required("Message is required")
             .minLength(10)
             .maxLength(1000)
-            .helpText("Enter your message..."),
+            .help("Enter your message..."),
 
           // NEW FIELD: Email Type
           emailType: fields
             .text()
             .renderer("radio-buttons")
             .label("Email Type")
-            .helpText("Automatically classified as Work or Personal")
+            .help("Automatically classified as Work or Personal")
             .predefinedValues([
               { label: "Work", value: "work" },
               { label: "Personal", value: "personal" }
@@ -275,8 +275,13 @@ In the next lesson, we'll customize the **Data List** in the Admin UI to better 
 
 <Quiz
   question="If you wanted to send an email notification AFTER the entry is saved, which event would you use?"
-  options={["onBeforeCreate", "onAfterCreate", "onBeforePublish", "onEntrySaved"]}
-  correctAnswer={1}
-  explanation="Correct! onAfterCreate (or EntryAfterCreateEventHandler) is triggered after the data has been successfully persisted to the database, making it the perfect place for side effects like sending notifications."
+  options={[
+    "EntryBeforeCreateEventHandler",
+    "EntryBeforePublishEventHandler",
+    "EntryAfterCreateEventHandler",
+    "EntryBeforeSaveEventHandler"
+  ]}
+  correctAnswer={3}
+  explanation="Correct! EntryAfterCreateEventHandler is triggered after the data has been successfully persisted to the database, making it the perfect place for side effects like sending notifications."
   hint="We need to ensure the data is saved before taking action."
 />

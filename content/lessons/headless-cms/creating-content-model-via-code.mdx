@@ -75,7 +75,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Name of the product category")
+            .help("Name of the product category")
             .required("Name is required")
             .minLength(2)
             .maxLength(100),
@@ -83,7 +83,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
             .text()
             .renderer("text-input")
             .label("Slug")
-            .helpText("URL-friendly identifier")
+            .help("URL-friendly identifier")
             .required("Slug is required")
             .unique()
             .pattern(
@@ -132,7 +132,7 @@ The `.fields()` method uses a fluent API to define fields:
 - `fields.longText()` - Creates a long text field
 - `.renderer()` - Specifies the UI renderer for the field
 - `.label()` - Display name for the field
-- `.helpText()` - Helper text shown in the editor
+- `.help()` - Helper text shown in the editor
 - `.required()` - Makes field required with custom error message
 - `.minLength()` / `.maxLength()` - Validation constraints
 - `.unique()` - Ensures field values are unique
@@ -339,20 +339,20 @@ class ProductModelImpl implements ModelFactory.Interface {
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Product name")
+            .help("Product name")
             .required("Name is required"),
           sku: fields
             .text()
             .renderer("text-input")
             .label("SKU")
-            .helpText("Stock Keeping Unit - unique product identifier")
+            .help("Stock Keeping Unit - unique product identifier")
             .required("SKU is required")
             .unique(),
           description: fields
             .longText()
             .renderer("long-text-text-area")
             .label("Description")
-            .helpText("Detailed product description"),
+            .help("Detailed product description"),
           price: fields
             .number()
             .renderer("number-input")

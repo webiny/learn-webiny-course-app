@@ -168,6 +168,11 @@ export const courseData: Course = {
           slug: "headless-cms/creating-content-model-via-ui"
         },
         {
+          id: "customize-data-list",
+          title: "Customize Data List",
+          slug: "headless-cms/customize-data-list"
+        },
+        {
           id: "learn-webiny-nextjs-app",
           title: "Learn Webiny Next.js App",
           slug: "headless-cms/learn-webiny-nextjs-app"
