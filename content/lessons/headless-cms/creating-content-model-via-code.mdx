@@ -58,7 +58,7 @@ Open `extensions/ProductCategoryModel.ts` and add the following code:
 ```typescript title="extensions/ProductCategoryModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
+const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
 
 class ProductCategoryModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {
@@ -322,7 +322,7 @@ Here's how you would define the Product model programmatically to match what we 
 ```typescript title="extensions/ProductModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const PRODUCT_MODEL_ID = "product";
+const PRODUCT_MODEL_ID = "product";
 
 class ProductModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {

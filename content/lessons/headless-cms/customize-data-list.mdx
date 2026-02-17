@@ -36,7 +36,7 @@ import { ContentEntryListConfig } from "webiny/admin/cms/entry/list";
 // You can destructure config components to make the code more readable and easier to work with.
 const { Browser } = ContentEntryListConfig;
 
-export const EmailTypeCell = () => {
+const EmailTypeCell = () => {
   // You can destructure child methods to make the code more readable and easier to work with.
   const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
   // useTableRow() allows you to access the entire data of the current row.

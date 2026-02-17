@@ -178,7 +178,7 @@ Add the following code to `ContactSubmissionModel.ts`:
 ```ts title="extensions/ContactSubmissionModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
+const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
 
 class ContactSubmissionModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {

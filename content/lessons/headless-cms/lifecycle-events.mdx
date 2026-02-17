@@ -47,74 +47,18 @@ First, we need a field to store our classification. We'll add an `emailType` fie
 If you created your model via code in the previous lesson, open `extensions/ContactSubmissionModel.ts` and add the new field.
 
 ```ts title="extensions/ContactSubmissionModel.ts"
-// ... existing imports ...
-import { ModelFactory } from "webiny/api/cms/model";
+// ... existing code ...
 
-export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
-
-class ContactSubmissionModelImpl implements ModelFactory.Interface {
-  async execute(builder: ModelFactory.Builder) {
-    return [
-      builder
-        .public({
-          modelId: CONTACT_SUBMISSION_MODEL_ID,
-          name: "Contact Submission",
-          group: "ungrouped"
-        })
-        .description("Stores contact form submissions from the website")
-        .fields(fields => ({
-          // ... existing fields (name, email, message) ...
-          name: fields
-            .text()
-            .renderer("text-input")
-            .label("Name")
-            .help("Full name of the person submitting the form")
-            .required("Name is required")
-            .minLength(2)
-            .maxLength(100)
-            .help("Enter your full name"),
-          email: fields
-            .text()
-            .renderer("text-input")
-            .label("Email")
-            .help("Email address for contact")
-            .required("Email is required")
-            .email()
-            .help("Enter a valid email address"),
-          message: fields
-            .longText()
-            .renderer("long-text-text-area")
-            .label("Message")
-            .help("Message content from the contact form")
-            .required("Message is required")
-            .minLength(10)
-            .maxLength(1000)
-            .help("Enter your message..."),
-
-          // NEW FIELD: Email Type
-          emailType: fields
-            .text()
-            .renderer("radio-buttons")
-            .label("Email Type")
-            .help("Automatically classified as Work or Personal")
-            .predefinedValues([
-              { label: "Work", value: "work" },
-              { label: "Personal", value: "personal" }
-            ])
-        }))
-        .layout([["name", "email"], ["message"], ["emailType"]])
-        .titleFieldId("name")
-        .descriptionFieldId("message")
-        .singularApiName("ContactSubmission")
-        .pluralApiName("ContactSubmissions")
-    ];
-  }
-}
-
-export const ContactSubmissionModel = ModelFactory.createImplementation({
-  implementation: ContactSubmissionModelImpl,
-  dependencies: []
-});
+// NEW FIELD: Email Type
+emailType: fields
+  .text()
+  .renderer("radio-buttons")
+  .label("Email Type")
+  .help("Automatically classified as Work or Personal")
+  .predefinedValues([
+    { label: "Work", value: "work" },
+    { label: "Personal", value: "personal" }
+  ]);
 ```
 
 <Callout type="info">
