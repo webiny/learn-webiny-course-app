@@ -62,12 +62,14 @@ const EmailTypeEntryListColumn = () => {
     <ContentEntryListConfig>
       <Browser.Table.Column
         name={"email"}
+        after={"name"}
         path={"values.email"}
         header={"Email"}
         modelIds={["contactSubmission"]}
       />
       <Browser.Table.Column
         name={"emailType"}
+        after={"email"}
         header={"Email Type"}
         modelIds={["contactSubmission"]}
         cell={<EmailTypeCell />}
@@ -84,8 +86,9 @@ export default EmailTypeEntryListColumn;
 1.  **`ContentEntryListConfig`**: The main component for configuring the data list.
 2.  **`Browser.Table.Column`**: Defines a new column in the table.
 3.  **`modelIds={["contactSubmission"]}`**: Ensures these columns ONLY appear for the Contact Submission model.
-4.  **`path={"values.email"}`**: For simple fields, we can just specify the path to the data instead of writing a custom cell component!
-5.  **`cell`**: For custom rendering (like our Email Type), we provide a React component.
+4.  **`after`**: Controls column positioning. `after={"name"}` places the Email column right after the Name column, and `after={"email"}` places Email Type after Email.
+5.  **`path={"values.email"}`**: For simple fields, we can just specify the path to the data instead of writing a custom cell component!
+6.  **`cell`**: For custom rendering (like our Email Type), we provide a React component.
 
 ## Step 2: Register the Extension
 
@@ -134,8 +137,8 @@ If you're already running this command, your changes will be picked up automatic
 
 <Image
   src="/images/headless-cms/custom-data-list.png"
-  alt="Webiny Admin showing Contact Submissions list with custom Email and Email Type columns"
-  caption="The Contact Submission list now displays Email and Email Type columns"
+  alt="Webiny Admin showing Contact Submissions list with custom Email and Email Type columns positioned right after the Name column"
+  caption="The Contact Submission list now displays Email and Email Type columns right after the Name column"
 />
 
 ## Summary
