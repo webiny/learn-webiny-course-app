@@ -35,6 +35,11 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
+        id: "developing",
+        ...chapterMetadata["developing"],
+        lessons: []
+    },
+    {
         id: "developing-with-webiny",
         ...chapterMetadata["developing-with-webiny"],
         lessons: [
@@ -195,6 +200,11 @@ export const courseData: Course = {
         ]
     },
     {
+        id: "multi-tenancy",
+        ...chapterMetadata["multi-tenancy"],
+        lessons: []
+    },
+    {
         id: "webiny-control-panel",
         ...chapterMetadata["webiny-control-panel"],
         lessons: [
@@ -219,6 +229,11 @@ export const courseData: Course = {
                             "slug": "webiny-control-panel"
                   }
         ]
+    },
+    {
+        id: "website-builder",
+        ...chapterMetadata["website-builder"],
+        lessons: []
     }
 ],
 }
