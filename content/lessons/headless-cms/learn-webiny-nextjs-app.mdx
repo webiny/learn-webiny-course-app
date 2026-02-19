@@ -55,9 +55,7 @@ First, let's set up the Next.js project.
 
 ### Step 1: Clone the Starter Repository
 
-For this tutorial, we will use the [Webiny Website Builder Next.js Starter Kit](https://github.com/webiny/website-builder-nextjs).
-
-Although this starter is primarily designed for building websites with Webiny's **Website Builder** application, it functions as a standard Next.js app and is perfectly suitable for our Headless CMS project. Using this specific starter allows us to seamlessly transition into the Website Builder section of this course later, without needing to configure a new project from scratch.
+For this tutorial, we'll use a basic Next.js starter repository that's been set up with TypeScript and Tailwind CSS:
 
 Clone the repository and install dependencies:
 
@@ -259,7 +257,7 @@ Let's create a TypeScript interface for the Product data structure.
 Create a new file `lib/types.ts`:
 
 ```typescript title="lib/types.ts"
-import { CmsEntryData } from "@webiny/sdk";
+import type { CmsEntryData } from "@webiny/sdk";
 
 export interface Product {
   name: string;
@@ -293,7 +291,7 @@ Now let's create a reusable API client for communicating with Webiny. We'll use 
 Create a new file `lib/webiny.ts`:
 
 ```ts title="lib/webiny.ts"
-import { Sdk } from "@webiny/sdk";
+import { Webiny } from "@webiny/sdk";
 
 const API_ENDPOINT = process.env.WEBINY_API_ENDPOINT!;
 const API_TOKEN = process.env.WEBINY_API_TOKEN!;
@@ -306,7 +304,7 @@ if (!API_ENDPOINT || !API_TOKEN) {
 }
 
 // Initialize and export the SDK
-export const sdk = new Sdk({
+export const sdk = new Webiny({
   token: API_TOKEN,
   endpoint: API_ENDPOINT,
   tenant: API_TENANT

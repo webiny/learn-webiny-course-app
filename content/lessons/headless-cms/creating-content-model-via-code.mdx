@@ -58,23 +58,24 @@ Open `extensions/ProductCategoryModel.ts` and add the following code:
 ```typescript title="extensions/ProductCategoryModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
+const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
 
 class ProductCategoryModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {
     return [
       builder
-        .public()
-        .modelId(PRODUCT_CATEGORY_MODEL_ID)
-        .name("Product Category")
+        .public({
+          modelId: PRODUCT_CATEGORY_MODEL_ID,
+          name: "Product Category",
+          group: "ungrouped"
+        })
         .description("Product categories for organizing products")
-        .group("ungrouped")
         .fields(fields => ({
           name: fields
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Name of the product category")
+            .help("Name of the product category")
             .required("Name is required")
             .minLength(2)
             .maxLength(100),
@@ -82,7 +83,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
             .text()
             .renderer("text-input")
             .label("Slug")
-            .helpText("URL-friendly identifier")
+            .help("URL-friendly identifier")
             .required("Slug is required")
             .unique()
             .pattern(
@@ -103,7 +104,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const ProductCategoryModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ProductCategoryModelImpl,
   dependencies: []
 });
@@ -120,11 +121,8 @@ Let's break down what this code does:
 
 **Model Configuration:**
 
-- `.public()` - Makes this a public content model (accessible via Read API)
-- `.modelId()` - Internal identifier (used in the database)
-- `.name()` - Display name in the Admin UI
+- `.public({...})` - Makes this a public content model, defining its ID, name, and group in one configuration object
 - `.description()` - Model description
-- `.group()` - Organizes the model in the sidebar ("ungrouped" keeps it in the default group)
 - `.singularApiName()` and `.pluralApiName()` - GraphQL query names
 
 **Field Definitions:**
@@ -134,7 +132,7 @@ The `.fields()` method uses a fluent API to define fields:
 - `fields.longText()` - Creates a long text field
 - `.renderer()` - Specifies the UI renderer for the field
 - `.label()` - Display name for the field
-- `.helpText()` - Helper text shown in the editor
+- `.help()` - Helper text shown in the editor
 - `.required()` - Makes field required with custom error message
 - `.minLength()` / `.maxLength()` - Validation constraints
 - `.unique()` - Ensures field values are unique
@@ -324,36 +322,37 @@ Here's how you would define the Product model programmatically to match what we 
 ```typescript title="extensions/ProductModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const PRODUCT_MODEL_ID = "product";
+const PRODUCT_MODEL_ID = "product";
 
 class ProductModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {
     return [
       builder
-        .public()
-        .modelId(PRODUCT_MODEL_ID)
-        .name("Product")
+        .public({
+          modelId: PRODUCT_MODEL_ID,
+          name: "Product",
+          group: "ungrouped"
+        })
         .description("Products for our e-commerce store")
-        .group("ungrouped")
         .fields(fields => ({
           name: fields
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Product name")
+            .help("Product name")
             .required("Name is required"),
           sku: fields
             .text()
             .renderer("text-input")
             .label("SKU")
-            .helpText("Stock Keeping Unit - unique product identifier")
+            .help("Stock Keeping Unit - unique product identifier")
             .required("SKU is required")
             .unique(),
           description: fields
             .longText()
             .renderer("long-text-text-area")
             .label("Description")
-            .helpText("Detailed product description"),
+            .help("Detailed product description"),
           price: fields
             .number()
             .renderer("number-input")
@@ -369,12 +368,12 @@ class ProductModelImpl implements ModelFactory.Interface {
         .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
         .titleFieldId("name")
         .singularApiName("Product")
-        .pluralApiName("Products")
+        .pluralApiName("ProductCategories")
     ];
   }
 }
 
-export const ProductModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ProductModelImpl,
   dependencies: []
 });

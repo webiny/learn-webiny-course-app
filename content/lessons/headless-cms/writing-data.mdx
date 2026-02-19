@@ -163,59 +163,60 @@ Open your **Webiny project directory** (not the Next.js app) in your code editor
 Create a new file in your Webiny project:
 
 ```text
-extensions/ContactSubmissionModel.ts
+extensions/contactSubmission/ContactSubmissionModel.ts
 ```
 
 <Callout type="hint">
-  The `extensions` folder is where all content model definitions live. You should already have
-  `ProductModel.ts` and `ProductCategoryModel.ts` there from earlier lessons.
+  We're organizing all Contact Submission-related code in a dedicated folder. This keeps related
+  extensions together and makes the codebase easier to maintain.
 </Callout>
 
 ### Step 3: Define the Model
 
 Add the following code to `ContactSubmissionModel.ts`:
 
-```ts title="extensions/ContactSubmissionModel.ts"
+```ts title="extensions/contactSubmission/ContactSubmissionModel.ts"
 import { ModelFactory } from "webiny/api/cms/model";
 
-export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
+const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
 
 class ContactSubmissionModelImpl implements ModelFactory.Interface {
   async execute(builder: ModelFactory.Builder) {
     return [
       builder
-        .public()
-        .modelId(CONTACT_SUBMISSION_MODEL_ID)
-        .name("Contact Submission")
+        .public({
+          modelId: CONTACT_SUBMISSION_MODEL_ID,
+          name: "Contact Submission",
+          group: "ungrouped"
+        })
         .description("Stores contact form submissions from the website")
-        .group("ungrouped")
         .fields(fields => ({
           name: fields
             .text()
             .renderer("text-input")
             .label("Name")
-            .helpText("Full name of the person submitting the form")
+            .help("Full name of the person submitting the form")
             .required("Name is required")
             .minLength(2)
             .maxLength(100)
-            .helpText("Enter your full name"),
+            .help("Enter your full name"),
           email: fields
             .text()
             .renderer("text-input")
             .label("Email")
-            .helpText("Email address for contact")
+            .help("Email address for contact")
             .required("Email is required")
             .email()
-            .helpText("Enter a valid email address"),
+            .help("Enter a valid email address"),
           message: fields
             .longText()
             .renderer("long-text-text-area")
             .label("Message")
-            .helpText("Message content from the contact form")
+            .help("Message content from the contact form")
             .required("Message is required")
             .minLength(10)
             .maxLength(1000)
-            .helpText("Enter your message...")
+            .help("Enter your message...")
         }))
         .layout([["name", "email"], ["message"]])
         .titleFieldId("name")
@@ -226,7 +227,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const ContactSubmissionModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ContactSubmissionModelImpl,
   dependencies: []
 });
@@ -268,7 +269,7 @@ export const Extensions = () => {
       <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
 
       {/* Register our Contact Submission model */}
-      <Api.Extension src={"/extensions/ContactSubmissionModel.ts"} />
+      <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionModel.ts"} />
     </>
   );
 };
@@ -279,7 +280,7 @@ export const Extensions = () => {
 Deploy your Webiny project to apply the new content model:
 
 ```bash
-yarn webiny deploy api --env dev
+yarn webiny deploy api
 ```
 
 Or if you're already running watch mode, the changes will be picked up automatically.
@@ -660,24 +661,20 @@ Click **Send Message**. You should see:
 Let's review what happens when a user submits the form:
 
 1. **User fills out form** (Client Component: `app/contact/page.tsx`)
-
    - React state manages form data
    - HTML5 validation on submit
 
 2. **Form calls Server Action** (`submitContactForm`)
-
    - Runs securely on the server
    - API tokens never exposed to client
 
 3. **Server Action uses SDK** (`sdk.cms.createEntry()`)
-
    - Connects to Webiny Manage API
    - Creates new ContactSubmission entry
    - Passes form data as values
    - Returns a Result object (not throwing errors)
 
 4. **Webiny processes request**
-
    - Validates data against content model
    - Creates new ContactSubmission entry
    - Result object contains either success data or error
