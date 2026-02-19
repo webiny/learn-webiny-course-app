@@ -52,7 +52,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
     import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
   "headless-cms/lifecycle-events": () =>
     import("@/content/lessons/headless-cms/lifecycle-events.mdx"),
-  "headless-cms/webiny-sdk": () => import("@/content/lessons/headless-cms/webiny-sdk.mdx"),
+  "headless-cms/reading-data": () => import("@/content/lessons/headless-cms/reading-data.mdx"),
   "headless-cms/writing-data": () => import("@/content/lessons/headless-cms/writing-data.mdx"),
   "webiny-control-panel/assigning-licenses": () =>
     import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
@@ -333,7 +333,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Learn Webiny Next.js App",
       description:
         "Checkout the Learn Webiny Next.js App, create an API key and connect the app to Webiny API.",
-      order: 6
+      order: 5
     },
     chapter: "headless-cms"
   },
@@ -349,13 +349,13 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms"
   },
   {
-    slug: "headless-cms/webiny-sdk",
-    import: () => import("@/content/lessons/headless-cms/webiny-sdk.mdx"),
+    slug: "headless-cms/reading-data",
+    import: () => import("@/content/lessons/headless-cms/reading-data.mdx"),
     frontmatter: {
-      title: "Webiny SDK",
+      title: "Reading Data",
       description:
-        "Learn how to use the Webiny SDK to list, filter, create, update, publish, and unpublish content entries.",
-      order: 5
+        "Fetch and display products from Webiny Headless CMS using the Webiny SDK and Static Site Generation in Next.js.",
+      order: 6
     },
     chapter: "headless-cms"
   },

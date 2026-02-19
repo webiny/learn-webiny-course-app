@@ -22,6 +22,12 @@ This folder contains lessons that have been archived and are not currently part 
 - **Reason:** Replaced by a new SDK-focused article (`webiny-sdk.mdx`). Course now teaches SDK exclusively instead of raw GraphQL.
 - **Content:** GraphQL queries in API Playground - listing, filtering, sorting, pagination, reference fields across Manage/Read/Preview APIs.
 
+### webiny-sdk.mdx (formerly order: 5)
+
+- **Archived on:** Feb 19, 2026
+- **Reason:** Content moved to `developing-with-webiny/webiny-sdk-overview.mdx`. CMS-specific SDK usage is now demonstrated directly inside the Next.js app lessons.
+- **Content:** Full `sdk.cms` reference - listEntries, getEntry, createEntry, updateEntry, publishEntry, unpublishEntry, filtering, sorting, pagination, preview mode.
+
 ## Next Steps
 
 These articles contain good content that may be repurposed:

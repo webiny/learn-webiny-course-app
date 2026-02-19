@@ -188,9 +188,9 @@ export const courseData: Course = {
           slug: "headless-cms/lifecycle-events"
         },
         {
-          id: "webiny-sdk",
-          title: "Webiny SDK",
-          slug: "headless-cms/webiny-sdk"
+          id: "reading-data",
+          title: "Reading Data",
+          slug: "headless-cms/reading-data"
         },
         {
           id: "writing-data",

@@ -30,7 +30,7 @@ A contact form page at `/contact` that:
 
 **Prerequisites:**
 
-- Completed Lesson 8 (Next.js app setup)
+- Completed Lesson 5 (Next.js app setup) and Lesson 6 (Reading Data)
 - Your Next.js app running locally
 - Access to Webiny Admin
 
@@ -50,7 +50,7 @@ In this lesson, we'll use the **Webiny SDK** to create new contact form submissi
 
 <Callout type="info">
   **Behind the scenes:** When you create, update, or delete entries using the SDK, it uses Webiny's
-  **Manage API**. The Read API (which we used in Lesson 8) is read-only, while the Manage API allows
+  **Manage API**. The Read API (which we used in Lesson 6) is read-only, while the Manage API allows
   full CRUD operations. The SDK automatically routes your requests to the correct API based on the
   method you call.
 </Callout>
@@ -312,7 +312,7 @@ Or if you're already running watch mode, the changes will be picked up automatic
 
 ## Updating Your API Key with Write Permissions
 
-In Lesson 8, we created an API key with Read-only permissions. Now we need to expand those permissions to include the Manage API so we can write data to Webiny.
+In Lesson 5, we created an API key with Read-only permissions. Now we need to expand those permissions to include the Manage API so we can write data to Webiny.
 
 ### Step 1: Navigate to API Keys
 
@@ -321,7 +321,7 @@ In Lesson 8, we created an API key with Read-only permissions. Now we need to ex
 
 ### Step 2: Edit the Existing API Key
 
-Find the **Next.js App** API key you created in Lesson 8 and click on it to edit.
+Find the **Next.js App** API key you created in Lesson 5 and click on it to edit.
 
 ### Step 3: Update Permissions
 
@@ -350,7 +350,7 @@ However, if you need more granular control - such as restricting this key to onl
 Click **Save API Key** to update the permissions.
 
 <Callout type="info">
-  **Do I need a new token?** No! The existing API token from Lesson 8 continues to work. The token
+  **Do I need a new token?** No! The existing API token from Lesson 5 continues to work. The token
   now has access to both the Read API and the Manage API. You only need to get a new token if you
   want to regenerate it for security reasons.
 </Callout>
@@ -375,7 +375,7 @@ export interface ContactSubmission {
 
 Next.js Server Actions allow us to securely call server-side code from client components.
 
-We'll use the same SDK instance from `lib/webiny.ts` that we created in Lesson 8. The SDK is already exported and configured with our API credentials, so we can import it directly.
+We'll use the same SDK instance from `lib/webiny.ts` that we created in Lesson 5. The SDK is already exported and configured with our API credentials, so we can import it directly.
 
 Create a new file `app/actions/submitContact.ts`:
 
@@ -423,21 +423,7 @@ export async function submitContactForm(formData: ContactSubmission) {
 
 The `"use server"` directive tells Next.js this code runs only on the server.
 
-**Understanding the Result Pattern:**
-
-Notice how we use the Result pattern here instead of try-catch:
-
-1. Call `sdk.cms.createEntry()` and get a `result` object
-2. Check if successful with `result.isOk()`
-3. If successful: return the data via `result.value`
-4. If failed: return the error via `result.error.message`
-
-This makes error handling explicit and type-safe - you can't forget to handle errors!
-
-<Callout type="info">
-  Just like in Lesson 8 where we called the SDK directly in `page.tsx`, we're calling the SDK
-  directly in the Server Action. This keeps the code simple and all in one place!
-</Callout>
+As in the previous lesson, `createEntry` returns a Result object — check `result.isOk()`, read data from `result.value`, and get the error message from `result.error.message`.
 
 ## Creating the Contact Form Page
 
