@@ -1,7 +1,7 @@
 ---
 title: "Learn Webiny Next.js App"
 description: "Checkout the Learn Webiny Next.js App, create an API key and connect the app to Webiny API."
-order: 8
+order: 6
 ---
 
 # Learn Webiny Next.js App
@@ -22,14 +22,14 @@ A product listing homepage that fetches products from Webiny at build time and d
 
 **Prerequisites:**
 
-- Completed Lessons 1-7 (especially Lesson 7: Reading Records via the API)
+- Completed Lessons 1-5 (especially Lesson 5: Webiny SDK)
 - At least 2-3 published products in your Webiny CMS
 - Node.js 20.9+ and npm/yarn installed
 - Basic understanding of React and Next.js
 
 ## Introduction
 
-So far, you've learned how to use the API Playground to query your Webiny Headless CMS. Now it's time to put that knowledge into practice by building a real Next.js application!
+So far, you've learned how to create content models, add entries, and interact with the Webiny SDK. Now it's time to put that knowledge into practice by building a real Next.js application!
 
 In this lesson, we'll create a simple product listing page that fetches data from Webiny's Read API using **Static Site Generation (SSG)**. This means:
 
@@ -38,15 +38,13 @@ In this lesson, we'll create a simple product listing page that fetches data fro
 - Users get **instant page loads** with no API calls
 - Perfect for product catalogs that don't change every second
 
-Instead of writing raw GraphQL queries like you did in the API Playground, we'll use the **Webiny SDK** (`@webiny/sdk`). The SDK is a TypeScript library that provides a simple, type-safe interface for interacting with Webiny's APIs - no need to write GraphQL manually!
+We'll use the **Webiny SDK** (`@webiny/sdk`) - the same SDK you explored in the previous lesson - to fetch products from Webiny and display them on the page.
 
-The SDK uses a clean API with parameters like `token`, `endpoint`, and `tenant` to connect to your Webiny instance.
-
-This lesson establishes the foundation for the next lessons where we'll add a contact form (Lesson 9), implement lifecycle events (Lesson 10), and more!
+This lesson establishes the foundation for the next lessons where we'll add a contact form, implement lifecycle events, and more!
 
 <Callout type="info">
-  We'll be building on this same Next.js application throughout lessons 8-12, so each lesson adds
-  new functionality to the same codebase.
+  We'll be building on this same Next.js application throughout the remaining lessons, so each
+  lesson adds new functionality to the same codebase.
 </Callout>
 
 ## Project Setup
@@ -64,6 +62,7 @@ Clone the repository and install dependencies:
 git clone https://github.com/webiny/learn-webiny-nextjs-app.git learn-webiny-nextjs-app
 cd learn-webiny-nextjs-app
 npm install
+npm install @webiny/sdk
 ```
 
 ### Step 2: Explore the Project Structure
@@ -128,14 +127,13 @@ https://d1ud9w3i9i7d77.cloudfront.net/cms/read
 We need the **base URL** part (the domain). In this example, it would be:
 
 ```text
-https://d1ud9w3i9i7d77.cloudfront.net
+https://d1ud9w3i9i7d77`.cloudfront.net
 ```
 
 Copy this URL - you'll need it in the next step.
 
 <Callout type="hint">
-  We covered this in Lesson 5, but here's a quick reminder: The Read API only returns published
-  content, which is perfect for a public product listing page.
+  The Read API only returns published content, which is perfect for a public product listing page.
 </Callout>
 
 ## Creating an API Key
@@ -185,8 +183,8 @@ Configure the permissions as follows:
 <Callout type="info">
   We're giving the API key access to only the Read API because that's all we need for displaying
   published products. This follows the **principle of least privilege** - only grant the permissions
-  you actually need. In Lesson 9, we'll expand this API key's permissions to include the Manage API
-  for writing data.
+  you actually need. In the next lesson, we'll expand this API key's permissions to include the
+  Manage API for writing data.
 </Callout>
 
 <Callout type="hint">
@@ -572,7 +570,7 @@ For most product catalogs, having content that's a few minutes or hours old is p
    - Check that the product status shows "Published"
 2. The Read API only returns published content - drafts won't appear
 3. Verify your API key has permission to read the Product model
-4. Test the API in the API Playground (Lesson 7) to confirm products are accessible
+4. Verify your API key permissions are configured correctly in Webiny Admin → Settings → API Keys
 
 ### TypeScript Errors About SDK Types
 
@@ -616,7 +614,7 @@ For most product catalogs, having content that's a few minutes or hours old is p
 1. Verify the `fields` parameter in `sdk.cms.listEntries()` matches your actual field names
 2. Check that your `Product` TypeScript interface matches the structure of your content model
 3. Ensure all products have the required fields filled in (name, description, price, sku)
-4. Use the API Playground to inspect the actual response structure
+4. Double-check the field names in your content model match what you're passing to `fields`
 
 ### Build Fails in Production
 

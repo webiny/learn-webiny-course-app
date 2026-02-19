@@ -1,0 +1,525 @@
+---
+title: "Webiny SDK"
+description: "Learn how to use the Webiny SDK to list, filter, create, update, publish, and unpublish content entries."
+order: 5
+---
+
+# Webiny SDK - Headless CMS
+
+So far, you've learned how to create content models and add entries through the Webiny Admin. Now it's time to interact with your content programmatically using the **Webiny SDK**.
+
+<ChapterOverview
+  items={[
+    { icon: "settings", text: "Initialize the SDK with your API credentials." },
+    { icon: "list", text: "List, filter, sort, and paginate entries." },
+    { icon: "edit", text: "Create, update, publish, and unpublish entries." }
+  ]}
+/>
+
+<Callout type="info">
+  The Webiny SDK covers more than just the Headless CMS — it also provides modules for the File
+  Manager, Page Builder, and other Webiny apps. For a broader overview of the SDK and its core
+  concepts, see the [Webiny SDK](/lessons/developing-with-webiny/webiny-sdk-overview) article in the
+  Developing with Webiny chapter. This article focuses specifically on `sdk.cms` — the CMS module.
+</Callout>
+
+## The `sdk.cms` Module
+
+The `sdk.cms` module wraps Webiny's Headless CMS GraphQL APIs with a clean, intuitive interface. Instead of writing GraphQL queries manually, you call simple methods like `sdk.cms.listEntries()` or `sdk.cms.createEntry()`.
+
+Key benefits:
+
+- **No GraphQL required** - the SDK handles query construction for you
+- **Full TypeScript support** - generics give you type safety for your content models
+- **Result pattern** - explicit error handling without try/catch (as you'll see throughout this article)
+- **Automatic API routing** - read operations use the Read API, writes use the Manage API
+
+## Installation
+
+```bash title="Terminal"
+npm install @webiny/sdk
+```
+
+<Callout type="info">
+  The code examples in this article are standalone JavaScript/TypeScript snippets — they're not tied
+  to any specific project or starter kit. They're here to demonstrate what the SDK can do and how it
+  works. In the following lessons, you'll use the SDK inside a real Next.js project.
+</Callout>
+
+## Initializing the SDK
+
+Every interaction with Webiny starts by initializing the SDK with your API credentials.
+
+```typescript title="lib/webiny.ts"
+import { Webiny } from "@webiny/sdk";
+
+const API_ENDPOINT = process.env.WEBINY_API_ENDPOINT!;
+const API_TOKEN = process.env.WEBINY_API_TOKEN!;
+const API_TENANT = process.env.WEBINY_API_TENANT || "root";
+
+if (!API_ENDPOINT || !API_TOKEN) {
+  throw new Error(
+    "Missing required environment variables: WEBINY_API_ENDPOINT and WEBINY_API_TOKEN"
+  );
+}
+
+export const sdk = new Webiny({
+  token: API_TOKEN,
+  endpoint: API_ENDPOINT,
+  tenant: API_TENANT
+});
+
+export type { CmsEntryData } from "@webiny/sdk";
+```
+
+The three initialization parameters:
+
+- **`token`** - your API key token (from Webiny Admin → Settings → API Keys)
+- **`endpoint`** - your Webiny base URL (e.g. `https://xxx.cloudfront.net`)
+- **`tenant`** - the tenant ID, defaults to `"root"` for single-tenant projects
+
+<Callout type="hint">
+  Run `yarn webiny info` in your Webiny project directory to find your API endpoint URL. Look for
+  the **Headless CMS** section and copy the base domain (not the full path).
+</Callout>
+
+## TypeScript Types
+
+Before using the SDK, define TypeScript interfaces that match your content model fields:
+
+```typescript title="lib/types.ts"
+import type { CmsEntryData } from "@webiny/sdk";
+
+export interface Product {
+  name: string;
+  description: string;
+  price: number;
+  sku: string;
+  category?: CmsEntryData<ProductCategory>;
+}
+
+export interface ProductCategory {
+  name: string;
+  slug: string;
+}
+```
+
+The `CmsEntryData<T>` wrapper is used for reference fields. It matches the SDK's entry structure, which includes system fields like `id`, `entryId`, `createdOn`, `modifiedOn`, and more, as well as a `values` object containing your model's fields.
+
+## The Result Pattern
+
+Every SDK operation returns a **Result object** - it never throws. You check the outcome with `isOk()`:
+
+```typescript title="Result Pattern"
+const result = await sdk.cms.listEntries<Product>({ modelId: "product", fields: ["id"] });
+
+if (result.isOk()) {
+  // result.value contains the data
+  const { data, meta } = result.value;
+} else {
+  // result.error contains the error
+  console.error(result.error.message);
+}
+```
+
+This makes error handling explicit and type-safe - you can't accidentally forget to handle errors.
+
+## Listing Entries
+
+Use `sdk.cms.listEntries()` to fetch a list of entries from a content model.
+
+### Basic List
+
+```typescript title="Listing entries"
+import { sdk } from "@/lib/webiny";
+import type { Product } from "@/lib/types";
+
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.description", "values.price", "values.sku"]
+});
+
+if (result.isOk()) {
+  const products = result.value.data;
+  const totalCount = result.value.meta.totalCount;
+  console.log(`Found ${totalCount} products`);
+} else {
+  console.error("Error:", result.error.message);
+}
+```
+
+The `fields` parameter controls which data gets fetched. Specify only what you need:
+
+- `"id"` - the full revision ID (system field)
+- `"values.name"` - a user-defined field
+- `"values.category.id"` - the ID of a referenced entry
+- `"values.category.values.name"` - a field from a referenced entry
+
+<Callout type="info">
+  By default, `listEntries()` fetches **published entries only** via the Read API. To include draft
+  entries, pass `preview: true` - this switches to the Preview API.
+</Callout>
+
+### Fetching Reference Fields
+
+To include nested data from referenced entries, add their fields to the `fields` array:
+
+```typescript title="Fetching reference fields"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: [
+    "id",
+    "values.name",
+    "values.price",
+    "values.sku",
+    "values.category.id",
+    "values.category.values.name",
+    "values.category.values.slug"
+  ]
+});
+
+if (result.isOk()) {
+  for (const product of result.value.data) {
+    const categoryName = product.values?.category?.values?.name ?? "Uncategorized";
+    console.log(`${product.values?.name} - ${categoryName}`);
+  }
+}
+```
+
+### Filtering
+
+Pass a `where` object to filter entries. Filters go inside a `values` key to target your model's fields:
+
+```typescript title="Filtering entries"
+// Products priced at $100 or more
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"],
+  where: {
+    values: {
+      price_gte: 100
+    }
+  }
+});
+```
+
+**Common filter operators:**
+
+| Operator      | Meaning               | Example                   |
+| ------------- | --------------------- | ------------------------- |
+| (no suffix)   | Equals                | `name: "Laptop"`          |
+| `_not`        | Not equals            | `name_not: "Old Product"` |
+| `_in`         | In array              | `sku_in: ["A", "B"]`      |
+| `_not_in`     | Not in array          | `sku_not_in: ["OLD"]`     |
+| `_lt`         | Less than             | `price_lt: 100`           |
+| `_lte`        | Less than or equal    | `price_lte: 100`          |
+| `_gt`         | Greater than          | `price_gt: 50`            |
+| `_gte`        | Greater than or equal | `price_gte: 50`           |
+| `_contains`   | Contains substring    | `name_contains: "Pro"`    |
+| `_startsWith` | Starts with           | `sku_startsWith: "LAP"`   |
+
+<Callout type="info">
+  Comparison operators (`_gt`, `_gte`, `_lt`, `_lte`) are only available on **number fields**. Text
+  fields use `_contains` and `_startsWith` instead.
+</Callout>
+
+You can combine multiple filters in the same `where` object - they are applied with AND logic:
+
+```typescript title="Combining filters"
+// Products priced between $50 and $500 whose name contains "Pro"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"],
+  where: {
+    values: {
+      price_gte: 50,
+      price_lte: 500,
+      name_contains: "Pro"
+    }
+  }
+});
+```
+
+### Sorting
+
+Pass a `sort` array to control the order of results:
+
+```typescript title="Sorting entries"
+// Sort by price ascending, then by name
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"],
+  sort: ["values_price_ASC", "values_name_ASC"]
+});
+```
+
+Sort field name format: `values_{fieldId}_{ASC|DESC}` for model fields, or `createdOn_DESC` / `lastPublishedOn_DESC` for system fields.
+
+### Searching
+
+The `search` parameter performs a full-text search across all searchable fields simultaneously:
+
+```typescript title="Searching entries"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.description"],
+  search: "laptop"
+});
+```
+
+### Combining Filter, Sort, and Search
+
+```typescript title="Combining filter, sort, and search"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"],
+  where: { values: { price_gte: 50 } },
+  sort: ["values_price_DESC"],
+  search: "pro"
+});
+```
+
+### Pagination
+
+Use `limit` to control page size and `after` (cursor) to fetch subsequent pages:
+
+```typescript title="Pagination"
+// First page
+const page1 = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name"],
+  limit: 10
+});
+
+if (page1.isOk()) {
+  const { data, meta } = page1.value;
+
+  console.log(`Page 1: ${data.length} items`);
+  console.log(`Total: ${meta.totalCount}`);
+  console.log(`Has more: ${meta.hasMoreItems}`);
+
+  // Fetch next page using the cursor
+  if (meta.hasMoreItems) {
+    const page2 = await sdk.cms.listEntries<Product>({
+      modelId: "product",
+      fields: ["id", "values.name"],
+      limit: 10,
+      after: meta.cursor
+    });
+  }
+}
+```
+
+The `meta` object contains:
+
+- **`totalCount`** - total number of matching entries
+- **`hasMoreItems`** - `true` if there are more pages
+- **`cursor`** - opaque string to pass as `after` to fetch the next page
+
+## Getting a Single Entry
+
+Use `sdk.cms.getEntry()` to fetch a specific entry by `entryId`:
+
+```typescript title="Getting a single entry"
+const result = await sdk.cms.getEntry<Product>({
+  modelId: "product",
+  entryId: "676d123456789",
+  fields: ["id", "values.name", "values.description", "values.price", "values.sku"]
+});
+
+if (result.isOk()) {
+  const product = result.value;
+  console.log(`Found: ${product.values?.name}`);
+} else {
+  // Entry not found or other error
+  console.error(result.error.message);
+}
+```
+
+<Callout type="hint">
+  You can find an entry's `entryId` from a `listEntries()` response or from the Webiny Admin (it
+  appears in the URL when you open an entry).
+</Callout>
+
+## Creating Entries
+
+Use `sdk.cms.createEntry()` to create a new entry. New entries are created in **draft** status.
+
+```typescript title="Creating an entry"
+import { sdk } from "@/lib/webiny";
+import type { ContactSubmission } from "@/lib/types";
+
+const result = await sdk.cms.createEntry<ContactSubmission>({
+  modelId: "contactSubmission",
+  fields: ["id"],
+  data: {
+    values: {
+      name: "Jane Smith",
+      email: "jane@example.com",
+      message: "Hello, I have a question about your products."
+    }
+  }
+});
+
+if (result.isOk()) {
+  console.log("Created entry with ID:", result.value.id);
+} else {
+  console.error("Failed to create entry:", result.error.message);
+}
+```
+
+The `data.values` object maps directly to your content model fields. Webiny validates the data against your model's field definitions (required fields, min/max length, etc.) before saving.
+
+<Callout type="info">
+  `createEntry()` uses the **Manage API** behind the scenes. Your API key must have Manage API
+  access enabled to create entries.
+</Callout>
+
+## Updating Entries
+
+Use `sdk.cms.updateEntry()` to update an existing entry's fields:
+
+```typescript title="Updating an entry"
+const result = await sdk.cms.updateEntry<Product>({
+  modelId: "product",
+  entryId: "676d123456789",
+  fields: ["id", "values.name", "values.price"],
+  data: {
+    values: {
+      price: 1099.99
+    }
+  }
+});
+
+if (result.isOk()) {
+  console.log("Updated price:", result.value.values?.price);
+} else {
+  console.error("Failed to update:", result.error.message);
+}
+```
+
+You only need to pass the fields you want to change - other fields remain untouched. Updating creates a new **draft revision** while the previously published revision stays live.
+
+## Publishing Entries
+
+Entries are not visible via the Read API until they're published. Use `sdk.cms.publishEntry()`:
+
+```typescript title="Publishing an entry"
+const result = await sdk.cms.publishEntry({
+  modelId: "product",
+  entryId: "676d123456789"
+});
+
+if (result.isOk()) {
+  console.log("Entry is now published");
+} else {
+  console.error("Failed to publish:", result.error.message);
+}
+```
+
+A common pattern is to create an entry and immediately publish it:
+
+```typescript title="Creating and publishing an entry"
+// Step 1: Create
+const createResult = await sdk.cms.createEntry<Product>({
+  modelId: "product",
+  fields: ["id", "entryId"],
+  data: {
+    values: {
+      name: "New Product",
+      description: "A brand new product",
+      price: 49.99,
+      sku: "NEW-PROD-01"
+    }
+  }
+});
+
+if (!createResult.isOk()) {
+  console.error("Create failed:", createResult.error.message);
+  return;
+}
+
+// Step 2: Publish
+const publishResult = await sdk.cms.publishEntry({
+  modelId: "product",
+  entryId: createResult.value.entryId!
+});
+
+if (publishResult.isOk()) {
+  console.log("Product created and published!");
+}
+```
+
+## Unpublishing Entries
+
+To revert a published entry back to draft status, use `sdk.cms.unpublishEntry()`:
+
+```typescript title="Unpublishing an entry"
+const result = await sdk.cms.unpublishEntry({
+  modelId: "product",
+  entryId: "676d123456789"
+});
+
+if (result.isOk()) {
+  console.log("Entry is now unpublished (no longer visible in Read API)");
+} else {
+  console.error("Failed to unpublish:", result.error.message);
+}
+```
+
+Once unpublished, the entry is no longer returned by `listEntries()` or `getEntry()` (unless `preview: true` is passed).
+
+## Fetching Draft Content
+
+By default, the SDK reads from the **Read API**, which only returns published entries. To fetch the latest revision (published or draft), pass `preview: true`:
+
+```typescript title="Fetching draft content"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"],
+  preview: true // switches to Preview API
+});
+```
+
+This is useful for building preview modes in your application, where editors can see unpublished changes before making them live.
+
+## Summary
+
+The Webiny SDK provides a clean TypeScript interface for all CMS operations:
+
+| Operation            | SDK Method                    | Notes                               |
+| -------------------- | ----------------------------- | ----------------------------------- |
+| List entries         | `sdk.cms.listEntries()`       | Supports filter, sort, search, page |
+| Get single entry     | `sdk.cms.getEntry()`          | Lookup by `entryId`                 |
+| Create entry         | `sdk.cms.createEntry()`       | Creates as draft; requires Manage   |
+| Update entry         | `sdk.cms.updateEntry()`       | Partial update; creates new draft   |
+| Publish entry        | `sdk.cms.publishEntry()`      | Makes entry visible in Read API     |
+| Unpublish entry      | `sdk.cms.unpublishEntry()`    | Reverts to draft                    |
+| Fetch drafts/preview | Pass `preview: true` to reads | Switches to Preview API             |
+
+**Key takeaways:**
+
+- Initialize once with `new Webiny({ token, endpoint, tenant })`
+- All methods return a Result object - check with `isOk()` before accessing data
+- Use `fields` to request only what you need
+- Read operations default to published content; pass `preview: true` for drafts
+- Write operations require a Manage API-enabled API key
+
+In the next lesson, you'll use the SDK inside a real Next.js application to build a product listing page.
+
+<Quiz
+  question="When you call sdk.cms.listEntries() without any extra options, which content does it return?"
+  options={[
+    "All entries regardless of status",
+    "Only draft entries",
+    "Only published entries",
+    "The latest revision of every entry"
+  ]}
+  correctAnswer={3}
+  explanation="Correct! By default, listEntries() reads from the Read API, which only returns published entries. To include drafts, pass preview: true to switch to the Preview API."
+  hint="Think about which underlying API the SDK uses for read operations by default."
+/>
+
+---
+
+**Next lesson**: [Learn Webiny Next.js App](/lessons/headless-cms/learn-webiny-nextjs-app) - Build a product listing page using the SDK in a real Next.js application.

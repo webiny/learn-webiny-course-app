@@ -14,7 +14,7 @@ In this lesson, we'll explore the Manage, Read, and Preview APIs, their differen
   items={[
     { icon: "settings", text: "Manage API for content administration." },
     { icon: "book", text: "Read API for public content consumption." },
-    { icon: "visibility", text: "Preview API for draft content viewing." },
+    { icon: "visibility", text: "Preview API for draft content viewing." }
   ]}
 />
 
@@ -65,9 +65,8 @@ Navigate to **API Playground** in the Webiny Admin sidebar. The URL for the curr
 />
 
 <Callout type="info">
-  We'll explore the API Playground in detail in the next lesson (Lesson 6),
-  where you'll learn how to test queries and explore your GraphQL schema
-  interactively.
+  We'll explore the API Playground in detail in the next lesson (Lesson 6), where you'll learn how
+  to test queries and explore your GraphQL schema interactively.
 </Callout>
 
 ## Manage API
@@ -113,9 +112,9 @@ The Manage API returns data with:
 The Webiny Admin application uses the Manage API to let editors create, edit, and publish content. When you're logged into the Admin and working with content, you're using the Manage API.
 
 <Callout type="info" title="Built-in Security">
-  The Manage API is protected by Webiny's security layer. Only users with
-  appropriate roles and permissions (content editors, administrators) can access
-  it. The Webiny Admin UI automatically adapts based on user permissions.
+  The Manage API is protected by Webiny's security layer. Only users with appropriate roles and
+  permissions (content editors, administrators) can access it. The Webiny Admin UI automatically
+  adapts based on user permissions.
 </Callout>
 
 ### When to Use Manage API
@@ -160,8 +159,8 @@ The Read API returns data with:
 Your e-commerce website queries the Read API to display products to customers. Only published products appear on the site, ensuring customers never see draft or work-in-progress content.
 
 <Callout type="success" title="Optimized for Performance">
-  The Read API is optimized for performance and can be cached aggressively since
-  it only returns published, stable content.
+  The Read API is optimized for performance and can be cached aggressively since it only returns
+  published, stable content.
 </Callout>
 
 ### When to Use Read API
@@ -211,9 +210,8 @@ Your content editors want to preview how a new product will look on the website 
 The Preview API will show unpublished references as complete objects with their data, while the Read API returns `null` for those same references. This allows editors to preview how content will look with all relationships in place before publishing.
 
 <Callout type="info" title="Preview Mode Pattern">
-  A common pattern is to build a "Preview Mode" toggle in your application that
-  switches between Read and Preview APIs. Content editors can preview changes
-  before publishing.
+  A common pattern is to build a "Preview Mode" toggle in your application that switches between
+  Read and Preview APIs. Content editors can preview changes before publishing.
 </Callout>
 
 ### When to Use Preview API
@@ -242,8 +240,8 @@ Here's a quick comparison of the three APIs:
 | Use case                     | Admin interfaces | Production apps | Preview modes |
 
 <Callout type="warning">
-  All three API types require authentication via API keys. You'll learn how to
-  create and use API keys in Lesson 7: Reading Records via the API.
+  All three API types require authentication via API keys. You'll learn how to create and use API
+  keys in Lesson 7: Reading Records via the API.
 </Callout>
 
 ## Best Practices
@@ -259,8 +257,8 @@ For public content on your website, use the **Read API**, not the Manage API. Th
 When implementing preview functionality, use a conditional approach that switches between Read and Preview APIs based on whether the user is in preview mode.
 
 <Callout type="hint" title="Preview Mode Security">
-  Preview mode should be protected! Use authentication or preview tokens to
-  ensure only authorized users can preview unpublished content.
+  Preview mode should be protected! Use authentication or preview tokens to ensure only authorized
+  users can preview unpublished content.
 </Callout>
 
 ### 3. Cache Read API Responses
@@ -365,7 +363,7 @@ In the next two lessons, you'll learn how to:
     "Manage API - it has the most features",
     "Preview API - it shows the latest content",
     "Read API - it's optimized for public, published content",
-    "Any API works the same for public content",
+    "Any API works the same for public content"
   ]}
   correctAnswer={3}
   explanation="Correct! The Read API is specifically designed for public-facing applications. It only returns published content, is optimized for performance, and can be cached aggressively. The Manage API should be protected and used only for admin operations, while the Preview API is for preview modes, not production content."
