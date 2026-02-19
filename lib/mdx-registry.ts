@@ -28,9 +28,7 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "headless-cms/content-versioning": () => import("@/content/lessons/headless-cms/content-versioning.mdx"),
   "headless-cms/creating-content-model-via-code": () => import("@/content/lessons/headless-cms/creating-content-model-via-code.mdx"),
   "headless-cms/creating-content-model-via-ui": () => import("@/content/lessons/headless-cms/creating-content-model-via-ui.mdx"),
-  "headless-cms/customize-data-list": () => import("@/content/lessons/headless-cms/customize-data-list.mdx"),
   "headless-cms/learn-webiny-nextjs-app": () => import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
-  "headless-cms/lifecycle-events": () => import("@/content/lessons/headless-cms/lifecycle-events.mdx"),
   "headless-cms/reading-records-via-api": () => import("@/content/lessons/headless-cms/reading-records-via-api.mdx"),
   "headless-cms/understanding-different-apis": () => import("@/content/lessons/headless-cms/understanding-different-apis.mdx"),
   "headless-cms/webiny-api-playground": () => import("@/content/lessons/headless-cms/webiny-api-playground.mdx"),
@@ -271,32 +269,12 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms"
   },
   {
-    slug: "headless-cms/customize-data-list",
-    import: () => import("@/content/lessons/headless-cms/customize-data-list.mdx"),
-    frontmatter: {
-          "title": "Customize Data List",
-          "description": "Learn how to customize the Headless CMS data list by adding custom columns to display important information at a glance.",
-          "order": 11
-    },
-    chapter: "headless-cms"
-  },
-  {
     slug: "headless-cms/learn-webiny-nextjs-app",
     import: () => import("@/content/lessons/headless-cms/learn-webiny-nextjs-app.mdx"),
     frontmatter: {
           "title": "Learn Webiny Next.js App",
           "description": "Checkout the Learn Webiny Next.js App, create an API key and connect the app to Webiny API.",
           "order": 8
-    },
-    chapter: "headless-cms"
-  },
-  {
-    slug: "headless-cms/lifecycle-events",
-    import: () => import("@/content/lessons/headless-cms/lifecycle-events.mdx"),
-    frontmatter: {
-          "title": "Lifecycle Events",
-          "description": "Create an extension that triggers before the contact us data is written. It verifies if the provided email address is work email or personal and sets a flag into the contact us content entry.",
-          "order": 10
     },
     chapter: "headless-cms"
   },
