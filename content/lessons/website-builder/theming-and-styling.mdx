@@ -1,0 +1,247 @@
+---
+title: "Theming and Styling"
+description: "Learn how the Website Builder theme works, how it's registered, and how mobile-responsive styling is applied."
+order: 4
+---
+
+# Theming and Styling
+
+In this lesson we'll cover how the Website Builder theme works, how to customise it, and how responsive styling is handled — so what editors see in the Admin matches what visitors see on the published site.
+
+<ChapterOverview
+  items={[
+    { icon: "palette", text: "Understand how the theme is defined and injected." },
+    { icon: "tune", text: "Customise colours and typography in theme.css and theme.ts." },
+    { icon: "phone_iphone", text: "Add mobile-responsive CSS using standard media queries." }
+  ]}
+/>
+
+## How the Theme System Works
+
+The Website Builder theme has two parts that work together:
+
+1. **`theme.css`** — A CSS file that defines CSS custom properties (variables) for colours, and CSS classes for typography styles. This is injected into both the Next.js app and the Admin editor so they share the same visual language.
+
+2. **`createTheme()`** — A TypeScript call (in `theme.ts`) that builds a typed theme object. This object is passed to `initializeContentSdk` and tells the editor which colours and typography styles are available to assign.
+
+The webpack plugin `injectThemeCss` (configured in `next.config.ts`) reads `theme.css` at build time and makes it available to `createTheme()` via the `__THEME_CSS__` global.
+
+## The theme.css File
+
+Open `src/theme/theme.css`:
+
+```css title="src/theme/theme.css"
+:root {
+  --wb-theme-color1: #fa5723;
+  --wb-theme-color2: #00ccb0;
+  --wb-theme-color3: #0a0a0a;
+  --wb-theme-color4: #616161;
+  --wb-theme-color5: #eaecec;
+  --wb-theme-color6: #ffffff;
+  --wb-theme-font-family: InterVariable, sans-serif;
+}
+
+.wb-heading-1 {
+  line-height: 1.5;
+  font-family: var(--wb-theme-font-family);
+  font-weight: bold;
+  font-size: 48px;
+  color: var(--wb-theme-color3);
+}
+
+.wb-paragraph-1 {
+  line-height: 1.35;
+  font-family: var(--wb-theme-font-family);
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--wb-theme-color3);
+}
+```
+
+The CSS variable names follow the pattern `--wb-theme-colorN` for colours and `--wb-theme-font-family` for the base font. The typography classes (`wb-heading-1`, `wb-paragraph-1`, etc.) are applied by the editor's rich-text and text components.
+
+## The theme.ts File
+
+Open `src/theme/theme.ts`:
+
+```typescript title="src/theme/theme.ts"
+import { createTheme } from "@webiny/website-builder-nextjs";
+
+declare const __THEME_CSS__: string;
+
+export const getTheme = async () => {
+  const css = __THEME_CSS__;
+
+  const theme = createTheme({
+    css,
+    cssVariables: {
+      "--wb-theme-font-family": "Roboto, sans-serif"
+    },
+    fonts: ["https://fonts.googleapis.com/css2?family=Roboto&display=swap"],
+    styles: {
+      colors: {
+        color1: "var(--wb-theme-color1)",
+        color2: "var(--wb-theme-color2)",
+        color3: "var(--wb-theme-color3)",
+        color4: "var(--wb-theme-color4)",
+        color5: "var(--wb-theme-color5)",
+        color6: "var(--wb-theme-color6)"
+      },
+      typography: {
+        headings: [
+          { id: "heading1", name: "Heading 1", tag: "h1", className: "wb-heading-1" },
+          { id: "heading2", name: "Heading 2", tag: "h2", className: "wb-heading-2" }
+          // ...
+        ],
+        paragraphs: [
+          { id: "paragraph1", name: "Paragraph 1", tag: "p", className: "wb-paragraph-1" }
+        ]
+        // ...
+      }
+    }
+  });
+
+  return { theme, css };
+};
+```
+
+The `styles.colors` object maps colour identifiers (`color1` through `color6`) to the CSS variables. These identifiers appear in the editor's colour picker. The `typography` arrays define the text styles available in the editor's rich-text toolbar.
+
+The `getTheme()` function is called in `initializeContentSdk` and the result is passed as the `theme` option to `contentSdk.init()`.
+
+## Customising Colours
+
+To change the colour palette, edit the CSS variables in `theme.css`:
+
+```css title="src/theme/theme.css — customised brand colours"
+:root {
+  /* Primary brand colour */
+  --wb-theme-color1: #2563eb; /* blue-600 */
+  /* Secondary / accent */
+  --wb-theme-color2: #16a34a; /* green-600 */
+  /* Body text */
+  --wb-theme-color3: #111827; /* gray-900 */
+  /* Muted text */
+  --wb-theme-color4: #6b7280; /* gray-500 */
+  /* Light background */
+  --wb-theme-color5: #f3f4f6; /* gray-100 */
+  /* White */
+  --wb-theme-color6: #ffffff;
+}
+```
+
+The change propagates automatically to both the rendered pages and the Admin editor.
+
+## Customising Typography
+
+To add or modify typography styles, update both `theme.css` (for the CSS class) and `theme.ts` (for the editor definition):
+
+```css title="src/theme/theme.css — adding a new style"
+.wb-heading-display {
+  font-family: var(--wb-theme-font-family);
+  font-weight: 900;
+  font-size: 72px;
+  letter-spacing: -2px;
+  color: var(--wb-theme-color1);
+}
+```
+
+```typescript title="src/theme/theme.ts — registering the new style"
+headings: [
+  { id: "heading1", name: "Heading 1", tag: "h1", className: "wb-heading-1" },
+  { id: "headingDisplay", name: "Display", tag: "h1", className: "wb-heading-display" }
+  // ...
+];
+```
+
+The editor will now show "Display" as an option in the typography toolbar, and the `wb-heading-display` class will be applied to the rendered output.
+
+## Loading Custom Fonts
+
+Add fonts to the `fonts` array in `createTheme()`:
+
+```typescript title="src/theme/theme.ts"
+createTheme({
+  fonts: ["https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"],
+  cssVariables: {
+    "--wb-theme-font-family": "Inter, sans-serif"
+  }
+  // ...
+});
+```
+
+Fonts listed here are injected into the editor iframe so the Admin preview matches the live site.
+
+## Responsive Styling
+
+The theme CSS file is a regular CSS file — standard media queries work as expected:
+
+```css title="src/theme/theme.css — responsive typography"
+.wb-heading-1 {
+  font-size: 48px;
+}
+
+@media (max-width: 768px) {
+  .wb-heading-1 {
+    font-size: 32px;
+  }
+}
+
+.wb-paragraph-1 {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .wb-paragraph-1 {
+    font-size: 14px;
+  }
+}
+```
+
+For responsive styles inside your custom components, use Tailwind's responsive prefixes (e.g. `sm:`, `md:`, `lg:`) as you normally would in your React components. There's nothing special required — the component renders to HTML and the normal CSS cascade applies.
+
+```tsx title="responsive Banner component"
+export function Banner({ headline, ctaLabel, ctaUrl }: BannerProps) {
+  return (
+    <div className="py-8 px-4 text-center md:py-16 md:px-12">
+      <h2 className="text-2xl font-bold md:text-4xl">{headline}</h2>
+      <a href={ctaUrl} className="mt-4 inline-block px-4 py-2 text-sm md:px-8 md:py-3 md:text-base">
+        {ctaLabel}
+      </a>
+    </div>
+  );
+}
+```
+
+<Callout type="info">
+  The Admin editor renders your component in an iframe at desktop width. Responsive behaviour is
+  only visible on the live published site. Test mobile rendering in your Next.js dev server at a
+  narrow viewport width.
+</Callout>
+
+## How the CSS Reaches the Editor
+
+The `injectThemeCss` webpack plugin reads `theme.css` at build time and stores its contents as a string in the `__THEME_CSS__` global. `createTheme()` receives that string and sends it to the Admin editor via the SDK, which injects it into the editor's iframe. This is why changes to `theme.css` take effect in the editor after a dev server restart — no deployment needed during development.
+
+## Summary
+
+- `theme.css` defines CSS variables for colours and CSS classes for typography.
+- `theme.ts` registers the theme with `createTheme()` and lists available colours and text styles.
+- Edit `theme.css` to change colours, typography sizes, and add responsive breakpoints.
+- Custom components use regular Tailwind / CSS — no special theme API needed.
+- The webpack plugin syncs `theme.css` to the Admin editor automatically.
+
+**Next lesson**: Build an article listing component that fetches content from the Headless CMS.
+
+<Quiz
+  question="Why are fonts listed in the createTheme() fonts array, rather than just in a Next.js layout file?"
+  options={[
+    "The Next.js layout doesn't support Google Fonts",
+    "Fonts must be in createTheme to load properly in production",
+    "The fonts array injects the font into the Admin editor iframe so the preview matches the live site",
+    "createTheme automatically optimises font loading"
+  ]}
+  correctAnswer={2}
+  explanation="The Admin editor runs inside an iframe that is separate from your Next.js app. Fonts listed in the createTheme fonts array are sent to the editor via the SDK and injected into the iframe, ensuring the editor preview looks identical to the published site."
+  hint="Think about where the editor preview runs."
+/>

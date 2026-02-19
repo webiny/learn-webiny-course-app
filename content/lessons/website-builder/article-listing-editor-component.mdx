@@ -1,0 +1,308 @@
+---
+title: "Article Listing Editor Component"
+description: "Build a custom Website Builder component that fetches articles from Webiny Headless CMS and renders them inside a Website Builder page."
+order: 5
+---
+
+# Article Listing Editor Component
+
+In this lesson we combine the Website Builder with the Headless CMS. You'll create a custom **Article Listing** editor component that content editors can drop onto any page, and that fetches published articles from the HCMS at render time to display them.
+
+<ChapterOverview
+  items={[
+    { icon: "article", text: "Create an Article content model in the Headless CMS." },
+    { icon: "download", text: "Fetch CMS entries inside a Website Builder component." },
+    {
+      icon: "integration_instructions",
+      text: "Register the component and publish a page that uses it."
+    }
+  ]}
+/>
+
+**Prerequisites:**
+
+- Website Builder starter kit running (Lesson 2)
+- Webiny SDK configured in your Next.js app — either from the HCMS chapter, or follow the quick setup below
+- Node 18+
+
+## Why Combine Website Builder and Headless CMS?
+
+The Website Builder is great for layout and editorial composition. The Headless CMS is great for structured, reusable content. Combining them lets you get the best of both: editors compose a page visually, but the actual article data lives in the CMS where it can be authored, versioned, and reused across multiple surfaces.
+
+## Step 1: Set Up the Article Content Model
+
+If you completed the HCMS chapter you may already have an Article model. If not, create one now:
+
+1. In Webiny Admin, go to **Content Modeling → Models → New Model**.
+2. Set the name to **Article** and the model ID to `article`.
+3. Add the following fields:
+
+| Field          | Type      | Field ID        |
+| -------------- | --------- | --------------- |
+| Title          | Text      | `title`         |
+| Slug           | Text      | `slug`          |
+| Summary        | Long Text | `summary`       |
+| Published Date | Date/Time | `publishedDate` |
+
+4. Click **Save**.
+5. Go to **Content → Article** and create 2–3 dummy articles. **Publish each one.**
+
+## Step 2: Set Up the Webiny SDK
+
+The Website Builder starter kit uses `@webiny/website-builder-nextjs` for page rendering, but to query the Headless CMS you need `@webiny/sdk`. If you completed the HCMS chapter it's already installed. Otherwise:
+
+```bash title="Terminal"
+npm install @webiny/sdk
+```
+
+Create `src/lib/webiny.ts`:
+
+```typescript title="src/lib/webiny.ts"
+import { createWcpClient } from "@webiny/sdk";
+
+if (!process.env.WEBINY_API_ENDPOINT) {
+  throw new Error("Missing WEBINY_API_ENDPOINT environment variable");
+}
+if (!process.env.WEBINY_API_TOKEN) {
+  throw new Error("Missing WEBINY_API_TOKEN environment variable");
+}
+
+export const sdk = createWcpClient({
+  endpoint: process.env.WEBINY_API_ENDPOINT,
+  token: process.env.WEBINY_API_TOKEN
+});
+```
+
+Add the variables to your `.env` file (use the same API host and a Read-enabled API key):
+
+```dotenv title=".env"
+# Existing Website Builder variables
+NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=...
+NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=...
+NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
+
+# Headless CMS (Read API)
+WEBINY_API_ENDPOINT=https://your-cloudfront-url.cloudfront.net/cms/read/en-US
+WEBINY_API_TOKEN=your_read_api_token
+```
+
+<Callout type="hint">
+  The Read API endpoint includes the locale — adjust `en-US` if your content is in a different
+  locale. You can copy the full endpoint URL from the **API Playground** in Webiny Admin.
+</Callout>
+
+## Step 3: Define the Article Type
+
+Create `src/lib/types.ts` (or add to an existing one):
+
+```typescript title="src/lib/types.ts"
+export interface Article {
+  title: string;
+  slug: string;
+  summary: string;
+  publishedDate: string;
+}
+```
+
+## Step 4: Build the ArticleListing React Component
+
+This component is a **Server Component** — it fetches data at render time using the SDK. Create `src/editorComponents/components/ArticleListing.tsx`:
+
+```tsx title="src/editorComponents/components/ArticleListing.tsx"
+import React from "react";
+import { sdk } from "@/src/lib/webiny";
+import type { Article } from "@/src/lib/types";
+import type { CmsEntryData } from "@webiny/sdk";
+
+interface ArticleListingProps {
+  heading: string;
+  limit: string; // inputs are strings; we'll parse it
+}
+
+export async function ArticleListing({ heading, limit }: ArticleListingProps) {
+  const parsedLimit = parseInt(limit, 10) || 6;
+
+  const result = await sdk.cms.listEntries<Article>({
+    modelId: "article",
+    limit: parsedLimit,
+    sort: ["values.publishedDate_DESC"]
+  });
+
+  if (!result.isOk()) {
+    return <div className="p-8 text-red-600">Failed to load articles: {result.error.message}</div>;
+  }
+
+  const articles: CmsEntryData<Article>[] = result.value.data;
+
+  return (
+    <section className="py-12 px-6">
+      {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
+
+      {articles.length === 0 ? (
+        <p className="text-center text-gray-500">No articles published yet.</p>
+      ) : (
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+          {articles.map(article => (
+            <li
+              key={article.id}
+              className="border rounded-lg p-6 hover:shadow-md transition-shadow"
+            >
+              <a href={`/articles/${article.values.slug}`}>
+                <h3 className="text-xl font-semibold mb-2">{article.values.title}</h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.values.summary}</p>
+                <time dateTime={article.values.publishedDate} className="text-xs text-gray-400">
+                  {new Date(article.values.publishedDate).toLocaleDateString()}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+```
+
+<Callout type="info">
+  This component is an **async Server Component**. It runs on the server (or at build time) and
+  never ships the SDK or API token to the browser. This is the correct and secure pattern for
+  fetching CMS data inside a component.
+</Callout>
+
+## Step 5: Register the Component
+
+Open `src/editorComponents/index.tsx` and add the ArticleListing registration:
+
+```tsx title="src/editorComponents/index.tsx"
+"use client";
+import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
+import { Hero_1 } from "./components/Hero-1";
+import { ProductRecommendations } from "./components/ProductRecommendations";
+import { ArticleListing } from "./components/ArticleListing";
+
+export const editorComponents = [
+  // ... existing components ...
+
+  createComponent(ArticleListing, {
+    name: "Custom/ArticleListing",
+    label: "Article Listing",
+    group: "custom",
+    inputs: [
+      createTextInput({
+        name: "heading",
+        label: "Section Heading",
+        defaultValue: "Latest Articles"
+      }),
+      createTextInput({
+        name: "limit",
+        label: "Number of articles to show",
+        defaultValue: "6"
+      })
+    ]
+  })
+];
+```
+
+<Callout type="warning">
+  The `"use client"` directive at the top of `index.tsx` marks the *registration file* as a client
+  module — it does **not** force `ArticleListing` itself to run on the client. `ArticleListing` is
+  imported from a separate file with no `"use client"` directive, so Next.js treats it as a Server
+  Component and renders it server-side.
+</Callout>
+
+## Step 6: Add the Component Group
+
+If you haven't already registered a "custom" group in `initializeContentSdk`, add it now:
+
+```typescript title="src/contentSdk/initializeContentSdk.ts"
+registerComponentGroup({
+  name: "custom",
+  label: "Custom",
+  description: "Assorted custom components",
+  filter: (component: ComponentManifest) => !component.group
+});
+```
+
+## Step 7: Use It in the Editor
+
+1. Restart your dev server to pick up the new component.
+2. Open the Website Builder in Webiny Admin.
+3. Open or create a page.
+4. Find **Article Listing** in the **Custom** group of the component palette.
+5. Drag it onto the canvas.
+6. Set the heading and the number of articles in the sidebar inputs.
+7. **Publish** the page.
+
+<Image
+  src="/images/website-builder/article-listing-editor.png"
+  alt="Article Listing component in the Website Builder editor with inputs visible"
+  caption="The Article Listing component configured in the editor"
+/>
+
+8. Visit the page in your Next.js app. You should see your articles listed.
+
+<Image
+  src="/images/website-builder/article-listing-rendered.png"
+  alt="Article Listing component rendered on the page showing three article cards"
+  caption="Articles fetched from the Headless CMS, rendered inside a Website Builder page"
+/>
+
+## How the Data Flow Works
+
+```
+Webiny Admin Editor
+  └── Editor saves page document to Webiny API
+         (document contains: "Custom/ArticleListing", inputs: { heading, limit })
+
+Next.js request / build
+  └── contentSdk.getPage("/your-page-slug")
+         returns the page document
+  └── DocumentRenderer encounters "Custom/ArticleListing"
+         maps it to the ArticleListing React component
+  └── ArticleListing (Server Component) runs
+         calls sdk.cms.listEntries({ modelId: "article" })
+         renders the article cards
+```
+
+The page document from the Website Builder and the article entries from the Headless CMS are fetched independently and composed at render time.
+
+## Troubleshooting
+
+### No articles showing
+
+- Check that you published the articles in Webiny Admin (not just saved them).
+- Verify `WEBINY_API_ENDPOINT` points to the **Read API**, not the Manage API.
+- Check `WEBINY_API_TOKEN` has Read permissions for the Headless CMS.
+
+### "Custom/ArticleListing not found" in the editor
+
+- Restart the dev server — new component registrations require a restart.
+- Make sure `ArticleListing` is added to the `editorComponents` array before it's passed to `DocumentRenderer`.
+
+### TypeScript error on `article.values.title`
+
+- Check that the `Article` interface field name matches the field ID in your Webiny content model (e.g. `title` not `articleTitle`).
+
+## Summary
+
+In this lesson you built a hybrid component that bridges the Website Builder and Headless CMS:
+
+- Created an Article content model and published some dummy entries.
+- Built an async Server Component that fetches CMS entries inside a Website Builder component.
+- Registered the component with `createComponent` and configurable inputs.
+- Placed the component on a page in the editor and saw live article data rendered.
+
+This pattern — a Website Builder page composing one or more Server Components that query the Headless CMS — is the core of building editorial-driven content experiences with Webiny.
+
+<Quiz
+  question="Why is it safe to use the Webiny SDK and API token inside an async Server Component?"
+  options={[
+    "Server Components are encrypted so tokens are safe",
+    "Server Components run on the server and are never sent to the browser, so secrets stay server-side",
+    "The Webiny SDK automatically hides tokens from the client",
+    "You still need to use an API route to keep tokens safe"
+  ]}
+  correctAnswer={1}
+  explanation="Next.js Server Components execute on the server (or at build time) and their code is never shipped to the browser. Environment variables without the NEXT_PUBLIC_ prefix are only accessible server-side, making async Server Components the correct pattern for server-to-server API calls."
+  hint="Think about where Server Component code executes."
+/>
