@@ -21,6 +21,7 @@ In this lesson, we'll explore how the Website Builder works from a developer's p
 
 - A running Webiny project (completed via the Getting Started chapter, or already deployed)
 - Node.js 18+ and a package manager (npm, yarn, or pnpm)
+- Familiarity with Next.js App Router — the starter kit uses App Router, not Pages Router
 
 ## How It All Fits Together
 
@@ -41,31 +42,15 @@ This means all your component code and all your styles live in your Next.js proj
 
 The practical upside: no style clashes, no fighting the platform, full ownership of your code. And because editors are looking at your actual app, the WYSIWYG is genuine — not a simulation.
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  Webiny Admin                                            │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐  │
-│  │  Website Builder Editor                            │  │
-│  │                                                    │  │
-│  │   sidebar     ┌──────────────────────────────┐     │  │
-│  │   (inputs)    │  your Next.js app (iframe)   │     │  │
-│  │               │  real components             │     │  │
-│  │               │  real styles                 │     │  │
-│  │               └──────────────────────────────┘     │  │
-│  └────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────┘
-                        ↕ postMessage (SDK)
-┌──────────────────────────────────────────────────────────┐
-│  Your Next.js App (running separately)                   │
-│  @webiny/website-builder-nextjs SDK installed            │
-└──────────────────────────────────────────────────────────┘
-```
+<Image
+  src="/images/website-builder/architecture-diagram.png"
+  alt="Diagram showing Webiny Admin embedding your Next.js app in an iframe, communicating via postMessage through the SDK"
+  caption="The Website Builder editor loads your Next.js app in an iframe. The SDK bridges the two sides via postMessage."
+/>
 
-The `@webiny/website-builder-nextjs` SDK is what connects the two sides:
+{/* TODO: replace architecture-diagram.png with final version */}
 
-- **Editor SDK** — runs inside your app when it's loaded in the iframe. Tells the Admin which components are registered, and applies input changes live as the editor types.
-- **Content SDK** — used at build/request time to fetch published page documents from Webiny, so your Next.js app can render them for visitors.
+The `@webiny/website-builder-nextjs` SDK is what connects the two sides — it handles the communication between the editor and your app when editing, and fetches published page documents from Webiny when rendering pages for visitors.
 
 With that in mind, let's get everything set up.
 
@@ -79,49 +64,44 @@ cd my-website
 npm install
 ```
 
-<Callout type="warning">
-  The starter kit uses the **App Router** (not Pages Router). Make sure you're comfortable with
-  Next.js App Router conventions before diving in.
-</Callout>
+Before running `npm install`, make sure the `@webiny/website-builder-nextjs` version in `package.json` matches your Webiny version. You can find it at the bottom of the Admin sidebar, or by running `webiny --version` in your Webiny project.
 
-<Callout type="warning" title="Match your Webiny version">
-  The `@webiny/website-builder-nextjs` package version must match your Webiny Admin version. Check
-  your Webiny Admin version and update `package.json` accordingly before running `npm install`. If
-  there is no matching branch in the starter kit repo, use the closest available version.
-</Callout>
+<Image
+  style={{ width: 400 }}
+  src="/images/website-builder/webiny-version-sidebar.png"
+  alt="Webiny Admin sidebar showing the Webiny version number at the bottom"
+  caption="The Webiny version is shown at the bottom of the Admin sidebar"
+/>
+
+For example, if your Webiny version is `6.0.0`, your `package.json` should have:
+
+```json title="package.json"
+{
+  "dependencies": {
+    "@webiny/website-builder-nextjs": "6.0.0"
+  }
+}
+```
 
 ## Step 2: Gather Your Credentials
 
-You need three values from your Webiny Admin:
-
-### API Host URL
-
-1. Log in to Webiny Admin.
-2. Click **Support** in the bottom-left corner, then select **API Playground**.
-3. Copy the URL from the browser address bar — it looks like `https://d2pectsnqadb1k.cloudfront.net`. **Remove the `/graphql` path** — you only want the host.
+To connect the starter kit to your Webiny project, you'll need an API key, API host URL, and tenant ID. The easiest way to get these is through the **Configure Next.js** shortcut in Webiny Admin — click **Support** in the bottom-left corner and select **Configure Next.js**.
 
 <Image
-  src="/images/website-builder/api-playground.png"
-  alt="Webiny Admin API Playground showing the URL in the address bar"
-  caption="Copy the host URL from the API Playground (without /graphql)"
+  src="/images/website-builder/configure-nextjs-menu.png"
+  alt="Webiny Admin sidebar with the Support menu open, showing the Configure Next.js option"
+  caption="Open the Support menu and select Configure Next.js"
 />
 
-### API Key
-
-1. In Webiny Admin, go to **Settings → Access Management → API Keys**.
-2. Create a new key. Name it something like "Website Builder".
-3. Make sure the key has access to **Website Builder**.
-4. Copy the key value.
+A dialog appears with the three environment variables already filled in and ready to copy:
 
 <Image
-  src="/images/website-builder/api-keys.png"
-  alt="Webiny Admin API Keys page showing a new key being created"
-  caption="Create an API key with Website Builder access"
+  src="/images/website-builder/configure-nextjs-dialog.png"
+  alt="Configure Next.js dialog showing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY, API_HOST, and API_TENANT pre-filled"
+  caption="The Configure Next.js dialog gives you all three values in one click"
 />
 
-### Tenant ID
-
-Your Tenant ID is typically `root` for single-tenant Webiny projects. If you're using multi-tenancy, use the slug of the tenant you want to connect to.
+Click the copy icon and paste the block directly into your `.env` file in the next step.
 
 ## Step 3: Configure Environment Variables
 
@@ -151,16 +131,23 @@ Open [http://localhost:3000](http://localhost:3000). At this point you'll see a 
 1. Open your Webiny Admin app.
 2. In the main menu, find **Website Builder** and open it.
 3. Click **New Page**.
-4. Set the **title** to "Hello World" and the **path** to `/` (the homepage).
-5. From the component palette on the left, drag a **Text** component onto the canvas.
-6. Type "Hello World" into the text field.
-7. Click **Publish**.
+4. Set the **title** to "Hello World" and the **path** to `/` (the homepage), then click **Create**.
 
 <Image
-  src="/images/website-builder/hello-world-editor.png"
-  alt="Website Builder editor with a text component containing Hello World text"
-  caption="A simple Hello World page in the Website Builder editor"
+  src="/images/website-builder/create-page-dialog.png"
+  alt="Create a Page dialog with Title set to Hello World and Path set to /"
+  caption="Set the title and path, then hit Create"
 />
+
+5. You'll land in the page editor. From the component palette on the left, drag a **Rich Text** component onto the canvas and type "Hello World".
+
+<Image
+  src="/images/website-builder/hello-world-typed.png"
+  alt="Website Builder editor with Hello World typed into the canvas"
+  caption="Hello World typed into the canvas, ready to publish"
+/>
+
+6. Click **Publish**.
 
 ## Step 6: See It Rendered
 
@@ -171,12 +158,6 @@ Go back to [http://localhost:3000](http://localhost:3000) and refresh. You shoul
   alt="Browser showing the Hello World text rendered from the Website Builder"
   caption="The Hello World page rendered by your Next.js app"
 />
-
-<Callout type="info">
-  In development mode the starter kit renders pages on every request, so changes you publish in the
-  Admin are visible immediately on refresh. In production (`npm run build`), pages are statically
-  generated — you'd trigger a rebuild to pick up content changes.
-</Callout>
 
 ## How the Rendering Works
 
@@ -201,22 +182,21 @@ export default async function Page({ params }) {
 
 ## Cross-Origin Configuration
 
-Because the editor loads your Next.js app in an iframe, you need to explicitly allow this. The starter kit already has the CSP header configured for `localhost:3001` (the default local Webiny Admin port). If your Admin is on a different domain — for example a deployed CloudFront URL — add it:
+Because the editor loads your Next.js app in an iframe, you need to explicitly allow this. The starter kit already handles it — `next.config.ts` reads `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` and adds it to the `Content-Security-Policy` header automatically. `localhost:3001` (the default local Webiny Admin port) is always included.
 
-```typescript title="next.config.ts"
-{
-  key: "Content-Security-Policy",
-  value: "frame-ancestors http://localhost:3001 https://your-admin-url.cloudfront.net"
-}
-```
-
-Also set `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` so the SDK knows which origin to accept messages from:
+So if your Admin is on a deployed CloudFront URL, just add it to your `.env`:
 
 ```dotenv title=".env"
 NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=https://your-admin-url.cloudfront.net
 ```
 
-Without the CSP header the browser will block the iframe and the editor will show a blank canvas.
+You can also comma-separate multiple domains if needed:
+
+```dotenv title=".env"
+NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=https://admin-1.cloudfront.net,https://admin-2.cloudfront.net
+```
+
+Without this, the browser will block the iframe and the editor will show a blank canvas.
 
 ## Troubleshooting
 
