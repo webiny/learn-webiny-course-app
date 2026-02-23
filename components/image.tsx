@@ -13,6 +13,7 @@ interface ImageComponentProps {
   height?: number
   withBg?: boolean
   className?: string
+  withShadow?: boolean
 }
 
 /**
@@ -28,6 +29,7 @@ export function ImageComponent({
   width = 800,
   height = 600,
   withBg = true,
+  withShadow = true,
   className
 }: ImageComponentProps) {
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -104,7 +106,7 @@ export function ImageComponent({
             alt={alt}
             width={width}
             height={height}
-            className="w-full h-auto p-2"
+            className={`w-full h-auto  ${withShadow ? "border shadow-md rounded-lg" : "p-2"}`}
             style={{ objectFit: "contain" }}
           />
           {title && (
