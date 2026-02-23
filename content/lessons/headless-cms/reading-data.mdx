@@ -124,7 +124,7 @@ export default async function HomePage() {
 
 Let's walk through what's happening:
 
-1. **`sdk.cms.listEntries<Product>`** — Calls the Read API to fetch published entries from the `product` model. The `<Product>` generic types the response so `product.values` is fully typed.
+1. **`sdk.cms.listEntries<Product>`** — Calls the ƒRead API to fetch published entries from the `product` model. The `<Product>` generic types the response so `product.values` is fully typed.
 2. **`sort: ["values.name_ASC"]`** — Returns products sorted alphabetically by name. The sort format is `values.<fieldId>_ASC` or `values.<fieldId>_DESC`.
 3. **Result pattern** — We check `result.isOk()` before accessing the data. If the call fails (network error, wrong model ID, expired token, etc.), we render an error message instead of crashing.
 4. **`result.value.data`** — An array of `CmsEntryData<Product>` objects. Each item has `id`, `entryId`, and a `values` object containing the actual product fields.
@@ -153,7 +153,7 @@ In development mode, Next.js fetches data on every request rather than at build 
 `listEntries` supports server-side filtering and sorting. Here are a few examples you can try:
 
 ```typescript title="Filter by price"
-const result = await sdk.cms.listEntries<Product>({
+const result = await sdk.cms.listEntries<Product>({y dev
   modelId: "product",
   where: {
     "values.price_gte": 100
