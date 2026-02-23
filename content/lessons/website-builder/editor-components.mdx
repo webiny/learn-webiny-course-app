@@ -19,6 +19,7 @@ Editor components are the building blocks that content editors use to compose pa
 **Prerequisites:**
 
 - Starter kit running locally (previous lesson)
+- Webiny Admin app running (locally via `yarn webiny watch admin`, or deployed CloudFront URL)
 
 ## What Is an Editor Component?
 
@@ -37,44 +38,25 @@ Open `src/editorComponents/index.tsx` in the starter kit:
 
 ```tsx title="src/editorComponents/index.tsx"
 "use client";
-import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
+import { createComponent } from "@webiny/website-builder-nextjs";
 import { Hero_1 } from "./components/Hero-1";
-import { ProductRecommendations } from "./components/ProductRecommendations";
 
 export const editorComponents = [
-  createComponent(ProductRecommendations, {
-    name: "SampleEcommerce/ProductRecommendations",
-    label: "Product Recommendations",
-    group: "sample",
-    inputs: [
-      createTextInput({
-        name: "title",
-        label: "Title",
-        defaultValue: "",
-        required: true
-      }),
-      createTextInput({
-        name: "productIds",
-        list: true,
-        renderer: "SampleEcommerce/Product/List",
-        label: "Products"
-      })
-    ]
-  }),
   createComponent(Hero_1, {
     name: "Webiny/Hero",
-    label: "Hero #1"
+    label: "Hero #1",
+    inputs: []
   })
 ];
 ```
 
 A few things to notice:
 
-- The file is marked `"use client"` — component registrations must run on the client.
+- The file is marked `"use client"` — component registrations must run on the client, because the SDK communicates the available components to the editor via the browser.
 - `createComponent` takes the React component as its first argument and the manifest as the second.
-- `createTextInput` defines a text-based input. Other input creators exist for numbers, booleans, objects, etc.
 - `name` is a namespaced string — use a consistent convention like `"YourNamespace/ComponentName"`.
-- `group` links the component to a component group registered in `initializeContentSdk`.
+- `inputs` defines the configurable props that appear in the editor sidebar. An empty array means no inputs — the component renders with fixed content.
+- `group` (optional) links the component to a named component group in the editor palette.
 
 ## Component Groups
 
@@ -119,8 +101,17 @@ The `filter` option on the "custom" group is a catch-all: it collects any compon
 `DocumentRenderer` receives the `editorComponents` array as its `components` prop. When it encounters a component in the page document — identified by its `name` — it looks up the matching React component and renders it, passing the editor-configured input values as props.
 
 ```tsx title="src/components/DocumentRenderer.tsx (simplified)"
-<DocumentRendererSSR document={page} components={editorComponents} />
+export const DocumentRenderer = ({ document, isEditing }) => {
+  // Renders with SSR when visiting a page, without SSR when editing in Admin
+  return isEditing ? (
+    <DocumentRendererNoSSR document={document} components={editorComponents} />
+  ) : (
+    <DocumentRendererSSR document={document} components={editorComponents} />
+  );
+};
 ```
+
+The `components={editorComponents}` prop is how `DocumentRenderer` knows which React components are available. When it encounters a component in the page document — identified by its `name` — it looks up the matching entry in this array and renders it.
 
 This means the component name in the page document (stored in Webiny) must exactly match the `name` in your `createComponent` manifest. If you rename a component, existing pages that use the old name will fail to render it.
 
@@ -139,7 +130,6 @@ Let's build a simple **Banner** component — a full-width coloured strip with a
 Create `src/editorComponents/components/Banner.tsx`:
 
 ```tsx title="src/editorComponents/components/Banner.tsx"
-"use client";
 import React from "react";
 
 interface BannerProps {
@@ -211,7 +201,7 @@ export const editorComponents = [
 2. Open an existing page or create a new one.
 3. In the component palette, look for the **Custom** group — your **Banner** component should be there.
 4. Drag it onto the canvas, fill in the inputs, and publish.
-5. Refresh your local dev server to see the rendered banner.
+5. Visit your Next.js app and refresh the page to see the rendered banner.
 
 <Image
   src="/images/website-builder/banner-component-editor.png"
@@ -219,17 +209,9 @@ export const editorComponents = [
   caption="The Banner component in the editor with Headline, Button Label, and Button URL inputs"
 />
 
-## Input Types Reference
+## Input Types
 
-The SDK provides several input factory functions:
-
-| Function                               | Use case                                             |
-| -------------------------------------- | ---------------------------------------------------- |
-| `createTextInput`                      | Single-line text, URLs, labels                       |
-| `createTextInput({ list: true })`      | List of text values                                  |
-| `createTextInput({ renderer: "..." })` | Text with a custom renderer (e.g. ecommerce pickers) |
-
-More input types (number, boolean, object, rich text) are available — check the `@webiny/website-builder-nextjs` package exports for the full list.
+`createTextInput` is the most common input factory, covering single-line text, URLs, and labels. Passing `list: true` makes it accept multiple values. Beyond text, the SDK exports `createNumberInput`, `createBooleanInput`, `createObjectInput`, and others — check the `@webiny/website-builder-nextjs` package exports for the full list.
 
 ## Summary
 
