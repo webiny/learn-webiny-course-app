@@ -215,24 +215,37 @@ Now that we've successfully rendered a page end-to-end, let's dive into a bit mo
 src/
 ├── app/
 │   ├── [[...slug]]/
-│   │   └── page.tsx          # Catch-all route — renders every Website Builder page
+│   │   └── page.tsx              # Catch-all route — renders every Website Builder page
 │   ├── api/
-│   │   ├── preview/          # Enables Next.js draft mode for Website Builder preview
-│   │   └── redirects/        # Serves redirect rules defined in Website Builder Admin
+│   │   ├── preview/              # Enables Next.js draft mode for Website Builder preview
+│   │   └── redirects/            # Serves redirect rules defined in Website Builder Admin
 │   └── layout.tsx
 │
+├── components/
+│   ├── DocumentRenderer.tsx      # Wires editorComponents into the SDK renderer
+│   ├── Header.tsx
+│   ├── NotFound.tsx
+│   └── PageLayout.tsx
+│
 ├── contentSdk/
-│   ├── initializeContentSdk.ts   # SDK init + component group registration
+│   ├── initializeContentSdk.ts   # SDK init
+│   ├── groups.ts                 # Component group registration
 │   ├── ContentSdkInitializer.ts  # Client component wrapper for SDK init
-│   └── getTenant.ts              # Reads tenant ID from request headers
+│   ├── getTenant.ts              # Reads tenant ID from request headers
+│   └── index.ts
 │
 ├── editorComponents/
 │   ├── index.tsx                 # Register your components here
-│   └── components/               # Your React components live here
+│   └── Hero-1.tsx                # Built-in Hero component
 │
 ├── theme/
 │   ├── theme.css                 # CSS variables + typography classes
-│   └── theme.ts                  # createTheme() call
+│   ├── theme.ts                  # createTheme() call
+│   ├── globals.css
+│   └── lexical.css               # Styles for the Lexical rich-text editor
+│
+├── utils/
+│   └── normalizeSlug.ts
 │
 └── middleware.ts                 # Handles preview mode, tenant routing, redirects
 ```
