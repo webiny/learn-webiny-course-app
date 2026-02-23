@@ -302,7 +302,7 @@ This pattern — a Website Builder page composing one or more Server Components 
     "The Webiny SDK automatically hides tokens from the client",
     "You still need to use an API route to keep tokens safe"
   ]}
-  correctAnswer={1}
+  correctAnswer={2}
   explanation="Next.js Server Components execute on the server (or at build time) and their code is never shipped to the browser. Environment variables without the NEXT_PUBLIC_ prefix are only accessible server-side, making async Server Components the correct pattern for server-to-server API calls."
   hint="Think about where Server Component code executes."
 />

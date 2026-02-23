@@ -127,6 +127,12 @@ A dialog appears with the three environment variables already filled in and read
 
 Click the copy icon and paste the block directly into your `.env` file in the next step.
 
+<Callout type="info">
+  If your Admin is running on a non-localhost domain (i.e. a deployed CloudFront URL), the dialog
+  will also include a `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` variable — make sure to copy that
+  too.
+</Callout>
+
 ### API Key Is Auto-Created
 
 Note that unlike the Headless CMS chapter where you had to manually create an API key and configure its permissions, the Website Builder API key is created automatically for the current tenant — you'll find it under **Settings → Access Management → API Keys** as "Website Builder". It's a read-only key, intentionally scoped that way since it's meant to be used in external frontend apps like your Next.js project. The Configure Next.js dialog pulls it for you, so there's nothing to set up manually.
@@ -254,24 +260,6 @@ export default async function Page({ params }) {
 
 `initializeContentSdk` (in `src/contentSdk/initializeContentSdk.ts`) calls `contentSdk.init()` with your env var credentials and registers the component groups. `DocumentRenderer` takes the page document — a JSON tree of component names and their input values — and renders it by looking up each name in your registered `editorComponents` array.
 
-## Cross-Origin Configuration
-
-Because the editor loads your Next.js app in an iframe, you need to explicitly allow this. The starter kit already handles it — `next.config.ts` reads `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` and adds it to the `Content-Security-Policy` header automatically. `localhost:3001` (the default local Webiny Admin port) is always included.
-
-So if your Admin is on a deployed CloudFront URL, just add it to your `.env`:
-
-```dotenv title=".env"
-NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=https://your-admin-url.cloudfront.net
-```
-
-You can also comma-separate multiple domains if needed:
-
-```dotenv title=".env"
-NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=https://admin-1.cloudfront.net,https://admin-2.cloudfront.net
-```
-
-Without this, the browser will block the iframe and the editor will show a blank canvas.
-
 ## Troubleshooting
 
 ### Still seeing "Not found!" after publishing
@@ -282,7 +270,7 @@ Without this, the browser will block the iframe and the editor will show a blank
 
 ### Editor shows a blank canvas
 
-- The Admin editor can't load your app in the iframe. Make sure your dev server is running and the CSP header includes the Admin domain.
+- Make sure your Next.js dev server is running on `http://localhost:3000`.
 
 ## Summary
 
@@ -294,14 +282,14 @@ Without this, the browser will block the iframe and the editor will show a blank
 **Next lesson**: Learn how editor components work and how to register your own.
 
 <Quiz
-  question="Which environment variable tells the SDK where your Webiny API is hosted?"
+  question="Where do your component code and styles actually live in the Website Builder setup?"
   options={[
-    "NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST",
-    "NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY",
-    "NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT",
-    "WEBINY_API_ENDPOINT"
+    "In your Next.js project — Webiny only stores the page structure",
+    "In Webiny Admin — components are uploaded when you register them",
+    "Split between both — React code in Next.js, styles in Webiny",
+    "In a shared npm package that both sides import"
   ]}
-  correctAnswer={0}
-  explanation="NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST holds the Webiny CloudFront URL (without trailing slash or /graphql path). The API key is a separate variable, and WEBINY_API_ENDPOINT is used by the Headless CMS SDK, not the Website Builder SDK."
-  hint="It's the URL you copied from the API Playground."
+  correctAnswer={1}
+  explanation="Webiny stores the page document — a JSON tree of component names and their input values. It has no knowledge of what those components look like. All React code, CSS, and styles live entirely in your Next.js project. This is what makes the WYSIWYG genuine: the editor is showing your actual app in an iframe."
+  hint="Think about what the editor is actually loading in its iframe."
 />

@@ -249,7 +249,7 @@ More input types (number, boolean, object, rich text) are available — check th
     "Because Next.js App Router requires all component files to be client components",
     "Because createComponent uses browser APIs internally"
   ]}
-  correctAnswer={1}
+  correctAnswer={2}
   explanation="When the editor loads your app in its iframe, the Editor SDK (running client-side) announces the registered components back to the Admin via postMessage. This handshake must happen in the browser — it can't run on the server. The 'use client' directive ensures the registration code runs where the editor can reach it."
   hint="Think about where the editor iframe runs and how the SDK communicates with the Admin."
 />
