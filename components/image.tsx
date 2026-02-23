@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { X } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ImageComponentProps {
-  src: string
-  title?: string
-  alt?: string
-  width?: number
-  height?: number
-  withBg?: boolean
-  className?: string
+  src: string;
+  title?: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  withBg?: boolean;
+  className?: string;
   style?: React.CSSProperties;
-  withShadow?: boolean
+  withShadow?: boolean;
 }
 
 /**
@@ -24,65 +24,65 @@ interface ImageComponentProps {
  * <Image src="/images/example.png" alt="Example" title="Click to enlarge" />
  */
 export function ImageComponent({
-                                 src,
-                                 title,
-                                 alt = '',
-                                 width = 800,
-                                 height = 600,
-                                 withBg = true,
-                                 withShadow = true,
-                                 className,
+  src,
+  title,
+  alt = "",
+  width = 800,
+  height = 600,
+  withBg = true,
+  withShadow = true,
+  className,
   style
-                               }: ImageComponentProps) {
-  const [isFullscreen, setIsFullscreen] = useState(false)
+}: ImageComponentProps) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleClick = () => {
-    setIsFullscreen(true)
-  }
+    setIsFullscreen(true);
+  };
 
   const handleClose = () => {
-    setIsFullscreen(false)
-  }
+    setIsFullscreen(false);
+  };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      setIsFullscreen(false)
+      setIsFullscreen(false);
     }
-  }
+  };
 
   // Handle ESC key press
   useEffect(() => {
-    if (!isFullscreen) return
+    if (!isFullscreen) return;
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsFullscreen(false)
+        setIsFullscreen(false);
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleEscape)
-    return () => document.removeEventListener("keydown", handleEscape)
-  }, [isFullscreen])
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isFullscreen]);
 
   // Prevent body scroll when fullscreen is open
   useEffect(() => {
     if (isFullscreen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [isFullscreen])
+      document.body.style.overflow = "";
+    };
+  }, [isFullscreen]);
 
-
-
-  if(alt==='') {
-    if (!title || title==='') {
-      throw new Error(`Image component requires at least an alt text or a title for accessibility. (Image path: ${src})`);
-    }else {
+  if (alt === "") {
+    if (!title || title === "") {
+      throw new Error(
+        `Image component requires at least an alt text or a title for accessibility. (Image path: ${src})`
+      );
+    } else {
       alt = title;
     }
   }
@@ -90,15 +90,19 @@ export function ImageComponent({
   return (
     <>
       {/* Regular Image */}
-      <figure className={cn("my-6", className)}>
+      <figure className={cn("my-6 mx-auto", className)}>
         <div
-          className={"relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-muted/50 group mx-[-75px] px-[75px] py-[50px] mb-16"+(withBg && '  bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-black)]/5 dark:[--pattern-fg:var(--color-white)]/10')}
+          className={
+            "relative rounded-lg overflow-hidden border border-border cursor-pointer hover:opacity-90 transition-opacity bg-muted/50 group mx-[-75px] px-[75px] py-[50px] mb-16" +
+            (withBg &&
+              "  bg-[image:repeating-linear-gradient(315deg,_var(--pattern-fg)_0,_var(--pattern-fg)_1px,_transparent_0,_transparent_50%)] bg-[size:10px_10px] bg-fixed [--pattern-fg:var(--color-black)]/5 dark:[--pattern-fg:var(--color-white)]/10")
+          }
           onClick={handleClick}
           role="button"
           tabIndex={0}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === "Enter" || e.key === " ") {
-              handleClick()
+              handleClick();
             }
           }}
           aria-label="Click to view fullscreen"
@@ -108,8 +112,8 @@ export function ImageComponent({
             alt={alt}
             width={width}
             height={height}
-            className={`w-full h-auto  ${withShadow ? "border shadow-md rounded-lg" : "p-2"}`}
-            style={{ objectFit: "contain" }}
+            className={`w-full h-auto mx-auto ${withShadow ? "border shadow-md rounded-lg" : "p-2"}`}
+            style={{ objectFit: "contain", ...style }}
           />
           {title && (
             <figcaption className="text-sm text-muted-foreground text-center mt-2 italic">
@@ -119,7 +123,12 @@ export function ImageComponent({
           {/* Zoom indicator - only visible on hover */}
           <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+              />
             </svg>
             <span>Click to enlarge</span>
           </div>
@@ -168,6 +177,5 @@ export function ImageComponent({
         </div>
       )}
     </>
-  )
+  );
 }
-
