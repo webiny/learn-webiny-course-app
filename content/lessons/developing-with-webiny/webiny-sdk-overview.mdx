@@ -1,0 +1,150 @@
+---
+title: "Webiny SDK"
+description: "An overview of the Webiny SDK - what it is, what it covers, and how it fits into your development workflow."
+order: 6
+---
+
+# Webiny SDK
+
+The **Webiny SDK** (`@webiny/sdk`) is a TypeScript library that gives you a programmatic interface to interact with your Webiny instance from any external JavaScript or TypeScript application — think Next.js, Vue, SvelteKit, or a plain Node.js script.
+
+<ChapterOverview
+  items={[
+    { icon: "api", text: "Understand what the SDK covers." },
+    { icon: "extension", text: "See which Webiny apps are supported." },
+    { icon: "code", text: "Learn the core concepts used throughout the SDK." }
+  ]}
+/>
+
+## Where the SDK Fits In
+
+In the [Local Development](/lessons/developing-with-webiny/local-development) lesson, we covered two development modes: **Admin application development** (extending the Webiny Admin UI) and **API development** (adding backend logic via Lambda extensions). Both of those are about building _on top of_ Webiny itself.
+
+The SDK covers a different angle — **external applications**. Any frontend or backend app that lives outside of Webiny and needs to read or write content uses the SDK to do so. Think Next.js, Vue, SvelteKit, or a plain Node.js script.
+
+## What Is the Webiny SDK?
+
+Webiny's backend is powered by GraphQL — every operation, whether reading content, uploading files, or managing pages, goes through a GraphQL API. Rather than writing those raw queries yourself, the SDK gives you a clean, type-safe interface with simple method calls. It handles query construction, authentication headers, and error parsing for you.
+
+<Callout type="info">
+  If you prefer to work directly with GraphQL, you absolutely can — the SDK doesn't replace that
+  option. It's simply a more convenient layer on top.
+</Callout>
+
+To get started, install the package:
+
+```bash title="Terminal"
+npm install @webiny/sdk
+```
+
+Then initialize it once with your API credentials and use it across your application:
+
+```typescript title="lib/webiny.ts"
+import { Webiny } from "@webiny/sdk";
+
+export const sdk = new Webiny({
+  token: process.env.WEBINY_API_TOKEN!,
+  endpoint: process.env.WEBINY_API_ENDPOINT!,
+  tenant: process.env.WEBINY_API_TENANT || "root"
+});
+```
+
+<Callout type="hint">
+  Run `yarn webiny info` in your Webiny project directory to find your API endpoint URL. Copy the
+  base domain (e.g. `https://xxx.cloudfront.net`) - not the full path.
+</Callout>
+
+## What the SDK Covers
+
+The SDK provides access to multiple Webiny applications through namespaced modules on the `sdk` object:
+
+| Module               | Webiny App      | What you can do                                       |
+| -------------------- | --------------- | ----------------------------------------------------- |
+| `sdk.cms`            | Headless CMS    | List, get, create, update, publish, unpublish entries |
+| `sdk.fileManager`    | File Manager    | List, upload, and manage files and folders            |
+| `sdk.websiteBuilder` | Website Builder | List and retrieve website builder content             |
+
+As Webiny evolves, additional modules may be added to the SDK.
+
+## API Keys & Permissions
+
+The SDK authenticates using an **API key token** generated inside the Webiny Admin application. Without a valid token, all SDK calls will be rejected. We'll cover creating and configuring API keys in the upcoming lessons when we start using the SDK in a real project.
+
+<Image
+  src="/images/developing-with-webiny/api-keys.png"
+  alt="Webiny Admin API Keys screen showing Headless CMS permissions with Read, Manage, and Preview options"
+  caption="API keys are managed under Settings → API Keys in the Webiny Admin."
+/>
+
+## Core Concepts
+
+The examples below use `sdk.cms` for illustration, but the same concepts apply across all SDK modules — `sdk.fileManager`, `sdk.websiteBuilder`, and any others.
+
+### The Result Pattern
+
+Every SDK method returns a **Result object** instead of throwing. You check success with `isOk()`:
+
+```typescript title="Result pattern"
+const result = await sdk.cms.listEntries({ modelId: "product", fields: ["id"] });
+
+if (result.isOk()) {
+  console.log(result.value.data);
+} else {
+  console.error(result.error.message);
+}
+```
+
+This makes error handling explicit - you can't accidentally forget to handle a failure case. You'll see this pattern consistently across all SDK operations throughout the upcoming articles.
+
+### The `fields` Parameter
+
+The `fields` parameter lets you declare exactly which fields to return, keeping responses lean and avoiding over-fetching:
+
+```typescript title="Requesting specific fields"
+const result = await sdk.cms.listEntries({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"]
+});
+```
+
+`fields` is optional. When omitted, the SDK returns all fields, with a `depth` parameter (default: `1`) controlling how deeply reference fields are resolved - depth `1` means direct references are included, but their nested references are not.
+
+### TypeScript Generics
+
+SDK methods accept a generic type parameter so the return type is fully typed:
+
+```typescript title="Type-safe SDK calls"
+import type { CmsEntryData } from "@webiny/sdk";
+
+interface Product {
+  name: string;
+  price: number;
+}
+
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"]
+});
+
+if (result.isOk()) {
+  // result.value.data is typed as CmsEntryData<Product>[]
+  const products = result.value.data;
+}
+```
+
+## What's Coming
+
+In the **Headless CMS** chapter, you'll get hands-on with `sdk.cms` - covering listing entries with filters and sorting, creating and publishing content, and integrating it all into a real Next.js application. The same SDK instance and patterns carry forward into every lesson from there.
+
+<Quiz
+  question="What does every Webiny SDK method return instead of throwing an error?"
+  options={[
+    "A Promise that rejects on failure",
+    "null on failure",
+    "A Result object checked with isOk()",
+    "An error code string"
+  ]}
+  correctAnswer={3}
+  explanation="Correct! The SDK uses the Result pattern - every operation returns a Result object. You call isOk() to check success and access result.value for data or result.error for the error. It never throws."
+  hint="Think about the explicit error handling pattern the SDK enforces."
+/>

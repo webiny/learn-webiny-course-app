@@ -1,0 +1,238 @@
+---
+title: "Reading Data"
+description: "Fetch and display products from Webiny Headless CMS using the Webiny SDK and Static Site Generation in Next.js."
+order: 6
+---
+
+# Reading Data
+
+In the previous lesson, you set up the Next.js app, created an API key, and initialized the Webiny SDK. Now it's time to actually fetch data from Webiny and display it on the page.
+
+<ChapterOverview
+  items={[
+    { icon: "code", text: "Define TypeScript types for your content models." },
+    { icon: "download", text: "Fetch entries using sdk.cms.listEntries." },
+    { icon: "filter_list", text: "Filter and sort results server-side." }
+  ]}
+/>
+
+**What you'll build:**
+
+A product listing homepage that fetches published products from Webiny at build time and renders them as a static HTML page.
+
+**Prerequisites:**
+
+- Completed Lesson 5 (Learn Webiny Next.js App)
+- At least 2–3 published products in your Webiny CMS
+- Dev server running (`npm run dev`)
+
+## Introduction
+
+In this lesson, we'll use `sdk.cms.listEntries` to query the published products from Webiny and render them on the homepage using **Static Site Generation (SSG)**.
+
+With SSG, Next.js runs your data-fetching code **once, at build time**. The resulting HTML is baked into the static output — no API calls happen when a visitor loads the page. This is ideal for product catalogs, blog posts, or any content that doesn't change in real time. One implication: when content changes in Webiny, you need to trigger a new build for the changes to appear — in production this is typically automated via a webhook, but for now a manual `npm run build` is enough.
+
+<Callout type="info">
+  SSG is powered by `async` server components in Next.js App Router. Because `app/page.tsx` is a
+  Server Component by default (no `"use client"` directive), you can call the SDK directly inside it
+  — no API route or Server Action needed.
+</Callout>
+
+## Creating TypeScript Types
+
+Before fetching data, let's define TypeScript interfaces that match the shape of our Webiny content models.
+
+Create a new file `lib/types.ts`:
+
+```typescript title="lib/types.ts"
+import type { CmsEntryData } from "@webiny/sdk";
+
+export interface Product {
+  name: string;
+  description: string;
+  price: number;
+  sku: string;
+  category?: CmsEntryData<ProductCategory>;
+}
+
+export interface ProductCategory {
+  name: string;
+  slug: string;
+}
+```
+
+A few things to note:
+
+- The fields map directly to the field IDs you defined in the content model (not the labels)
+- `category` is optional (`?`) since not all products may have a category assigned
+- Reference fields like `category` are typed as `CmsEntryData<T>` — this matches the SDK's response shape, which wraps referenced entries with `id`, `entryId`, and `values`
+
+<Callout type="hint">
+  Passing the `Product` type as a generic to SDK methods (e.g. `listEntries<Product>`) gives you
+  full type safety on `product.values` — your editor will autocomplete field names and catch typos
+  at compile time.
+</Callout>
+
+## Fetching Data in the Homepage
+
+Open `app/page.tsx` and replace its contents with the following:
+
+```tsx title="app/page.tsx"
+import { sdk } from "@/lib/webiny";
+import type { Product } from "@/lib/types";
+import type { CmsEntryData } from "@webiny/sdk";
+
+export default async function HomePage() {
+  const result = await sdk.cms.listEntries<Product>({
+    modelId: "product",
+    sort: ["values.name_ASC"]
+  });
+
+  if (!result.isOk()) {
+    return (
+      <main className="min-h-screen p-8">
+        <h1 className="text-4xl font-bold mb-4">Our Products</h1>
+        <p className="text-red-600">Failed to load products: {result.error.message}</p>
+      </main>
+    );
+  }
+
+  const products: CmsEntryData<Product>[] = result.value.data;
+
+  return (
+    <main className="min-h-screen p-8">
+      <h1 className="text-4xl font-bold mb-8">Our Products</h1>
+
+      {products.length === 0 ? (
+        <p className="text-gray-500">No products found. Add some in Webiny Admin!</p>
+      ) : (
+        <ul className="space-y-4">
+          {products.map(product => (
+            <li key={product.id} className="border rounded-lg p-4">
+              <h2 className="text-xl font-semibold">{product.values.name}</h2>
+              <p className="text-gray-600 mt-1">{product.values.description}</p>
+              <p className="text-lg font-bold mt-2">${product.values.price.toFixed(2)}</p>
+              <p className="text-sm text-gray-400">SKU: {product.values.sku}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
+}
+```
+
+Let's walk through what's happening:
+
+1. **`sdk.cms.listEntries<Product>`** — Calls the ƒRead API to fetch published entries from the `product` model. The `<Product>` generic types the response so `product.values` is fully typed.
+2. **`sort: ["values.name_ASC"]`** — Returns products sorted alphabetically by name. The sort format is `values.<fieldId>_ASC` or `values.<fieldId>_DESC`.
+3. **Result pattern** — We check `result.isOk()` before accessing the data. If the call fails (network error, wrong model ID, expired token, etc.), we render an error message instead of crashing.
+4. **`result.value.data`** — An array of `CmsEntryData<Product>` objects. Each item has `id`, `entryId`, and a `values` object containing the actual product fields.
+
+<Callout type="hint">
+  The `fields` parameter is omitted here, so the SDK returns all fields at depth 1. That includes
+  all scalar fields on the Product model and one level of reference data for the `category` field.
+</Callout>
+
+## Testing in Development
+
+Save the file. The dev server will hot-reload automatically.
+
+Open [http://localhost:3000](http://localhost:3000) in your browser. You should see your published products listed on the page.
+
+<Image
+  src="/images/headless-cms/nextjs-app-homepage.png"
+  alt="Homepage showing a list of products fetched from Webiny CMS with name, description, price and SKU"
+  caption="Products are fetched from Webiny and rendered on the homepage"
+/>
+
+In development mode, Next.js fetches data on every request rather than at build time — so you can publish a new product in Webiny Admin, refresh the page, and see it immediately without rebuilding. When you run `npm run build` for production, Next.js executes the Server Component once and bakes the output into static HTML. The route shows up as `○ (Static)` in the build output, meaning no server is needed at runtime and no API calls happen when visitors load the page.
+
+## Filtering and Sorting
+
+`listEntries` supports server-side filtering and sorting. Here are a few examples you can try:
+
+```typescript title="Filter by price"
+const result = await sdk.cms.listEntries<Product>({y dev
+  modelId: "product",
+  where: {
+    "values.price_gte": 100
+  },
+  sort: ["values.price_ASC"]
+});
+```
+
+```typescript title="Limit results"
+const result = await sdk.cms.listEntries<Product>({
+  modelId: "product",
+  limit: 10,
+  sort: ["values.name_ASC"]
+});
+```
+
+The `where` object uses the same filter operators available in the GraphQL API: `_eq`, `_not`, `_contains`, `_startsWith`, `_gt`, `_gte`, `_lt`, `_lte`, `_in`, and more.
+
+## Troubleshooting
+
+### Page Shows "Failed to load products"
+
+The SDK call returned an error. Check:
+
+1. Your `.env.local` has the correct `WEBINY_API_ENDPOINT` and `WEBINY_API_TOKEN` values
+2. The API key has **Read** permissions enabled (Settings → API Keys in Webiny Admin)
+3. The dev server was restarted after updating `.env.local`
+4. The `modelId` in the code (`"product"`) matches the Model ID in Webiny Admin exactly (case-sensitive)
+
+### Page Shows "No products found"
+
+The SDK call succeeded but returned an empty list. Check:
+
+1. You have products created in Webiny Admin
+2. Those products are **Published** (not just saved as drafts) — the Read API only returns published entries
+3. You're viewing the correct locale (default: `en-US`)
+
+### TypeScript Error on `product.values.name`
+
+This means the generic type doesn't match the model. Verify:
+
+1. The `Product` interface in `lib/types.ts` has a `name` field
+2. The field ID in Webiny matches the property name (e.g., `name`, not `productName`)
+
+### Build Fails with "Missing environment variables"
+
+The error guard in `lib/webiny.ts` throws if env vars are missing. During `npm run build`, Next.js needs the env vars to be present. Make sure:
+
+1. `.env.local` exists and has valid values
+2. You're running the build from the Next.js project root
+3. If deploying to Vercel/Netlify, add the env vars in the platform dashboard
+
+## Summary
+
+In this lesson, you fetched data from Webiny and displayed it on the homepage using Static Site Generation:
+
+- ✅ Defined TypeScript interfaces for `Product` and `ProductCategory`
+- ✅ Used `sdk.cms.listEntries<Product>()` to fetch published products
+- ✅ Applied the Result pattern to handle success and error cases
+- ✅ Rendered a typed product list using `CmsEntryData<Product>`
+- ✅ Understood the difference between dev (per-request) and production (static) rendering
+
+**What's Next?**
+
+In the next lesson, we'll flip direction and **write data** to Webiny — building a contact form that creates entries in the CMS using `sdk.cms.createEntry()` and the Manage API.
+
+<Quiz
+  question="Why does the Read API only return published entries?"
+  options={[
+    "It's a limitation of the Webiny SDK",
+    "The Read API is designed for public content delivery — only published content is ready for visitors",
+    "Drafts are stored in a separate database",
+    "You need a special filter to include drafts"
+  ]}
+  correctAnswer={2}
+  explanation="Correct! The Read API is the public-facing content delivery API. It intentionally returns only published entries so that draft or unpublished content never leaks to your visitors. The Preview API returns all statuses, and the Manage API handles CRUD including drafts."
+  hint="Think about who is the intended audience for the Read API."
+/>
+
+---
+
+**Next lesson**: [Writing Data](/lessons/headless-cms/writing-data) - Create a contact form that submits entries to Webiny using the SDK.

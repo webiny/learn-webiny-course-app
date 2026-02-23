@@ -59,6 +59,11 @@ export const courseData: Course = {
           slug: "developing-with-webiny/project-folder-structure"
         },
         {
+          id: "webiny-sdk-overview",
+          title: "Webiny SDK",
+          slug: "developing-with-webiny/webiny-sdk-overview"
+        },
+        {
           id: "whitelabel-extension",
           title: "White-Label Extension",
           slug: "developing-with-webiny/whitelabel-extension"
@@ -183,19 +188,9 @@ export const courseData: Course = {
           slug: "headless-cms/lifecycle-events"
         },
         {
-          id: "reading-records-via-api",
-          title: "Reading Records via the API",
-          slug: "headless-cms/reading-records-via-api"
-        },
-        {
-          id: "understanding-different-apis",
-          title: "Understanding Different HCMS APIs",
-          slug: "headless-cms/understanding-different-apis"
-        },
-        {
-          id: "webiny-api-playground",
-          title: "Webiny API Playground",
-          slug: "headless-cms/webiny-api-playground"
+          id: "reading-data",
+          title: "Reading Data",
+          slug: "headless-cms/reading-data"
         },
         {
           id: "writing-data",
