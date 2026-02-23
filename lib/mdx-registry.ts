@@ -436,7 +436,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Editor Components",
       description:
         "Learn what editor components are, how they work, and how to register custom ones through code.",
-      order: 3
+      order: 2
     },
     chapter: "website-builder"
   },
