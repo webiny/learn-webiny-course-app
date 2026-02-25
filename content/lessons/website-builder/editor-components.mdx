@@ -1,0 +1,230 @@
+---
+title: "Editor Components"
+description: "Learn what editor components are, how they work, and how to register custom ones through code."
+order: 2
+---
+
+# Editor Components
+
+Editor components are the building blocks that content editors use to compose pages in the Website Builder. In this lesson you'll learn what they are, how they're registered, and how to build your own.
+
+<ChapterOverview
+  items={[
+    { icon: "widgets", text: "Understand the anatomy of an editor component." },
+    { icon: "code", text: "Register components with createComponent and createTextInput." },
+    { icon: "add_box", text: "Build a custom Banner component from scratch." }
+  ]}
+/>
+
+**Prerequisites:**
+
+- Starter kit running locally (previous lesson)
+- Webiny Admin app running (locally via `yarn webiny watch admin`, or deployed CloudFront URL)
+
+## What Is an Editor Component?
+
+Recall from the previous lesson: the Website Builder editor loads your Next.js app in an iframe. The SDK running inside that app is responsible for telling the editor which components are available. An editor component is how you describe one of those components to both sides — the editor and the renderer.
+
+It has two parts:
+
+1. **The React component** — your regular React code that renders the UI, with your styles, your markup, completely in your codebase. It receives editor-configured values via an `inputs` prop, typed with `ComponentProps<YourInputs>` from the SDK.
+2. **The manifest** — metadata that tells the editor about the component: its name, label, group, and what inputs (configurable props) it exposes to the editor sidebar.
+
+You combine both using `createComponent()` from `@webiny/website-builder-nextjs`, then add the result to the `editorComponents` array that you pass to `DocumentRenderer`.
+
+## The `editorComponents` Array
+
+Open `src/editorComponents/index.tsx` in the starter kit:
+
+```tsx title="src/editorComponents/index.tsx"
+"use client";
+import { createComponent } from "@webiny/website-builder-nextjs";
+import { Hero_1 } from "./Hero-1";
+
+export const editorComponents = [
+  createComponent(Hero_1, {
+    name: "Webiny/Hero",
+    label: "Hero #1",
+    inputs: []
+  })
+];
+```
+
+A few things to notice:
+
+- The file is marked `"use client"` — component registrations must run on the client, because the SDK communicates the available components to the editor via the browser.
+- `createComponent` takes the React component as its first argument and the manifest as the second.
+- `name` is a namespaced string — use a consistent convention like `"YourNamespace/ComponentName"`.
+- `inputs` defines the configurable props that appear in the editor sidebar. An empty array means no inputs — the component renders with fixed content.
+- `group` (optional) links the component to a named component group in the editor palette.
+
+## Component Groups
+
+Component groups organise the editor's component palette into sections. They're registered in `src/contentSdk/groups.ts`:
+
+```typescript title="src/contentSdk/groups.ts"
+import { registerComponentGroup, type ComponentManifest } from "@webiny/website-builder-nextjs";
+
+export const registerComponentGroups = () => {
+  registerComponentGroup({
+    name: "basic",
+    label: "Basic",
+    description: "Components for simple content creation"
+  });
+  registerComponentGroup({
+    name: "custom",
+    label: "Custom",
+    description: "Assorted custom components",
+    filter: (component: ComponentManifest) => !component.group
+  });
+};
+```
+
+The `filter` option on the "custom" group is a catch-all: it collects any component that doesn't have an explicit `group` set in its manifest.
+
+## Building a Custom Component
+
+Let's build a simple **Banner** component — a full-width coloured strip with a headline and a call-to-action button link.
+
+### Step 1: Create the React Component
+
+Create `src/editorComponents/Banner.tsx`:
+
+```tsx title="src/editorComponents/Banner.tsx"
+import React from "react";
+import { ComponentProps } from "@webiny/website-builder-nextjs";
+
+interface BannerInputs {
+  headline: string;
+  ctaLabel: string;
+  ctaUrl: string;
+}
+
+export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProps<BannerInputs>) {
+  return (
+    <div className="bg-indigo-600 py-12 px-6 text-center text-white">
+      <h2 className="text-3xl font-bold mb-4">{headline}</h2>
+      {ctaLabel && ctaUrl && (
+        <a
+          href={ctaUrl}
+          className="inline-block bg-white text-indigo-600 font-semibold px-6 py-3 rounded-md hover:bg-indigo-50 transition-colors"
+        >
+          {ctaLabel}
+        </a>
+      )}
+    </div>
+  );
+}
+```
+
+<Callout type="info">
+  Always type your component with `ComponentProps<YourInputs>` from `@webiny/website-builder-nextjs`.
+  Without it, TypeScript won't know the shape of the `inputs` prop and you'll get type errors.
+</Callout>
+
+### Step 2: Register the Component
+
+Replace the contents of `src/editorComponents/index.tsx` with:
+
+```tsx title="src/editorComponents/index.tsx"
+"use client";
+import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
+import { Hero_1 } from "./Hero-1";
+import { Banner } from "./Banner";
+
+export const editorComponents = [
+  createComponent(Hero_1, {
+    name: "Webiny/Hero",
+    label: "Hero #1",
+    inputs: []
+  }),
+  createComponent(Banner, {
+    name: "Custom/Banner",
+    label: "Banner",
+    inputs: [
+      createTextInput({
+        name: "headline",
+        label: "Headline",
+        description: "The main headline text displayed on the banner.",
+        defaultValue: "Ready to get started?"
+      }),
+      createTextInput({
+        name: "ctaLabel",
+        label: "Button Label",
+        description: "The text displayed on the call-to-action button.",
+        defaultValue: "Get started"
+      }),
+      createTextInput({
+        name: "ctaUrl",
+        label: "Button URL",
+        description: "The URL the button links to.",
+        defaultValue: "/"
+      })
+    ]
+  })
+];
+```
+
+### Step 3: Test It
+
+1. In the Admin sidebar, go to **Website Builder → Pages**.
+2. Open an existing page or create a new one.
+3. In the component palette, look for the **Custom** group — your **Banner** component should be there.
+4. Drag it onto the canvas. Click the component to select it — the right sidebar will show the inputs you defined: Headline, Button Label, and Button URL.
+
+<Image
+  src="/images/website-builder/banner-component-editor.png"
+  alt="The Banner component selected in the editor showing the Headline, Button Label, and Button URL inputs filled in on the right sidebar"
+  caption="The Banner component selected — the right sidebar shows its inputs with the values the editor set"
+/>
+
+5. Fill in the inputs and click **Publish**.
+6. Visit your Next.js app and refresh the page to see the rendered banner.
+
+<Image
+  src="/images/website-builder/banner-component-rendered.png"
+  alt="The published page showing the Hero #1 component above and the Banner component below it"
+  caption="The Banner rendered below the Hero — your component, your styles, live on the page"
+/>
+
+## Input Types
+
+The SDK exports a factory function for each input type:
+
+| Function              | Use case                            |
+| --------------------- | ----------------------------------- |
+| `createTextInput`     | Single-line text, URLs, labels      |
+| `createLongTextInput` | Multi-line text                     |
+| `createNumberInput`   | Numeric values                      |
+| `createBooleanInput`  | Toggle / checkbox                   |
+| `createColorInput`    | Colour picker                       |
+| `createDateInput`     | Date / date-time picker             |
+| `createSelectInput`   | Dropdown with predefined options    |
+| `createRadioInput`    | Radio button group                  |
+| `createTagsInput`     | List of tags                        |
+| `createObjectInput`   | Nested object (group of sub-inputs) |
+| `createLexicalInput`  | Rich text (Lexical editor)          |
+| `createFileInput`     | File / media picker                 |
+| `createSlotInput`     | Slot for nesting other components   |
+
+## Summary
+
+- Editor components combine a React component with a manifest (name, label, group, inputs).
+- `createComponent` and `createTextInput` are the primary registration APIs.
+- Component groups are registered in `groups.ts` and organise the editor palette.
+- Component names are stored in page documents — treat them as stable identifiers, renaming breaks existing pages.
+
+**Next lesson**: Learn how theming and responsive styling work in the Website Builder.
+
+<Quiz
+  question="Why must the editorComponents file be marked 'use client'?"
+  options={[
+    "Because React components can only run on the client",
+    "Because component registration hooks into the editor SDK which runs in the browser",
+    "Because Next.js App Router requires all component files to be client components",
+    "Because createComponent uses browser APIs internally"
+  ]}
+  correctAnswer={2}
+  explanation="When the editor loads your app in its iframe, the Editor SDK (running client-side) announces the registered components back to the Admin via postMessage. This handshake must happen in the browser — it can't run on the server. The 'use client' directive ensures the registration code runs where the editor can reach it."
+  hint="Think about where the editor iframe runs and how the SDK communicates with the Admin."
+/>

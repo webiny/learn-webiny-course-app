@@ -224,6 +224,32 @@ export const courseData: Course = {
           slug: "webiny-control-panel"
         }
       ]
+    },
+    {
+      id: "website-builder",
+      ...chapterMetadata["website-builder"],
+      lessons: [
+        {
+          id: "article-listing-editor-component",
+          title: "Article Listing Editor Component",
+          slug: "website-builder/article-listing-editor-component"
+        },
+        {
+          id: "editor-components",
+          title: "Editor Components",
+          slug: "website-builder/editor-components"
+        },
+        {
+          id: "setting-up-website-builder",
+          title: "Setting up Website Builder",
+          slug: "website-builder/setting-up-website-builder"
+        },
+        {
+          id: "theming-and-styling",
+          title: "Theming and Styling",
+          slug: "website-builder/theming-and-styling"
+        }
+      ]
     }
   ]
 };

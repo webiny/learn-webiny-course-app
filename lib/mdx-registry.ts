@@ -61,7 +61,15 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
   "webiny-control-panel/usage-tracking": () =>
     import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
   "webiny-control-panel": () =>
-    import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx")
+    import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
+  "website-builder/article-listing-editor-component": () =>
+    import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
+  "website-builder/editor-components": () =>
+    import("@/content/lessons/website-builder/editor-components.mdx"),
+  "website-builder/setting-up-website-builder": () =>
+    import("@/content/lessons/website-builder/setting-up-website-builder.mdx"),
+  "website-builder/theming-and-styling": () =>
+    import("@/content/lessons/website-builder/theming-and-styling.mdx")
 };
 
 /**
@@ -409,6 +417,50 @@ export const mdxRegistry: LessonRegistryItem[] = [
       order: 1
     },
     chapter: "webiny-control-panel"
+  },
+  {
+    slug: "website-builder/article-listing-editor-component",
+    import: () => import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
+    frontmatter: {
+      title: "Article Listing Editor Component",
+      description:
+        "Build a custom Website Builder component that fetches articles from Webiny Headless CMS and renders them inside a Website Builder page.",
+      order: 5
+    },
+    chapter: "website-builder"
+  },
+  {
+    slug: "website-builder/editor-components",
+    import: () => import("@/content/lessons/website-builder/editor-components.mdx"),
+    frontmatter: {
+      title: "Editor Components",
+      description:
+        "Learn what editor components are, how they work, and how to register custom ones through code.",
+      order: 2
+    },
+    chapter: "website-builder"
+  },
+  {
+    slug: "website-builder/setting-up-website-builder",
+    import: () => import("@/content/lessons/website-builder/setting-up-website-builder.mdx"),
+    frontmatter: {
+      title: "Setting up Website Builder",
+      description:
+        "Understand how the Website Builder connects to your frontend app, then get the starter kit running and create your first page.",
+      order: 1
+    },
+    chapter: "website-builder"
+  },
+  {
+    slug: "website-builder/theming-and-styling",
+    import: () => import("@/content/lessons/website-builder/theming-and-styling.mdx"),
+    frontmatter: {
+      title: "Theming and Styling",
+      description:
+        "Learn how the Website Builder theme works, how it's registered, and how mobile-responsive styling is applied.",
+      order: 4
+    },
+    chapter: "website-builder"
   }
 ];
 
