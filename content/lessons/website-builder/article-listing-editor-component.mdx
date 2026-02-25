@@ -21,7 +21,7 @@ In this lesson we combine the Website Builder with the Headless CMS. You'll crea
 
 **Prerequisites:**
 
-- Website Builder starter kit running (Lesson 2)
+- Website Builder starter kit running (Lesson 1)
 - Webiny SDK configured in your Next.js app — either from the HCMS chapter, or follow the quick setup below
 - Node 18+
 
@@ -79,6 +79,7 @@ Add the variables to your `.env` file (use the same API host and a Read-enabled 
 # Existing Website Builder variables
 NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=...
 NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=...
+NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=...
 NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
 
 # Headless CMS (Read API)
@@ -261,7 +262,7 @@ export const editorComponents = [
   caption="The Article Listing component configured in the editor"
 />
 
-8. Visit the page in your Next.js app. You should see your articles listed.
+7. Visit the page in your Next.js app. You should see your articles listed.
 
 <Image
   src="/images/website-builder/article-listing-rendered.png"

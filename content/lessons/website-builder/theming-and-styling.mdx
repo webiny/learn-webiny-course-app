@@ -184,6 +184,7 @@ To add or modify a typography style, update both files:
   font-family: var(--wb-theme-font-family);
   font-weight: 900;
   font-size: clamp(3rem, 2rem + 3vw, 5rem);
+  line-height: clamp(3rem, 2rem + 3vw, 5rem);
   letter-spacing: -2px;
   color: var(--wb-theme-color-primary);
 }
@@ -269,6 +270,57 @@ export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProp
   alt="The Website Builder editor with the mobile device control active, showing the page rendered at a narrow mobile viewport width"
   caption="The mobile device control in the editor toolbar lets you preview responsive layouts without leaving the Admin"
 />
+
+## Troubleshooting
+
+### Text sizes look different between the editor canvas and the rich text editor sidebar
+
+When using `clamp()` or `rem`-based font sizes, you may notice the text appears at a different size on the editor canvas versus the rich text editor sidebar (and sometimes compared to the live site). This is expected — `clamp()` scales with the viewport width, and `rem` is relative to the root font size, both of which differ between the full-page canvas and the narrower editor sidebar container.
+
+<Image
+  src="/images/website-builder/editor-clamp-size-diff.png"
+  alt="The Website Builder editor showing a heading that appears at a different size on the canvas versus the rich text editor sidebar"
+  caption="The heading is larger on the canvas than in the sidebar — both are correct, just rendered in different container widths"
+/>
+
+This is a CSS behaviour, not a bug. If you need pixel-perfect consistency between the canvas and the rich text editor, use fixed `px` values instead of `clamp()` or `rem`:
+
+```css
+/* consistent across canvas and sidebar */
+font-size: 64px;
+line-height: 64px;
+```
+
+In practice this is rarely an issue — what matters is how the page looks on the published site.
+
+### Fonts look different in the editor vs the live site
+
+The most common cause is a mismatch between the font weights loaded in `layout.tsx` and the font URL in the `fonts` array.
+
+For example, if `layout.tsx` loads all weights:
+
+```typescript title="src/app/layout.tsx"
+const inter = Inter({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"]
+  // ...
+});
+```
+
+But `theme.ts` only requests the default weight in the Google Fonts URL:
+
+```typescript title="src/theme/theme.ts — missing weight range"
+fonts: ["https://fonts.googleapis.com/css2?family=Inter&display=swap"],
+```
+
+Then the editor iframe only has the default weight (400) available. Text that should be bold or light will appear at the wrong weight in the editor canvas and the rich text editor.
+
+Fix it by including the full weight range in the URL:
+
+```typescript title="src/theme/theme.ts — correct"
+fonts: ["https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"],
+```
+
+The rule of thumb: whatever weights you load in `layout.tsx`, load the same range in the `fonts` URL.
 
 ## Summary
 
