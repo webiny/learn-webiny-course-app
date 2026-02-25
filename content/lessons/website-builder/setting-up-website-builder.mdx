@@ -88,7 +88,7 @@ cd my-website
 npm install
 ```
 
-Before running `npm install`, make sure the `@webiny/website-builder-nextjs` version in `package.json` matches your Webiny version. You can find it at the bottom of the Admin sidebar, or by running `webiny --version` in your Webiny project.
+Before running `npm install`, make sure the `@webiny/website-builder-nextjs` and `@webiny/sdk` versions in `package.json` match your Webiny version. You can find it at the bottom of the Admin sidebar, or by running `webiny --version` in your Webiny project.
 
 <Image
   style={{ width: 400 }}
@@ -102,7 +102,8 @@ For example, if your Webiny version is `6.2.1`, your `package.json` should have 
 ```json title="package.json"
 {
   "dependencies": {
-    "@webiny/website-builder-nextjs": "~6.2.1"
+    "@webiny/website-builder-nextjs": "~6.2.1",
+    "@webiny/sdk": "~6.2.1"
   }
 }
 ```
