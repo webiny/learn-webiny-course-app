@@ -425,7 +425,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Article Listing Editor Component",
       description:
         "Build a custom Website Builder component that fetches articles from Webiny Headless CMS and renders them inside a Website Builder page.",
-      order: 5
+      order: 4
     },
     chapter: "website-builder"
   },
@@ -458,7 +458,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
       title: "Theming and Styling",
       description:
         "Learn how the Website Builder theme works, how it's registered, and how mobile-responsive styling is applied.",
-      order: 4
+      order: 3
     },
     chapter: "website-builder"
   }

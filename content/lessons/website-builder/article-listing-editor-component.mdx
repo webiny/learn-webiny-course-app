@@ -1,7 +1,7 @@
 ---
 title: "Article Listing Editor Component"
 description: "Build a custom Website Builder component that fetches articles from Webiny Headless CMS and renders them inside a Website Builder page."
-order: 5
+order: 4
 ---
 
 # Article Listing Editor Component
@@ -106,20 +106,23 @@ export interface Article {
 
 ## Step 4: Build the ArticleListing React Component
 
-This component is a **Server Component** — it fetches data at render time using the SDK. Create `src/editorComponents/components/ArticleListing.tsx`:
+This component is a **Server Component** — it fetches data at render time using the SDK. Create `src/editorComponents/ArticleListing.tsx`:
 
-```tsx title="src/editorComponents/components/ArticleListing.tsx"
+```tsx title="src/editorComponents/ArticleListing.tsx"
 import React from "react";
+import { ComponentProps } from "@webiny/website-builder-nextjs";
 import { sdk } from "@/lib/webiny";
 import type { Article } from "@/lib/types";
 import type { CmsEntryData } from "@webiny/sdk";
 
-interface ArticleListingProps {
+interface ArticleListingInputs {
   heading: string;
-  limit: string; // inputs are strings; we'll parse it
+  limit: string; // inputs are always strings; parse as needed
 }
 
-export async function ArticleListing({ heading, limit }: ArticleListingProps) {
+export async function ArticleListing({
+  inputs: { heading, limit }
+}: ComponentProps<ArticleListingInputs>) {
   const parsedLimit = parseInt(limit, 10) || 6;
 
   const result = await sdk.cms.listEntries<Article>({
@@ -139,7 +142,7 @@ export async function ArticleListing({ heading, limit }: ArticleListingProps) {
       {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
 
       {articles.length === 0 ? (
-        <p className="text-center text-gray-500">No articles published yet.</p>
+        <p className="text-center text-muted-foreground">No articles published yet.</p>
       ) : (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           {articles.map(article => (
@@ -149,8 +152,13 @@ export async function ArticleListing({ heading, limit }: ArticleListingProps) {
             >
               <a href={`/articles/${article.values.slug}`}>
                 <h3 className="text-xl font-semibold mb-2">{article.values.title}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.values.summary}</p>
-                <time dateTime={article.values.publishedDate} className="text-xs text-gray-400">
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                  {article.values.summary}
+                </p>
+                <time
+                  dateTime={article.values.publishedDate}
+                  className="text-xs text-muted-foreground/60"
+                >
                   {new Date(article.values.publishedDate).toLocaleDateString()}
                 </time>
               </a>
@@ -176,26 +184,54 @@ Open `src/editorComponents/index.tsx` and add the ArticleListing registration:
 ```tsx title="src/editorComponents/index.tsx"
 "use client";
 import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
-import { Hero_1 } from "./components/Hero-1";
-import { ProductRecommendations } from "./components/ProductRecommendations";
-import { ArticleListing } from "./components/ArticleListing";
+import { Hero1 } from "./Hero1";
+import { Banner } from "./Banner";
+import { ArticleListing } from "./ArticleListing";
 
 export const editorComponents = [
-  // ... existing components ...
-
+  createComponent(Hero1, {
+    name: "Webiny/Hero",
+    label: "Hero #1",
+    inputs: []
+  }),
+  createComponent(Banner, {
+    name: "Custom/Banner",
+    label: "Banner",
+    inputs: [
+      createTextInput({
+        name: "headline",
+        label: "Headline",
+        description: "The main headline text displayed on the banner.",
+        defaultValue: "Ready to get started?"
+      }),
+      createTextInput({
+        name: "ctaLabel",
+        label: "Button Label",
+        description: "The text displayed on the call-to-action button.",
+        defaultValue: "Get started"
+      }),
+      createTextInput({
+        name: "ctaUrl",
+        label: "Button URL",
+        description: "The URL the button links to.",
+        defaultValue: "/"
+      })
+    ]
+  }),
   createComponent(ArticleListing, {
     name: "Custom/ArticleListing",
     label: "Article Listing",
-    group: "custom",
     inputs: [
       createTextInput({
         name: "heading",
         label: "Section Heading",
+        description: "The heading displayed above the article list.",
         defaultValue: "Latest Articles"
       }),
       createTextInput({
         name: "limit",
-        label: "Number of articles to show",
+        label: "Number of articles",
+        description: "How many articles to display.",
         defaultValue: "6"
       })
     ]
@@ -206,32 +242,18 @@ export const editorComponents = [
 <Callout type="warning">
   The `"use client"` directive at the top of `index.tsx` marks the *registration file* as a client
   module — it does **not** force `ArticleListing` itself to run on the client. `ArticleListing` is
-  imported from a separate file with no `"use client"` directive, so Next.js treats it as a Server
-  Component and renders it server-side.
+  imported from `./ArticleListing` which has no `"use client"` directive, so Next.js treats it as a
+  Server Component and renders it server-side.
 </Callout>
 
-## Step 6: Add the Component Group
-
-If you haven't already registered a "custom" group in `initializeContentSdk`, add it now:
-
-```typescript title="src/contentSdk/initializeContentSdk.ts"
-registerComponentGroup({
-  name: "custom",
-  label: "Custom",
-  description: "Assorted custom components",
-  filter: (component: ComponentManifest) => !component.group
-});
-```
-
-## Step 7: Use It in the Editor
+## Step 6: Use It in the Editor
 
 1. Restart your dev server to pick up the new component.
-2. Open the Website Builder in Webiny Admin.
-3. Open or create a page.
-4. Find **Article Listing** in the **Custom** group of the component palette.
-5. Drag it onto the canvas.
-6. Set the heading and the number of articles in the sidebar inputs.
-7. **Publish** the page.
+2. In the Admin sidebar, go to **Website Builder → Pages** and open or create a page.
+3. Find **Article Listing** in the **Custom** group of the component palette.
+4. Drag it onto the canvas.
+5. Set the heading and the number of articles in the sidebar inputs.
+6. **Publish** the page.
 
 <Image
   src="/images/website-builder/article-listing-editor.png"
