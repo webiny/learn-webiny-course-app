@@ -371,36 +371,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms"
   },
   {
-    slug: "webiny-control-panel/structure-and-organization",
-    import: () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
-    frontmatter: {
-      title: "Structure and Organization",
-      description: "Understanding the structure and organization of the Webiny Control Panel.",
-      order: 2
-    },
-    chapter: "webiny-control-panel"
-  },
-  {
-    slug: "webiny-control-panel/usage-tracking",
-    import: () => import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
-    frontmatter: {
-      title: "Usage tracking",
-      description: "Understanding usage tracking in the Webiny Control Panel.",
-      order: 3
-    },
-    chapter: "webiny-control-panel"
-  },
-  {
-    slug: "webiny-control-panel",
-    import: () => import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
-    frontmatter: {
-      title: "Webiny Control Panel",
-      description: "An introduction to the Webiny Control Panel and its features.",
-      order: 1
-    },
-    chapter: "webiny-control-panel"
-  },
-  {
     slug: "website-builder/article-listing-editor-component",
     import: () => import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
     frontmatter: {

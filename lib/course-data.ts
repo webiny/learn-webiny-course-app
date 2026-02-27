@@ -205,7 +205,7 @@ export const courseData: Course = {
       lessons: [
         {
           id: "article-listing-editor-component",
-          title: "Article Listing Editor Component",
+          title: "Product Listing Editor Component",
           slug: "website-builder/article-listing-editor-component"
         },
         {
