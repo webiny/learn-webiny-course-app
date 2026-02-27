@@ -54,14 +54,6 @@ export const mdxImportRegistry: Record<string, () => Promise<any>> = {
     import("@/content/lessons/headless-cms/lifecycle-events.mdx"),
   "headless-cms/reading-data": () => import("@/content/lessons/headless-cms/reading-data.mdx"),
   "headless-cms/writing-data": () => import("@/content/lessons/headless-cms/writing-data.mdx"),
-  "webiny-control-panel/assigning-licenses": () =>
-    import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
-  "webiny-control-panel/structure-and-organization": () =>
-    import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
-  "webiny-control-panel/usage-tracking": () =>
-    import("@/content/lessons/webiny-control-panel/usage-tracking.mdx"),
-  "webiny-control-panel": () =>
-    import("@/content/lessons/webiny-control-panel/webiny-control-panel.mdx"),
   "website-builder/article-listing-editor-component": () =>
     import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
   "website-builder/editor-components": () =>
@@ -379,16 +371,6 @@ export const mdxRegistry: LessonRegistryItem[] = [
     chapter: "headless-cms"
   },
   {
-    slug: "webiny-control-panel/assigning-licenses",
-    import: () => import("@/content/lessons/webiny-control-panel/assigning-licenses.mdx"),
-    frontmatter: {
-      title: "Assigning Licenses",
-      description: "How to assign licenses to your Webiny projects using the Webiny Control Panel.",
-      order: 4
-    },
-    chapter: "webiny-control-panel"
-  },
-  {
     slug: "webiny-control-panel/structure-and-organization",
     import: () => import("@/content/lessons/webiny-control-panel/structure-and-organization.mdx"),
     frontmatter: {
@@ -422,9 +404,9 @@ export const mdxRegistry: LessonRegistryItem[] = [
     slug: "website-builder/article-listing-editor-component",
     import: () => import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
     frontmatter: {
-      title: "Article Listing Editor Component",
+      title: "Product Listing Editor Component",
       description:
-        "Build a custom Website Builder component that fetches articles from Webiny Headless CMS and renders them inside a Website Builder page.",
+        "Build a custom Website Builder component that fetches products from Webiny Headless CMS and renders them inside a Website Builder page.",
       order: 4
     },
     chapter: "website-builder"

@@ -6,150 +6,167 @@
  * Chapter metadata is read from lib/chapter-metadata.ts (single source of truth)
  */
 
-import fs from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import matter from 'gray-matter'
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import matter from "gray-matter";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const projectRoot = path.resolve(__dirname, '..')
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, "..");
 
 // Note: Chapter metadata is maintained in lib/chapter-metadata.ts
 // This script reads that file to ensure single source of truth
 
 function getChapterMetadataFromFile() {
-  const metadataPath = path.join(projectRoot, 'lib', 'chapter-metadata.ts')
+  const metadataPath = path.join(projectRoot, "lib", "chapter-metadata.ts");
 
   if (!fs.existsSync(metadataPath)) {
-    console.warn('⚠️  chapter-metadata.ts not found, using fallback metadata')
-    return {}
+    console.warn("⚠️  chapter-metadata.ts not found, using fallback metadata");
+    return {};
   }
 
   // Read and parse the TypeScript file to extract chapter metadata
-  const content = fs.readFileSync(metadataPath, 'utf8')
+  const content = fs.readFileSync(metadataPath, "utf8");
 
   // Extract the chapterMetadata object (simple regex parsing)
-  const match = content.match(/export const chapterMetadata[^{]*{([^}]+(?:{[^}]*}[^}]*)*)}/)
+  const match = content.match(/export const chapterMetadata[^{]*{([^}]+(?:{[^}]*}[^}]*)*)}/);
 
   if (!match) {
-    console.warn('⚠️  Could not parse chapter metadata, using fallback')
-    return {}
+    console.warn("⚠️  Could not parse chapter metadata, using fallback");
+    return {};
   }
 
   // Parse as JSON-like structure (this is a simplified approach)
   // For production, consider using a proper TypeScript parser
-  const chapters = {}
-  const chapterRegex = /'([^']+)':\s*{([^}]+)}/g
-  let chapterMatch
+  const chapters = {};
+  const chapterRegex = /'([^']+)':\s*{([^}]+)}/g;
+  let chapterMatch;
 
   while ((chapterMatch = chapterRegex.exec(match[1])) !== null) {
-    const [, chapterId, props] = chapterMatch
+    const [, chapterId, props] = chapterMatch;
 
     // Extract properties
-    const number = parseInt(props.match(/number:\s*(\d+)/)?.[1] || '999')
-    const title = props.match(/title:\s*'([^']+)'/)?.[1] || chapterId
-    const description = props.match(/description:\s*'([^']+)'/)?.[1] || ''
-    const icon = props.match(/icon:\s*'([^']+)'/)?.[1] || 'book'
+    const number = parseInt(props.match(/number:\s*(\d+)/)?.[1] || "999");
+    const title = props.match(/title:\s*'([^']+)'/)?.[1] || chapterId;
+    const description = props.match(/description:\s*'([^']+)'/)?.[1] || "";
+    const icon = props.match(/icon:\s*'([^']+)'/)?.[1] || "book";
 
-    chapters[chapterId] = { number, title, description, icon }
+    chapters[chapterId] = { number, title, description, icon };
   }
 
-  return chapters
+  return chapters;
 }
 
-const chapterMetadata = getChapterMetadataFromFile()
+const chapterMetadata = getChapterMetadataFromFile();
+
+// Chapters listed here will be excluded from the generated course data
+const HIDDEN_CHAPTERS = ["webiny-control-panel"];
 
 function discoverLessonsWithMetadata() {
-  const contentDir = path.join(projectRoot, 'content', 'lessons')
-  const chapters = {}
+  const contentDir = path.join(projectRoot, "content", "lessons");
+  const chapters = {};
 
   if (!fs.existsSync(contentDir)) {
-    console.error(`❌ Content directory not found: ${contentDir}`)
-    process.exit(1)
+    console.error(`❌ Content directory not found: ${contentDir}`);
+    process.exit(1);
   }
 
   // Read all chapter directories
-  const chapterDirs = fs.readdirSync(contentDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory() && !dirent.name.startsWith('.'))
+  const chapterDirs = fs
+    .readdirSync(contentDir, { withFileTypes: true })
+    .filter(
+      dirent =>
+        dirent.isDirectory() &&
+        !dirent.name.startsWith(".") &&
+        !HIDDEN_CHAPTERS.includes(dirent.name)
+    )
     .sort((a, b) => {
-      const aNum = chapterMetadata[a.name]?.number || 999
-      const bNum = chapterMetadata[b.name]?.number || 999
-      return aNum - bNum
-    })
+      const aNum = chapterMetadata[a.name]?.number || 999;
+      const bNum = chapterMetadata[b.name]?.number || 999;
+      return aNum - bNum;
+    });
 
   for (const chapterDir of chapterDirs) {
-    const chapterName = chapterDir.name
-    const chapterPath = path.join(contentDir, chapterName)
+    const chapterName = chapterDir.name;
+    const chapterPath = path.join(contentDir, chapterName);
     const metadata = chapterMetadata[chapterName] || {
       number: 999,
-      title: chapterName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-      description: `Learn about ${chapterName.replace(/-/g, ' ')}`,
-      icon: 'book'
-    }
+      title: chapterName
+        .split("-")
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" "),
+      description: `Learn about ${chapterName.replace(/-/g, " ")}`,
+      icon: "book"
+    };
 
     // Read all MDX files in the chapter directory
-    const files = fs.readdirSync(chapterPath)
-      .filter(file => file.endsWith('.mdx'))
-      .sort()
+    const files = fs
+      .readdirSync(chapterPath)
+      .filter(file => file.endsWith(".mdx"))
+      .sort();
 
-    const lessons = []
+    const lessons = [];
 
     for (const file of files) {
-      const fileName = file.replace('.mdx', '')
-      const filePath = path.join(chapterPath, file)
+      const fileName = file.replace(".mdx", "");
+      const filePath = path.join(chapterPath, file);
 
       // Read frontmatter for lesson metadata
-      let title = fileName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+      let title = fileName
+        .split("-")
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
 
       try {
-        const fileContent = fs.readFileSync(filePath, 'utf8')
-        const { data } = matter(fileContent)
+        const fileContent = fs.readFileSync(filePath, "utf8");
+        const { data } = matter(fileContent);
         if (data.title) {
-          title = data.title
+          title = data.title;
         }
       } catch (error) {
-        console.warn(`⚠️  Could not read frontmatter from ${file}:`, error.message)
+        console.warn(`⚠️  Could not read frontmatter from ${file}:`, error.message);
       }
 
       // Create slug
-      const slug = fileName === chapterName
-        ? chapterName
-        : `${chapterName}/${fileName}`
+      const slug = fileName === chapterName ? chapterName : `${chapterName}/${fileName}`;
 
       lessons.push({
         id: fileName,
         title,
         slug
-      })
+      });
     }
 
     chapters[chapterName] = {
       id: chapterName,
       ...metadata,
       lessons
-    }
+    };
   }
 
-  return chapters
+  return chapters;
 }
 
 function generateCourseData() {
-  console.log('🔍 Discovering lessons and generating course data...')
+  console.log("🔍 Discovering lessons and generating course data...");
 
-  const chapters = discoverLessonsWithMetadata()
-  const chapterArray = Object.values(chapters)
-    .sort((a, b) => a.number - b.number) // Sort by chapter number
+  const chapters = discoverLessonsWithMetadata();
+  const chapterArray = Object.values(chapters).sort((a, b) => a.number - b.number); // Sort by chapter number
 
-  console.log(`✅ Found ${chapterArray.length} chapters with ${chapterArray.reduce((sum, ch) => sum + ch.lessons.length, 0)} lessons\n`)
+  console.log(
+    `✅ Found ${chapterArray.length} chapters with ${chapterArray.reduce((sum, ch) => sum + ch.lessons.length, 0)} lessons\n`
+  );
 
   // Generate the TypeScript code with chapter metadata spread
-  const chaptersCode = chapterArray.map(chapter => {
-    return `    {
+  const chaptersCode = chapterArray
+    .map(chapter => {
+      return `    {
         id: "${chapter.id}",
         ...chapterMetadata["${chapter.id}"],
-        lessons: ${JSON.stringify(chapter.lessons, null, 12).replace(/^/gm, '        ').trim()}
-    }`
-  }).join(',\n')
+        lessons: ${JSON.stringify(chapter.lessons, null, 12).replace(/^/gm, "        ").trim()}
+    }`;
+    })
+    .join(",\n");
 
   const courseDataCode = `// This file is partially auto-generated by scripts/generate-course-data.mjs
 // Chapter metadata comes from chapter-metadata.ts (single source of truth)
@@ -280,28 +297,28 @@ export function getLessonNumberInChapter(slug: string): number {
   const lessonIndex = chapter.lessons.findIndex((l) => l.id === lesson.id)
   return lessonIndex !== -1 ? lessonIndex + 1 : 0
 }
-`
+`;
 
   // Write to lib/course-data.ts
-  const outputPath = path.join(projectRoot, 'lib', 'course-data.ts')
-  fs.writeFileSync(outputPath, courseDataCode, 'utf8')
+  const outputPath = path.join(projectRoot, "lib", "course-data.ts");
+  fs.writeFileSync(outputPath, courseDataCode, "utf8");
 
-  console.log(`📝 Generated course data at: ${outputPath}`)
-  console.log('\nChapters and lessons:')
+  console.log(`📝 Generated course data at: ${outputPath}`);
+  console.log("\nChapters and lessons:");
   chapterArray.forEach(chapter => {
-    console.log(`  ${chapter.number}. ${chapter.title} (${chapter.lessons.length} lessons)`)
+    console.log(`  ${chapter.number}. ${chapter.title} (${chapter.lessons.length} lessons)`);
     chapter.lessons.forEach(lesson => {
-      console.log(`     - ${lesson.title} [${lesson.slug}]`)
-    })
-  })
+      console.log(`     - ${lesson.title} [${lesson.slug}]`);
+    });
+  });
 
-  console.log('\n✅ Course data generated successfully!')
+  console.log("\n✅ Course data generated successfully!");
 }
 
 // Run the generator
 try {
-  generateCourseData()
+  generateCourseData();
 } catch (error) {
-  console.error('❌ Failed to generate course data:', error)
-  process.exit(1)
+  console.error("❌ Failed to generate course data:", error);
+  process.exit(1);
 }

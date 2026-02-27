@@ -200,32 +200,6 @@ export const courseData: Course = {
       ]
     },
     {
-      id: "webiny-control-panel",
-      ...chapterMetadata["webiny-control-panel"],
-      lessons: [
-        {
-          id: "assigning-licenses",
-          title: "Assigning Licenses",
-          slug: "webiny-control-panel/assigning-licenses"
-        },
-        {
-          id: "structure-and-organization",
-          title: "Structure and Organization",
-          slug: "webiny-control-panel/structure-and-organization"
-        },
-        {
-          id: "usage-tracking",
-          title: "Usage tracking",
-          slug: "webiny-control-panel/usage-tracking"
-        },
-        {
-          id: "webiny-control-panel",
-          title: "Webiny Control Panel",
-          slug: "webiny-control-panel"
-        }
-      ]
-    },
-    {
       id: "website-builder",
       ...chapterMetadata["website-builder"],
       lessons: [
