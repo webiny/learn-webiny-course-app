@@ -18,6 +18,7 @@ const certificationLevels = [
     borderColor: "border-blue-500/50",
     iconColor: "text-blue-600 dark:text-blue-400",
     level: "Beginner",
+    isExamAvailable: true,
     description: "Demonstrate fundamental knowledge of Webiny and serverless development",
     requirements: [
       "Complete all Foundation chapter lessons",
@@ -41,6 +42,7 @@ const certificationLevels = [
     borderColor: "border-purple-500/50",
     iconColor: "text-purple-600 dark:text-purple-400",
     level: "Intermediate",
+    isExamAvailable: false,
     description: "Prove your ability to build production-ready applications with Webiny",
     requirements: [
       "Hold Webiny Certified Associate certification",
@@ -67,6 +69,7 @@ const certificationLevels = [
     borderColor: "border-amber-500/50",
     iconColor: "text-amber-600 dark:text-amber-400",
     level: "Advanced",
+    isExamAvailable: false,
     description: "Master-level certification for experienced Webiny developers",
     requirements: [
       "Hold Webiny Certified Professional certification",
@@ -149,6 +152,11 @@ export default function CertificationPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="secondary">{cert.level}</Badge>
                         <Badge variant="outline">Level {index + 1}</Badge>
+                        {!cert.isExamAvailable ? (
+                          <Badge variant="outline" className="border-amber-500/50 text-amber-700 dark:text-amber-300">
+                            Coming Soon
+                          </Badge>
+                        ) : null}
                       </div>
                       <CardTitle className="text-2xl mb-2">{cert.title}</CardTitle>
                       <CardDescription className="text-base">{cert.description}</CardDescription>
@@ -201,11 +209,17 @@ export default function CertificationPage() {
                     </span>
                     <span>{cert.estimatedTime}</span>
                   </div>
-                  <Button asChild>
-                    <Link href={`/certification/${cert.id}/start`}>
-                      Take Certification Exam
-                    </Link>
-                  </Button>
+                  {cert.isExamAvailable ? (
+                    <Button asChild>
+                      <Link href={`/certification/${cert.id}/start`}>
+                        Take Certification Exam
+                      </Link>
+                    </Button>
+                  ) : (
+                    <Button disabled variant="secondary" aria-disabled="true">
+                      Coming Soon
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -258,4 +272,3 @@ export default function CertificationPage() {
     </div>
   )
 }
-

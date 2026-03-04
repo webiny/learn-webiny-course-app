@@ -10,6 +10,7 @@ import { IconTitle } from "@/components/icon-title";
 import { PaidFeature } from "@/components/paid-feature";
 import { TodoPointer } from "@/components/todo-pointer";
 import { FAQ } from "@/components/faq";
+import { FileTree } from "@/components/file-tree";
 
 export const mdxComponents: MDXComponents = {
   // Custom components available in MDX
@@ -21,6 +22,7 @@ export const mdxComponents: MDXComponents = {
   PaidFeature,
   TodoPointer,
   FAQ,
+  FileTree,
   Image: ImageComponent,
   ExternalLink,
   // Override default HTML elements with custom styling

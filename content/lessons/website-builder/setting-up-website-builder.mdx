@@ -212,44 +212,45 @@ You've successfully rendered your first Website Builder page. Content authored i
 
 Now that we've successfully rendered a page end-to-end, let's dive into a bit more of the technicalities — what's in the starter kit and what each part does:
 
-```txt title="Starter kit structure"
-src/
-├── app/
-│   ├── [[...slug]]/
-│   │   └── page.tsx              # Catch-all route — renders every Website Builder page
-│   ├── api/
-│   │   ├── preview/              # Enables Next.js draft mode for Website Builder preview
-│   │   └── redirects/            # Serves redirect rules defined in Website Builder Admin
-│   └── layout.tsx
-│
-├── components/
-│   ├── DocumentRenderer.tsx      # Wires editorComponents into the SDK renderer
-│   ├── Header.tsx
-│   ├── NotFound.tsx
-│   └── PageLayout.tsx
-│
-├── contentSdk/
-│   ├── initializeContentSdk.ts   # SDK init
-│   ├── groups.ts                 # Component group registration
-│   ├── ContentSdkInitializer.ts  # Client component wrapper for SDK init
-│   ├── getTenant.ts              # Reads tenant ID from request headers
-│   └── index.ts
-│
-├── editorComponents/
-│   ├── index.tsx                 # Register your components here
-│   └── Hero1.tsx                 # Built-in Hero component
-│
-├── theme/
-│   ├── theme.css                 # CSS variables + typography classes
-│   ├── theme.ts                  # createTheme() call
-│   └── tailwind.css
-│
-├── utils/
-│   └── normalizeSlug.ts
-│
-├── constants.ts
-└── middleware.ts                 # Handles preview mode, tenant routing, redirects
-```
+<FileTree
+  tree={`
+  src/
+    app/
+      [[...slug]]/
+        page.tsx              # Catch-all route — renders every Website Builder page
+      api/
+        preview/              # Enables Next.js draft mode for Website Builder preview
+        redirects/            # Serves redirect rules defined in Website Builder Admin
+      layout.tsx
+
+    components/
+      DocumentRenderer.tsx    # Wires editorComponents into the SDK renderer
+      Header.tsx
+      NotFound.tsx
+      PageLayout.tsx
+
+    contentSdk/
+      initializeContentSdk.ts # SDK init
+      groups.ts               # Component group registration
+      ContentSdkInitializer.ts # Client component wrapper for SDK init
+      getTenant.ts            # Reads tenant ID from request headers
+      index.ts
+
+    editorComponents/
+      index.tsx               # Register your components here
+      Hero1.tsx               # Built-in Hero component
+
+    theme/
+      theme.css               # CSS variables + typography classes
+      theme.ts                # createTheme() call
+      tailwind.css
+
+    utils/
+      normalizeSlug.ts
+
+    constants.ts
+    middleware.ts             # Handles preview mode, tenant routing, redirects`}
+/>
 
 The two folders you'll spend most time in are `editorComponents/` (building and registering components) and `theme/` (styling). Everything else is infrastructure the starter kit handles for you.
 

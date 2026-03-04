@@ -13,143 +13,273 @@ export const examQuestions = {
   associate: [
     {
       id: 'a1',
-      question: 'What cloud platform is Webiny primarily built on?',
+      question: 'What is Webiny primarily described as in the course?',
       type: 'multiple-choice' as const,
-      options: ['AWS (Amazon Web Services)', 'Microsoft Azure', 'Google Cloud Platform', 'DigitalOcean'],
-      correctAnswer: 0,
+      options: [
+        'A static site generator only',
+        'A content platform with an application framework',
+        'A relational database service',
+        'A frontend CSS framework'
+      ],
+      correctAnswer: 1,
     },
     {
       id: 'a2',
-      question: 'Which architecture pattern does Webiny use?',
+      question: 'Which prerequisite is explicitly listed as recommended before taking this course?',
       type: 'multiple-choice' as const,
-      options: ['Monolithic', 'Microservices', 'Serverless', 'Event-driven'],
+      options: [
+        'Deep Kubernetes expertise',
+        'Rust programming experience',
+        'Basic understanding of React.js',
+        'Oracle database administration'
+      ],
       correctAnswer: 2,
     },
     {
       id: 'a3',
-      question: 'What is the primary programming language used in Webiny?',
+      question: 'According to the course, what is a key reason Webiny was created?',
       type: 'multiple-choice' as const,
-      options: ['Python', 'JavaScript/TypeScript', 'Java', 'Go'],
+      options: [
+        'To replace AWS services with on-prem servers',
+        'To handle complex content management needs with flexibility and scale',
+        'To focus only on blogging use-cases',
+        'To eliminate the need for APIs'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a4',
-      question: 'Which of the following is NOT a core Webiny application?',
+      question: 'Which scenario is a good fit for using Webiny?',
       type: 'multiple-choice' as const,
-      options: ['Admin Panel', 'Headless CMS', 'E-commerce Store', 'Page Builder'],
-      correctAnswer: 2,
+      options: [
+        'A project requiring data ownership and infrastructure control',
+        'A team with no technical resources that wants zero setup',
+        'A strict on-prem-only deployment requirement',
+        'A tiny static site with minimal CMS needs'
+      ],
+      correctAnswer: 0,
     },
     {
       id: 'a5',
-      question: 'What command is used to create a new Webiny project?',
+      question: 'Which option best describes Webiny Community Edition?',
       type: 'multiple-choice' as const,
-      options: ['webiny create', 'npx create-webiny-app', 'webiny init', 'npm install webiny'],
+      options: [
+        'Commercial only, closed-source license',
+        'Open-source under the MIT License',
+        'Available only through AWS Marketplace',
+        'Limited to trial mode for 30 days'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a6',
-      question: 'Which AWS service does Webiny use for compute?',
+      question: 'What is one key characteristic of Webiny Enterprise Edition mentioned in the lesson?',
       type: 'multiple-choice' as const,
-      options: ['EC2', 'Lambda', 'ECS', 'Fargate'],
+      options: [
+        'It removes GraphQL support',
+        'It is intended for enterprise-level applications with additional features and support',
+        'It is only for personal hobby projects',
+        'It cannot be deployed to AWS'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a7',
-      question: 'What is the purpose of the Admin app in Webiny?',
+      question: 'Which set represents the three core parts that make up Webiny?',
       type: 'multiple-choice' as const,
-      options: ['To manage infrastructure', 'To manage content and settings', 'To deploy applications', 'To monitor performance'],
-      correctAnswer: 1,
+      options: [
+        'Applications, Developer toolkit, Infrastructure',
+        'Themes, Plugins, SQL migrations',
+        'Hosting plans, billing, CRM',
+        'Containers, VMs, physical servers'
+      ],
+      correctAnswer: 0,
     },
     {
       id: 'a8',
-      question: 'Which database does Webiny use by default?',
+      question: 'Which statement about Webiny architecture is correct according to the lessons?',
       type: 'multiple-choice' as const,
-      options: ['MySQL', 'PostgreSQL', 'DynamoDB', 'MongoDB'],
-      correctAnswer: 2,
+      options: [
+        'It is monolithic and hard to extend',
+        'It is modular and extensible',
+        'It requires direct edits to core files for customization',
+        'It only supports built-in features with no extension model'
+      ],
+      correctAnswer: 1,
     },
     {
       id: 'a9',
-      question: 'What is a key benefit of serverless architecture?',
+      question: 'In Webiny Applications, what is the Headless CMS primarily used for?',
       type: 'multiple-choice' as const,
-      options: ['Fixed monthly costs', 'Manual scaling', 'Pay-per-use pricing', 'Requires server management'],
+      options: [
+        'Managing DNS records',
+        'Serving only static images',
+        'Creating, managing, and delivering content via GraphQL API or SDK',
+        'Provisioning AWS accounts'
+      ],
       correctAnswer: 2,
     },
     {
       id: 'a10',
-      question: 'Which tool does Webiny use for infrastructure as code?',
+      question: 'How does the lesson describe the Headless CMS in relation to other Webiny apps?',
       type: 'multiple-choice' as const,
-      options: ['Terraform', 'CloudFormation', 'Pulumi', 'AWS CDK'],
-      correctAnswer: 2,
+      options: [
+        'An optional legacy add-on',
+        'The core data storage layer that other apps can rely on',
+        'A replacement for all frontend applications',
+        'A reporting-only subsystem'
+      ],
+      correctAnswer: 1,
     },
     {
       id: 'a11',
-      question: 'What file format is used for content models in Webiny?',
+      question: 'What does the Website Builder enable content editors to do?',
       type: 'multiple-choice' as const,
-      options: ['XML', 'JSON', 'YAML', 'TOML'],
+      options: [
+        'Manage IAM users in AWS',
+        'Create and customize pages with a visual drag-and-drop editor',
+        'Write backend Lambda handlers directly',
+        'Run SQL queries against content tables'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a12',
-      question: 'Which React framework does Webiny use?',
+      question: 'Which application is dedicated to managing digital assets like images and documents?',
       type: 'multiple-choice' as const,
-      options: ['Next.js', 'Gatsby', 'Create React App', 'Custom framework'],
-      correctAnswer: 3,
+      options: ['Tenant Manager', 'Publishing Workflows', 'File Manager', 'Security Console'],
+      correctAnswer: 2,
     },
     {
       id: 'a13',
-      question: 'What is the purpose of the Page Builder in Webiny?',
+      question: 'What is the role of Webiny Admin?',
       type: 'multiple-choice' as const,
-      options: ['To write code', 'To create visual web pages', 'To manage databases', 'To deploy applications'],
+      options: [
+        'A separate third-party service outside Webiny',
+        'The central interface for accessing Webiny applications, settings, and configuration',
+        'A CDN used for static files only',
+        'A local-only development dashboard'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a14',
-      question: 'Which authentication method does Webiny support out of the box?',
+      question: 'Webiny Framework is described as being built with which language?',
       type: 'multiple-choice' as const,
-      options: ['OAuth only', 'Cognito', 'Auth0 only', 'Basic authentication'],
+      options: ['PHP', 'TypeScript', 'Ruby', 'C#'],
       correctAnswer: 1,
     },
     {
       id: 'a15',
-      question: 'What is a "headless CMS"?',
+      question: 'Which API style is highlighted as part of the Webiny Framework capabilities?',
       type: 'multiple-choice' as const,
-      options: ['A CMS without a database', 'A CMS without a frontend', 'A CMS without users', 'A CMS without content'],
-      correctAnswer: 1,
+      options: ['SOAP API', 'gRPC API only', 'GraphQL API', 'XML-RPC'],
+      correctAnswer: 2,
     },
     {
       id: 'a16',
-      question: 'How does Webiny handle file storage?',
+      question: 'What is the only infrastructure requirement listed for hosting Webiny?',
       type: 'multiple-choice' as const,
-      options: ['Local filesystem', 'S3', 'FTP server', 'Database BLOBs'],
+      options: [
+        'A Kubernetes cluster',
+        'An AWS account',
+        'A self-managed PostgreSQL instance',
+        'A dedicated on-prem data center'
+      ],
       correctAnswer: 1,
     },
     {
       id: 'a17',
-      question: 'What is the minimum Node.js version required for Webiny?',
+      question: 'At this point in the course, which cloud provider is supported for Webiny hosting?',
       type: 'multiple-choice' as const,
-      options: ['Node.js 12', 'Node.js 14', 'Node.js 16', 'Node.js 18'],
-      correctAnswer: 3,
+      options: ['AWS only', 'Azure only', 'GCP only', 'All major cloud providers equally'],
+      correctAnswer: 0,
     },
     {
       id: 'a18',
-      question: 'Which GraphQL implementation does Webiny use?',
+      question: 'Which statement best captures a serverless benefit emphasized in the lessons?',
       type: 'multiple-choice' as const,
-      options: ['Apollo Server', 'GraphQL Yoga', 'Custom implementation', 'Prisma'],
-      correctAnswer: 0,
+      options: [
+        'You prepay for fixed server capacity',
+        'You pay only for what you use',
+        'You must manually scale infrastructure',
+        'It requires managing physical hardware'
+      ],
+      correctAnswer: 1,
     },
     {
       id: 'a19',
-      question: 'What is the purpose of environments in Webiny?',
+      question: 'In Webiny multi-tenancy, what is the default tenant hierarchy?',
       type: 'multiple-choice' as const,
-      options: ['To separate dev/staging/prod', 'To manage users', 'To organize content', 'To handle versions'],
-      correctAnswer: 0,
+      options: [
+        'Single tenant only',
+        'Root Tenant and Child Tenants',
+        'Region Tenant and Zone Tenant',
+        'Organization Tenant and Workspace Tenant and Team Tenant'
+      ],
+      correctAnswer: 1,
     },
     {
       id: 'a20',
-      question: 'How are Webiny plugins installed?',
+      question: 'What does multi-tenancy enable in Webiny?',
       type: 'multiple-choice' as const,
-      options: ['Via AWS Console', 'Via npm packages', 'Via FTP', 'Via database import'],
+      options: [
+        'Only one project per instance',
+        'Multiple isolated projects/clients managed from one instance',
+        'Shared data across all tenants by default',
+        'No configuration differences between tenants'
+      ],
       correctAnswer: 1,
+    },
+    {
+      id: 'a21',
+      question: 'What command is recommended to create a new Webiny project during installation?',
+      type: 'multiple-choice' as const,
+      options: [
+        'yarn webiny init learn-webiny-course',
+        'npx create-webiny-project learn-webiny-course',
+        'npm create webiny@latest',
+        'webiny new learn-webiny-course'
+      ],
+      correctAnswer: 1,
+    },
+    {
+      id: 'a22',
+      question: 'What does the installation lesson recommend as the database option for learning and experimentation?',
+      type: 'multiple-choice' as const,
+      options: [
+        'Amazon RDS',
+        'Amazon DynamoDB',
+        'Amazon Aurora',
+        'Amazon Redshift'
+      ],
+      correctAnswer: 1,
+    },
+    {
+      id: 'a23',
+      question: 'According to the installation warning, what is true about database type choice?',
+      type: 'multiple-choice' as const,
+      options: [
+        'You can switch database type at any time without constraints',
+        'Database type can only be changed by opening a support ticket',
+        'You cannot change the database type later for an environment',
+        'Database type changes automatically after first deploy'
+      ],
+      correctAnswer: 2,
+    },
+    {
+      id: 'a24',
+      question: 'Which Webiny CLI command deploys your project to AWS?',
+      type: 'multiple-choice' as const,
+      options: ['yarn webiny watch', 'yarn webiny info', 'yarn webiny destroy', 'yarn webiny deploy'],
+      correctAnswer: 3,
+    },
+    {
+      id: 'a25',
+      question: 'Which command helps you retrieve deployment details like endpoints and the Admin URL?',
+      type: 'multiple-choice' as const,
+      options: ['yarn webiny info', 'yarn webiny --help', 'yarn webiny watch', 'yarn webiny login'],
+      correctAnswer: 0,
     },
   ],
   professional: [

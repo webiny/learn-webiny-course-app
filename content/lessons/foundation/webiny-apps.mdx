@@ -22,14 +22,16 @@ Webiny is a comprehensive content platform that includes a variety of built-in a
 
 ## Headless CMS
 
-The Headless CMS is the core content management application in Webiny. It allows you to create, manage, and deliver content through a flexible GraphQL API. The CMS supports custom content models, versioning, localization, and more.
+The Headless CMS is the core content management application in Webiny. It allows you to create, manage, and deliver content through a flexible GraphQL API or the provided SDK. The CMS supports custom content models, versioning, localization, and more.
 
 <Image src="/images/lessons/foundation/webiny-headless-cms.png" title="Headless CMS - Content editor" withShadow={false} />
 
 Some of the key features of the Headless CMS include:
-- Content editors can easily create and manage content using the intuitive admin interface, while developers can fetch and manipulate content programmatically via the GraphQL API.
+- Content editors can easily create and manage content using the intuitive admin interface, while developers can fetch and manipulate content programmatically via the GraphQL API or the SDK.
 - Content models define the structure of your content, including fields, relationships, and validation rules. You can create custom content types to suit your specific needs.
 - Content models can be created through the Webiny Admin via the UI editor or programmatically through code using the Webiny Framework.
+- Control who can edit, or view which content fields with the granular field-level permissions system.
+- Use layout elements to build a more intuitive editing experience for content editors.
 - Integrates with other Webiny applications, such as the Website Builder, File Manager and Publishing Workflows, to provide a seamless content management experience.
 
 In the dedicated Headless CMS chapter, we will dive deeper into its features and capabilities.
@@ -72,6 +74,11 @@ Some of the key features of the File Manager include:
 The Publishing Workflows application provides a robust system for managing content approval and publishing processes. It allows you to define custom workflows that suit your editorial needs, ensuring that content goes through the necessary review stages before being published.
 
 <Image src="/images/lessons/foundation/webiny-publishing-workflows.png" title="Publishing Worflows - Content list" withShadow={false} />
+
+## Tenant Manager
+The Tenant Manager is an application that allows you to manage multiple tenants within your Webiny instance. A tenant represents a separate environment or instance of your applications, allowing you to isolate data and configurations for different projects, clients, or teams. Tenant are usually also used when Webiny gets embedded into a SaaS application as a content platform, where each tenant represents a different customer of the SaaS application.
+
+<Image src="/images/lessons/foundation/webiny-tenant-manager.png" title="Tenant Manager" withShadow={false} />
 
 ## Webiny Admin
 

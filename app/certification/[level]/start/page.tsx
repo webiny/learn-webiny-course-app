@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,27 +11,28 @@ import { ArrowLeft } from "lucide-react"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { FontSizeControl } from "@/components/font-size-control"
 import { WebinyLogo } from "@/components/webiny-logo"
+import { examQuestions } from "@/lib/exam-questions"
 
 const certificationInfo = {
   associate: {
     title: "Associate",
     description: "Fundamental knowledge of Webiny and serverless development",
     duration: "45 minutes",
-    questions: 20,
+    questions: examQuestions.associate.length,
     passingScore: 70,
   },
   professional: {
     title: "Professional",
     description: "Build production-ready applications with Webiny",
     duration: "60 minutes",
-    questions: 20,
+    questions: examQuestions.professional.length,
     passingScore: 75,
   },
   expert: {
     title: "Expert",
     description: "Master-level certification for experienced developers",
     duration: "90 minutes",
-    questions: 20,
+    questions: examQuestions.expert.length,
     passingScore: 80,
   },
 }

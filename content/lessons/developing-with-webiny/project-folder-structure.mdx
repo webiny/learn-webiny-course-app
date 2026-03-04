@@ -22,23 +22,24 @@ Webiny projects have a clean and simple structure that's easy to navigate and un
 
 A typical Webiny project structure looks like this:
 
-```text
-my-webiny-project/
-├── extensions/          # Your custom extensions and code
-│   └── README.md
-├── node_modules/        # Dependencies
-├── public/              # Public assets for Admin app
-│   ├── favicon.ico
-│   ├── global.css
-│   ├── index.html
-│   └── robots.txt
-├── eslint.config.js     # ESLint configuration
-├── package.json         # Project dependencies
-├── tsconfig.json        # TypeScript configuration
-├── webiny.config.tsx    # Main configuration file
-├── webiny-env.d.ts      # TypeScript environment types
-└── yarn.lock            # Locked dependencies
-```
+<FileTree
+  tree={`
+  my-webiny-project/
+    extensions/          # Your custom extensions and code
+      README.md
+    node_modules/        # Dependencies
+    public/              # Public assets for Admin app
+      favicon.ico
+      global.css
+      index.html
+      robots.txt
+    eslint.config.js     # ESLint configuration
+    package.json         # Project dependencies
+    tsconfig.json        # TypeScript configuration
+    webiny.config.tsx    # Main configuration file
+    webiny-env.d.ts      # TypeScript environment types
+    yarn.lock            # Locked dependencies`}
+/>
 
 <Callout type="info" title="Clean and Simple">
   Webiny projects use a straightforward structure with a single `package.json`, one `tsconfig.json`,
