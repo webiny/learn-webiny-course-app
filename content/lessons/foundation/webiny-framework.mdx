@@ -6,7 +6,7 @@ order: 4
 
 # Webiny Framework
 
-The Webiny Framework is the underlying framework that powers the Webiny content platform. It provides a robust foundation for building and customizing applications within the Webiny ecosystem. In this lesson, we will provide an overview of the Webiny Framework and its key features.
+The Webiny Framework is the underlying framework that powers the Webiny content platform. It provides a robust, strongly typed foundation for building and customizing applications within the Webiny ecosystem. In this lesson, we will provide an overview of the Webiny Framework and its key features.
 
 <ChapterOverview
     items={[
@@ -19,18 +19,27 @@ The Webiny Framework is the underlying framework that powers the Webiny content 
 ## Overview of the Webiny Framework
 
 Webiny Framework is a TypeScript-based framework that enables developers to build applications and customizations on top of Webiny.
-The framework is part of a larger developer toolkit that includes the Webiny CLI, SDKs, and other utilities that facilitate the development process.
+The framework is part of a larger developer toolkit that includes the Webiny CLI, SDKs, MCP server, AI skills, and other utilities that facilitate the development process.
+
+One of the key ideas behind Webiny is that customization should not feel like patching or working around a closed product. Instead, Webiny gives developers a proper framework with clear extension points, ready-made applications, and platform patterns that make custom development feel like a natural continuation of the product itself.
+
+This is also a big reason why Webiny is well suited for modern AI-assisted development. Because the framework is strongly typed, modular, and built around explicit extension patterns, AI-generated code tends to fit much more naturally into the platform. Instead of producing disconnected snippets or fragile one-off hacks, AI can help developers create features, API extensions, UI customizations, workflows, and integrations that align with Webiny's architecture and are easier to maintain over time.
+
+Webiny further supports this workflow through its MCP server and built-in AI skills, which give AI tools richer context about the platform, its structure, and recommended ways of extending it. This helps developers get better output and move faster when building on Webiny with AI.
 
 Some of the key features of the Webiny Framework include:
-- **Modular architecture**: The framework is built on a modular architecture that allows developers to create reusable components and services. This modularity makes it easy to maintain and scale applications as needed.
-- **GraphQL API**: The Webiny Framework provides a powerful GraphQL API that allows developers to interact with the underlying data layer. This API can be used to fetch, create, update, and delete content programmatically.
+
+- **Modular architecture**: The framework is built on a modular architecture that allows developers to create reusable components and services. This modularity makes it easy to maintain and scale applications as needed, and gives both developers and AI tools a clear structure to build on.
+- **GraphQL API**: The Webiny Framework provides a powerful GraphQL API that allows developers to interact with the underlying data layer. This API can be used to fetch, create, update, and delete content programmatically, and can also be extended with custom queries, mutations, and business logic.
 - **Serverless-first**: The framework is designed with serverless architecture in mind, making it easy to deploy applications to cloud platforms like AWS Lambda. This serverless approach ensures scalability, cost-efficiency, and high availability.
-- **TypeScript support**: The Webiny Framework is built with TypeScript, providing developers with strong typing and modern JavaScript features. This enhances code quality and maintainability.
+- **TypeScript support**: The Webiny Framework is built with TypeScript, providing developers with strong typing and modern JavaScript features. This enhances code quality and maintainability, and also gives AI-assisted development a much stronger foundation because the platform is easier to understand, navigate, and extend correctly.
+- **Designed for extensibility**: Webiny applications are built to be extended through plugins, lifecycle hooks, UI extensions, and custom logic. This means developers are not forced to work around the platform — they can shape it in ways that remain maintainable and upgrade-safe.
 
 ## Webiny Design System
 
-The Webiny Design System is a collection of reusable UI components and design patterns that help developers to create consistent and visually appealing user interfaces within the Webiny ecosystem. Often times you want to customize and existing app, or build a new app where you need a button, an accordion, a modal, or a form element - instead of building these from scratch, you can leverage the pre-built components from the Webiny Design System.
+The Webiny Design System is a collection of reusable UI components and design patterns that help developers create consistent and visually appealing user interfaces within the Webiny ecosystem. Often times you want to customize an existing app, or build a new app where you need a button, an accordion, a modal, or a form element - instead of building these from scratch, you can leverage the pre-built components from the Webiny Design System.
 
+This becomes even more valuable in an AI-assisted workflow. When developers or AI tools generate UI customizations on top of Webiny, the design system provides a clear set of ready-made building blocks to work with. The result is that new UI additions are more likely to feel like a native part of the platform instead of a separate layer bolted on top.
 
 <Image src="/images/lessons/foundation/webiny-design-system.png"
        title="Webiny Design System"

@@ -7,8 +7,10 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
+  "developing-with-webiny/ai-assisted-development": () => import("@/content/lessons/developing-with-webiny/ai-assisted-development.mdx"),
   "developing-with-webiny/debugging-errors-best-practices": () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
   "developing-with-webiny/extensions": () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
+  "developing-with-webiny/intro": () => import("@/content/lessons/developing-with-webiny/intro.mdx"),
   "developing-with-webiny/local-development": () => import("@/content/lessons/developing-with-webiny/local-development.mdx"),
   "developing-with-webiny/project-folder-structure": () => import("@/content/lessons/developing-with-webiny/project-folder-structure.mdx"),
   "developing-with-webiny/webiny-sdk-overview": () => import("@/content/lessons/developing-with-webiny/webiny-sdk-overview.mdx"),
@@ -57,6 +59,16 @@ export interface LessonRegistryItem {
  */
 export const mdxRegistry: LessonRegistryItem[] = [
   {
+    slug: "developing-with-webiny/ai-assisted-development",
+    import: () => import("@/content/lessons/developing-with-webiny/ai-assisted-development.mdx"),
+    frontmatter: {
+          "title": "AI-Assisted Development",
+          "description": "How to use AI effectively when building extensions, integrations, and customizations on top of Webiny.",
+          "order": 3
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
     slug: "developing-with-webiny/debugging-errors-best-practices",
     import: () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
     frontmatter: {
@@ -73,6 +85,16 @@ export const mdxRegistry: LessonRegistryItem[] = [
           "title": "Extensions",
           "description": "Understanding Webiny extensions - what they are and how they work.",
           "order": 3
+    },
+    chapter: "developing-with-webiny"
+  },
+  {
+    slug: "developing-with-webiny/intro",
+    import: () => import("@/content/lessons/developing-with-webiny/intro.mdx"),
+    frontmatter: {
+          "title": "Developing with Webiny",
+          "description": "An introduction to building, extending, testing, and debugging Webiny projects.",
+          "order": 0
     },
     chapter: "developing-with-webiny"
   },

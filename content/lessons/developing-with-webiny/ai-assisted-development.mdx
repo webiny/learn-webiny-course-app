@@ -1,0 +1,210 @@
+---
+title: "AI-Assisted Development"
+description: "How to use AI effectively when building extensions, integrations, and customizations on top of Webiny."
+order: 3
+---
+
+# AI-Assisted Development with Webiny
+
+In this lesson, we will look at how to use AI as part of your day-to-day Webiny development workflow. Instead of treating AI as a novelty or as a tool for generating random snippets, the goal is to use it as a practical development assistant that helps you move faster while still building maintainable, platform-native solutions.
+
+<ChapterOverview
+    items={[
+        { icon: "smart_toy", text: "How AI fits into the Webiny development workflow." },
+        { icon: "code", text: "What AI is good at, and where developers still need to lead." },
+        { icon: "rule", text: "Best practices for prompting, reviewing, and refining AI-generated code." },
+    ]}
+/>
+
+## AI as part of the development workflow
+
+When building with Webiny, AI can be a very effective assistant for tasks such as exploring the codebase, scaffolding new features, generating extensions, wiring integrations, and accelerating repetitive implementation work.
+
+But the most effective way to use AI is not to ask it to "build everything". Instead, use it the same way you would use a capable teammate: give it context, define the desired outcome clearly, let it produce a first draft, and then review and refine the result.
+
+A good Webiny development workflow with AI usually looks something like this:
+
+1. Understand the app, extension point, or feature you want to modify.
+2. Gather the right context from the codebase, docs, lessons, MCP server, and skills.
+3. Ask AI to generate a focused implementation.
+4. Review the result for correctness, maintainability, and fit with existing platform patterns.
+5. Test locally, refine, and iterate.
+
+This approach leads to much better results than treating AI as a black box code generator.
+
+## Where AI can help the most
+
+AI tends to be especially useful when you already know what you want to build, but want help getting there faster.
+
+Typical examples include:
+
+- creating a first draft of an extension
+- scaffolding admin UI changes
+- generating GraphQL queries, mutations, or resolvers
+- wiring up lifecycle-driven integrations
+- creating reusable utility functions
+- producing repetitive TypeScript boilerplate
+- explaining unfamiliar parts of the codebase
+- helping debug errors and suggest likely causes
+- transforming rough implementation ideas into cleaner code structure
+
+In practice, this means AI is often best used to accelerate implementation, not to replace technical decision making.
+
+## Where developers still need to lead
+
+Even with a strong AI workflow, there are still areas where developers need to stay in control.
+
+These include:
+
+- choosing the right architecture
+- deciding where custom logic should live
+- validating business rules
+- checking access control and security implications
+- reviewing multi-tenant behavior
+- ensuring the solution is maintainable and upgrade-safe
+- testing edge cases and production behavior
+
+AI can help generate a solution, but it does not own the consequences of that solution. That part still belongs to the developer.
+
+<Callout type="info" title="Think of AI as an accelerator, not an autopilot">
+    AI can help you move much faster, but you should still review generated code with the same care you would apply to code written by a teammate. The best results usually come from strong context, clear intent, and thoughtful review.
+</Callout>
+
+## A practical prompting approach
+
+When prompting AI while working with Webiny, be as specific as possible.
+
+Good prompts usually include:
+
+- what you are trying to build
+- which part of Webiny you are customizing
+- where the implementation should live
+- what constraints must be respected
+- what kind of output you want back
+
+For example, this is too vague:
+
+```text
+Add approval logic to Webiny.
+```
+
+A much better prompt would be:
+```text
+I want to extend a Webiny app with custom approval logic.
+The implementation should follow existing Webiny extension patterns.
+Use TypeScript.
+Avoid modifying core code directly.
+Suggest where the code should live, explain the structure, and provide the implementation.
+```
+
+The more clearly you define the target, the more useful the output tends to be.
+
+## Give AI context before asking for code
+
+One of the most common mistakes developers make is asking AI to generate code before providing enough context.
+
+Before asking for an implementation, it is often helpful to give AI:
+
+* the relevant file or folder structure
+* existing code it should follow
+* the extension point you plan to use
+* docs or lesson excerpts
+* constraints such as coding style, upgrade-safety, or tenant-awareness
+
+<Callout type="info" title="Webiny MCP server and AI skills provide rich context for better output">
+If you are using Webiny's MCP server and AI skills, that context becomes even richer, because AI can work with better knowledge of Webiny's structure, concepts, and recommended patterns.
+
+This usually leads to output that feels more consistent with the platform and requires less cleanup afterwards.
+</Callout>
+
+## Prefer focused tasks over giant prompts
+
+AI tends to perform better when the work is broken into smaller, clearly defined tasks.
+
+Instead of asking for:
+
+```text
+Build me a complete custom publishing workflow system for Webiny.
+```
+
+break the work into steps such as:
+
+1. define the data model
+2. identify the extension point
+3. generate the first UI component
+4. add the backend logic
+5. connect lifecycle events
+6. test and refine
+
+This makes the output easier to review, easier to fix, and much more likely to stay aligned with the rest of your codebase.
+
+## Ask for platform-native solutions
+
+When working with Webiny, you should guide AI toward solutions that fit naturally into the platform.
+
+That means asking for solutions that:
+
+* use extension points instead of modifying unrelated code
+* follow existing project structure
+* keep logic modular
+* use TypeScript properly
+* remain easy to understand and maintain
+* avoid brittle shortcuts
+
+A useful instruction to include in prompts is something like:
+
+```text
+Prefer a solution that fits naturally into Webiny's existing patterns and remains maintainable over time.
+```
+
+That small instruction can noticeably improve the quality of the output.
+
+## Review generated code with the right questions
+
+When AI gives you a result, don't just ask "does it compile?".
+
+Also ask:
+
+* does this belong in the right place?
+* does it follow the structure of the project?
+* does it introduce duplication?
+* does it respect tenant boundaries and permissions?
+* does it feel like a proper extension of Webiny?
+* will another developer understand this in six months?
+* would this survive future upgrades?
+
+These are the kinds of questions that separate a fast prototype from a good implementation.
+
+## Common mistakes to avoid
+
+Some common pitfalls when using AI with Webiny include:
+
+* asking for very large implementations in one step
+* not giving enough project context
+* accepting generated code without review
+* letting AI invent patterns instead of following existing ones
+* forcing custom logic into the wrong part of the system
+* treating a temporary prototype as production-ready code
+
+Avoiding these mistakes will save a lot of time later.
+
+## Recommended workflow
+
+A practical AI-assisted workflow for Webiny often looks like this:
+
+* use the docs, course lessons, skills, and MCP context to understand the platform area you want to change
+* inspect existing code before generating new code
+* ask AI for a small and focused implementation
+* review the generated code against platform patterns
+* test locally
+* refine the result through a few short iterations instead of one giant rewrite
+
+This way, AI becomes a force multiplier inside your development process rather than a source of noisy code you need to rewrite later.
+
+## Final thoughts
+
+AI can significantly improve developer productivity when working with Webiny, especially when used to explore, scaffold, and accelerate implementation. But the best results come when developers stay intentional about architecture, structure, and review.
+
+Used well, AI helps you build faster. Used carelessly, it can also help you make mistakes faster.
+
+The goal is not just to generate code. The goal is to generate code that belongs inside your Webiny project and moves it forward in a clean, maintainable way.

@@ -1,0 +1,94 @@
+---
+title: "Developing with Webiny"
+description: "An introduction to building, extending, testing, and debugging Webiny projects."
+order: 0
+---
+
+# Developing with Webiny
+
+Webiny is an AI-programmable CMS. That means developers can increasingly use AI to generate features, extensions, integrations, and custom experiences on top of the platform.
+
+But AI does not remove the need to understand how the system works.
+
+In fact, the more AI becomes part of the development workflow, the more important it becomes to understand Webiny's architecture, extension model, lifecycle events, project structure, and the patterns that make customizations maintainable and upgrade-safe.
+
+This chapter is designed to give you that understanding.
+
+<ChapterOverview
+    items={[
+        { icon: "code", text: "How Webiny projects are structured and how local development works." },
+        { icon: "extension", text: "How extensions, customizations, and white-label changes fit into the platform." },
+        { icon: "bug_report", text: "How to test, debug, and review changes with confidence." },
+    ]}
+/>
+
+## Why this chapter matters
+
+One of Webiny's biggest strengths is that it is not a closed-box CMS. It is a platform designed to be extended and shaped around your use-case.
+
+That makes Webiny especially powerful in an AI-driven development era. Developers can use AI to move faster, but speed is only valuable when the generated code fits naturally into the platform, follows the right patterns, and can be trusted in production.
+
+To get to that point, you need more than prompts.
+
+You need to understand:
+
+- how Webiny is structured
+- where custom code should live
+- how applications are extended
+- how lifecycle events work
+- how to test and validate changes
+- how to debug issues when something does not behave as expected
+
+That is exactly what this chapter focuses on.
+
+## This chapter is not about writing prompts
+
+This course is not meant to be a collection of prompts you can copy and paste into your favorite AI tool.
+
+Prompts will change. Tools will change. Models will change.
+
+What matters more is understanding the platform well enough that you can:
+
+- describe the right problem to solve
+- ask AI for the right kind of implementation
+- recognize when generated code fits Webiny well
+- spot when it does not
+- test and refine the result
+- feel confident deploying it to production
+
+In other words, the goal is to help you build the technical judgment that makes AI useful.
+
+## Why fundamentals matter even more in the AI era
+
+When developers do not understand the system they are extending, AI can create the illusion of progress. Code gets generated quickly, files appear in the project, and things may even seem to work at first.
+
+But without understanding the underlying architecture, it becomes much harder to answer important questions like:
+
+- is this the right extension point?
+- does this belong in the Admin app or the backend?
+- is this using the platform the way it was intended?
+- will this be maintainable in six months?
+- will this behave correctly across tenants, environments, and production workloads?
+- does this introduce hidden risks around permissions, workflows, or data handling?
+
+That is why strong fundamentals matter so much.
+
+The better you understand Webiny, the better you will be at guiding AI, reviewing its output, and turning generated code into reliable product capability.
+
+## What you will learn in this chapter
+
+In the lessons that follow, we will focus on the practical parts of developing with Webiny.
+
+You will learn how Webiny projects are organized, how local development works, how to create and register extensions, how to approach white-label customizations, and how to debug errors and follow best practices.
+
+You will also learn how to think about generated code more critically: where it belongs, how to validate it, how to test it, and how to make sure it behaves the way you expect before it reaches production.
+
+## The real goal
+
+The goal of this chapter is not just to teach you how to modify Webiny.
+
+The goal is to help you become confident building with Webiny in a modern development workflow where developers and AI increasingly work together.
+
+By the end of this chapter, you should have a much better understanding of how Webiny works under the hood, how to extend it properly, and how to evaluate generated code with the confidence of someone who understands the platform instead of just hoping the code is correct.
+
+That is what ultimately leads to better prompts, better implementations, fewer surprises, and much more confidence when shipping to production.

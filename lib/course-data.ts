@@ -39,6 +39,11 @@ export const courseData: Course = {
         ...chapterMetadata["developing-with-webiny"],
         lessons: [
                   {
+                            "id": "ai-assisted-development",
+                            "title": "AI-Assisted Development",
+                            "slug": "developing-with-webiny/ai-assisted-development"
+                  },
+                  {
                             "id": "debugging-errors-best-practices",
                             "title": "Debugging Errors & Best Practices",
                             "slug": "developing-with-webiny/debugging-errors-best-practices"
@@ -47,6 +52,11 @@ export const courseData: Course = {
                             "id": "extensions",
                             "title": "Extensions",
                             "slug": "developing-with-webiny/extensions"
+                  },
+                  {
+                            "id": "intro",
+                            "title": "Developing with Webiny",
+                            "slug": "developing-with-webiny/intro"
                   },
                   {
                             "id": "local-development",
