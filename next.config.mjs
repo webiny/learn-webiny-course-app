@@ -15,7 +15,8 @@ const nextConfig = {
   },
   images: {
     unoptimized: true
-  }
+  },
+  basePath: "/learn"
 };
 
 const withMDX = createMDX({

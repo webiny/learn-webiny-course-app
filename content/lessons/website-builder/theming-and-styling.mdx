@@ -131,7 +131,7 @@ export const theme = createTheme({
 The `colors` array (each item: `id`, `label`, `value`) populates the editor's colour picker. The `typography` object covers headings, paragraphs, quotes, and lists — each entry maps a CSS class to a tag and a label shown in the editor toolbar.
 
 <Image
-  src="/images/website-builder/editor-color-picker.png"
+  src="/learn/images/website-builder/editor-color-picker.png"
   alt="The Website Builder editor showing the colour picker open with all theme colours available for selection"
   caption="The colours defined in theme.ts appear in the editor's colour picker"
 />
@@ -170,7 +170,7 @@ To change the colour palette, edit the CSS variables in `theme.css`:
 The change propagates automatically to the rendered pages, the Tailwind tokens, and the Admin editor colour picker.
 
 <Image
-  src="/images/website-builder/green-theme-rendered.png"
+  src="/learn/images/website-builder/green-theme-rendered.png"
   alt="The Next.js page rendered with a green theme after changing the primary and secondary colour variables in theme.css"
   caption="Changing --wb-theme-color-primary to green propagates instantly across all components"
 />
@@ -201,7 +201,7 @@ headings: [
 The editor will now show "Display" as an option in the typography toolbar.
 
 <Image
-  src="/images/website-builder/editor-display-heading.png"
+  src="/learn/images/website-builder/editor-display-heading.png"
   alt="The Website Builder editor showing the custom Display heading style applied to text in the rich text editor"
   caption="After registering the Display style in theme.ts, it becomes available in the editor's typography toolbar"
 />
@@ -266,7 +266,7 @@ export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProp
 </Callout>
 
 <Image
-  src="/images/website-builder/editor-mobile-view.png"
+  src="/learn/images/website-builder/editor-mobile-view.png"
   alt="The Website Builder editor with the mobile device control active, showing the page rendered at a narrow mobile viewport width"
   caption="The mobile device control in the editor toolbar lets you preview responsive layouts without leaving the Admin"
 />
@@ -278,7 +278,7 @@ export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProp
 When using `clamp()` or `rem`-based font sizes, you may notice the text appears at a different size on the editor canvas versus the rich text editor sidebar (and sometimes compared to the live site). This is expected — `clamp()` scales with the viewport width, and `rem` is relative to the root font size, both of which differ between the full-page canvas and the narrower editor sidebar container.
 
 <Image
-  src="/images/website-builder/editor-clamp-size-diff.png"
+  src="/learn/images/website-builder/editor-clamp-size-diff.png"
   alt="The Website Builder editor showing a heading that appears at a different size on the canvas versus the rich text editor sidebar"
   caption="The heading is larger on the canvas than in the sidebar — both are correct, just rendered in different container widths"
 />

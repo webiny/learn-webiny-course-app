@@ -9,12 +9,12 @@ order: 1
 In this lesson, we'll explore how the Website Builder works from a developer's perspective, then get the Next.js starter kit running locally and create a first page — confirming the full stack is wired up correctly.
 
 <ChapterOverview
-  items={[
-    { icon: "architecture", text: "Understand how the editor and your app connect." },
-    { icon: "download", text: "Clone and install the Website Builder Next.js starter kit." },
-    { icon: "key", text: "Configure API keys and environment variables." },
-    { icon: "web", text: "Create a page in the Admin editor and see it rendered." }
-  ]}
+    items={[
+        { icon: "architecture", text: "Understand how the editor and your app connect." },
+        { icon: "download", text: "Clone and install the Website Builder Next.js starter kit." },
+        { icon: "key", text: "Configure API keys and environment variables." },
+        { icon: "web", text: "Create a page in the Admin editor and see it rendered." }
+    ]}
 />
 
 **Prerequisites:**
@@ -30,8 +30,8 @@ Before we start writing any code, it's worth taking a moment to understand how t
 When a content editor opens the Website Builder in Webiny Admin, they see a canvas where they can drag components onto a page, configure their inputs in a sidebar, and hit Publish. That's the editorial experience.
 
 <Image
-  src="/images/lessons/foundation/webiny-website-builder.png"
-  title="Website Builder - Page editor"
+    src="/learn/images/lessons/foundation/webiny-website-builder.png"
+    title="Website Builder - Page editor"
 />
 
 On the developer side, the picture is a bit different — and it's what makes the Website Builder stand out from most page builders.
@@ -41,7 +41,7 @@ On the developer side, the picture is a bit different — and it's what makes th
 This means all your component code and all your styles live in your Next.js project. Webiny only stores the page structure — which components are on the page and what input values the editor set for each one. It has no idea what a "Hero" or "Banner" looks like, and it never needs to.
 
 <Callout type="info">
-  We'll cover how to create and register your own editor components in the next lesson.
+    We'll cover how to create and register your own editor components in the next lesson.
 </Callout>
 
 The practical upside: no style clashes, no fighting the platform, full ownership of your code. And because editors are looking at your actual app, the WYSIWYG is genuine — not a simulation.
@@ -106,25 +106,25 @@ For example, if your Webiny version is `6.2.1`, your `package.json` should have 
 To connect the starter kit to your Webiny project, you'll need an API key, API host URL, and tenant ID. The easiest way to get these is through the **Configure Next.js** shortcut in Webiny Admin — click **Support** in the bottom-left corner and select **Configure Next.js**.
 
 <Image
-  src="/images/website-builder/configure-nextjs-menu.png"
-  alt="Webiny Admin sidebar with the Support menu open, showing the Configure Next.js option"
-  caption="Open the Support menu and select Configure Next.js"
+    src="/learn/images/website-builder/configure-nextjs-menu.png"
+    alt="Webiny Admin sidebar with the Support menu open, showing the Configure Next.js option"
+    caption="Open the Support menu and select Configure Next.js"
 />
 
 A dialog appears with the three environment variables already filled in and ready to copy:
 
 <Image
-  src="/images/website-builder/configure-nextjs-dialog.png"
-  alt="Configure Next.js dialog showing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY, API_HOST, and API_TENANT pre-filled"
-  caption="The Configure Next.js dialog gives you all three values in one click"
+    src="/learn/images/website-builder/configure-nextjs-dialog.png"
+    alt="Configure Next.js dialog showing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY, API_HOST, and API_TENANT pre-filled"
+    caption="The Configure Next.js dialog gives you all three values in one click"
 />
 
 Click the copy icon and paste the block directly into your `.env` file in the next step.
 
 <Callout type="info">
-  If your Admin is running on a non-localhost domain (i.e. a deployed CloudFront URL), the dialog
-  will also include a `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` variable — make sure to copy that
-  too.
+    If your Admin is running on a non-localhost domain (i.e. a deployed CloudFront URL), the dialog
+    will also include a `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` variable — make sure to copy that
+    too.
 </Callout>
 
 ### API Key Is Auto-Created
@@ -132,9 +132,9 @@ Click the copy icon and paste the block directly into your `.env` file in the ne
 Note that unlike the Headless CMS chapter where you had to manually create an API key and configure its permissions, the Website Builder API key is created automatically for the current tenant — you'll find it under **Settings → Access Management → API Keys** as "Website Builder". It's a read-only key, intentionally scoped that way since it's meant to be used in external frontend apps like your Next.js project. The Configure Next.js dialog pulls it for you, so there's nothing to set up manually.
 
 <Image
-  src="/images/website-builder/api-key-auto-created.png"
-  alt="API Keys page showing the auto-created Website Builder key"
-  caption="The Website Builder API key is created automatically — no manual setup needed"
+    src="/learn/images/website-builder/api-key-auto-created.png"
+    alt="API Keys page showing the auto-created Website Builder key"
+    caption="The Website Builder API key is created automatically — no manual setup needed"
 />
 
 ## Step 4: Configure Environment Variables
@@ -148,8 +148,8 @@ NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
 ```
 
 <Callout type="hint">
-  All three variables are prefixed with `NEXT_PUBLIC_` because they are used on the client side
-  during live editing. The Content SDK also reads them server-side at build/request time.
+    All three variables are prefixed with `NEXT_PUBLIC_` because they are used on the client side
+    during live editing. The Content SDK also reads them server-side at build/request time.
 </Callout>
 
 ## Step 5: Start the Dev Server
@@ -161,9 +161,9 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000). At this point you'll see a "Page not found" message — that's expected because there are no pages in your Website Builder yet.
 
 <Image
-  src="/images/website-builder/not-found.png"
-  alt="Browser showing the starter kit's 404 page with a Page not found message"
-  caption="No pages yet — this is expected at this point"
+    src="/learn/images/website-builder/not-found.png"
+    alt="Browser showing the starter kit's 404 page with a Page not found message"
+    caption="No pages yet — this is expected at this point"
 />
 
 ## Step 6: Create Your First Page
@@ -174,17 +174,17 @@ Open [http://localhost:3000](http://localhost:3000). At this point you'll see a 
 4. Set the **title** to "Hello World" and the **path** to `/` (the homepage), then click **Create**.
 
 <Image
-  src="/images/website-builder/create-page-dialog.png"
-  alt="Create a Page dialog with Title set to Hello World and Path set to /"
-  caption="Set the title and path, then hit Create"
+    src="/learn/images/website-builder/create-page-dialog.png"
+    alt="Create a Page dialog with Title set to Hello World and Path set to /"
+    caption="Set the title and path, then hit Create"
 />
 
 6. You'll land in the page editor. In the component palette on the left, find the **Custom** group and drag the **Hero #1** component onto the canvas. It renders with placeholder content straight away — no configuration needed for now.
 
 <Image
-  src="/images/website-builder/hero-editor.png"
-  alt="Website Builder editor with the Hero #1 component on the canvas"
-  caption="The Hero #1 component dropped onto the canvas, showing a live preview of your Next.js app"
+    src="/learn/images/website-builder/hero-editor.png"
+    alt="Website Builder editor with the Hero #1 component on the canvas"
+    caption="The Hero #1 component dropped onto the canvas, showing a live preview of your Next.js app"
 />
 
 7. Click **Publish**.
@@ -194,9 +194,9 @@ Open [http://localhost:3000](http://localhost:3000). At this point you'll see a 
 Go back to [http://localhost:3000](http://localhost:3000) and refresh. You should now see the hero section rendered by your Next.js app.
 
 <Image
-  src="/images/website-builder/hero-rendered.png"
-  alt="Browser showing the Hero #1 component rendered on the homepage"
-  caption="The published page rendered by your Next.js app"
+    src="/learn/images/website-builder/hero-rendered.png"
+    alt="Browser showing the Hero #1 component rendered on the homepage"
+    caption="The published page rendered by your Next.js app"
 />
 
 You've successfully rendered your first Website Builder page. Content authored in Webiny Admin, delivered through your own Next.js app — that's the full loop working end to end.
@@ -206,7 +206,7 @@ You've successfully rendered your first Website Builder page. Content authored i
 Now that we've successfully rendered a page end-to-end, let's dive into a bit more of the technicalities — what's in the starter kit and what each part does:
 
 <FileTree
-  tree={`
+    tree={`
   src/
     app/
       [[...slug]]/
@@ -215,34 +215,34 @@ Now that we've successfully rendered a page end-to-end, let's dive into a bit mo
         preview/              # Enables Next.js draft mode for Website Builder preview
         redirects/            # Serves redirect rules defined in Website Builder Admin
       layout.tsx
-
-    components/
-      DocumentRenderer.tsx    # Wires editorComponents into the SDK renderer
-      Header.tsx
-      NotFound.tsx
-      PageLayout.tsx
-
-    contentSdk/
-      initializeContentSdk.ts # SDK init
-      groups.ts               # Component group registration
-      ContentSdkInitializer.ts # Client component wrapper for SDK init
-      getTenant.ts            # Reads tenant ID from request headers
-      index.ts
-
-    editorComponents/
-      index.tsx               # Register your components here
-      Hero1.tsx               # Built-in Hero component
-
-    theme/
-      theme.css               # CSS variables + typography classes
-      theme.ts                # createTheme() call
-      tailwind.css
-
-    utils/
-      normalizeSlug.ts
-
-    constants.ts
-    middleware.ts             # Handles preview mode, tenant routing, redirects`}
+    
+        components/
+          DocumentRenderer.tsx    # Wires editorComponents into the SDK renderer
+          Header.tsx
+          NotFound.tsx
+          PageLayout.tsx
+    
+        contentSdk/
+          initializeContentSdk.ts # SDK init
+          groups.ts               # Component group registration
+          ContentSdkInitializer.ts # Client component wrapper for SDK init
+          getTenant.ts            # Reads tenant ID from request headers
+          index.ts
+    
+        editorComponents/
+          index.tsx               # Register your components here
+          Hero1.tsx               # Built-in Hero component
+    
+        theme/
+          theme.css               # CSS variables + typography classes
+          theme.ts                # createTheme() call
+          tailwind.css
+    
+        utils/
+          normalizeSlug.ts
+    
+        constants.ts
+        middleware.ts             # Handles preview mode, tenant routing, redirects`}
 
 />
 
@@ -291,14 +291,14 @@ export default async function Page({ params }) {
 **Next lesson**: Learn how editor components work and how to register your own.
 
 <Quiz
-  question="Where do your component code and styles actually live in the Website Builder setup?"
-  options={[
-    "In your Next.js project — Webiny only stores the page structure",
-    "In Webiny Admin — components are uploaded when you register them",
-    "Split between both — React code in Next.js, styles in Webiny",
-    "In a shared npm package that both sides import"
-  ]}
-  correctAnswer={1}
-  explanation="Webiny stores the page document — a JSON tree of component names and their input values. It has no knowledge of what those components look like. All React code, CSS, and styles live entirely in your Next.js project. This is what makes the WYSIWYG genuine: the editor is showing your actual app in an iframe."
-  hint="Think about what the editor is actually loading in its iframe."
+    question="Where do your component code and styles actually live in the Website Builder setup?"
+    options={[
+        "In your Next.js project — Webiny only stores the page structure",
+        "In Webiny Admin — components are uploaded when you register them",
+        "Split between both — React code in Next.js, styles in Webiny",
+        "In a shared npm package that both sides import"
+    ]}
+    correctAnswer={1}
+    explanation="Webiny stores the page document — a JSON tree of component names and their input values. It has no knowledge of what those components look like. All React code, CSS, and styles live entirely in your Next.js project. This is what makes the WYSIWYG genuine: the editor is showing your actual app in an iframe."
+    hint="Think about what the editor is actually loading in its iframe."
 />

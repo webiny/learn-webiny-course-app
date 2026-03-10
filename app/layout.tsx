@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Geist, Geist_Mono } from "next/font/google"
+import { GoogleTagManager } from "@next/third-parties/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import "./globals.css"
 
@@ -9,7 +10,7 @@ const _geis = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://learn.webiny.com'),
+  metadataBase: new URL('https://www.webiny.com/learn'),
   title: {
     template: '%s | Learn Webiny',
     default: 'Learn Webiny - Master Webiny from Beginner to Expert',
@@ -23,29 +24,39 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://learn.webiny.com',
+    url: 'https://www.webiny.com/learn',
     title: 'Learn Webiny - Master Webiny from Beginner to Expert',
     description: 'Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.',
     siteName: 'Learn Webiny',
+    images: [
+      {
+        url: '/learn/social/webiny-og-cover.png',
+        width: 2400,
+        height: 1260,
+        type: 'image/png',
+        alt: 'Learn Webiny - Master Webiny from Beginner to Expert',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Learn Webiny - Master Webiny from Beginner to Expert',
     description: 'Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.',
     creator: '@WebinyCMS',
+    images: ['/learn/social/webiny-og-cover.png'],
   },
   icons: {
     icon: [
       {
-        url: "/favicon.ico",
+        url: "/learn/favicon.ico",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/favicon.ico",
+        url: "/learn/favicon.ico",
         media: "(prefers-color-scheme: dark)",
       },
     ],
-    apple: "/favicon.ico",
+    apple: "/learn/favicon.ico",
   },
 }
 
@@ -61,6 +72,7 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
+        <GoogleTagManager gtmId="GTM-5TG2W9G" />
       </head>
       <body className={`font-sans antialiased`}>
         <ThemeProvider
