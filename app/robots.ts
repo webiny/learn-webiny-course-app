@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       // Disallow private routes if needed in the future
       // disallow: ['/admin/', '/api/private/'],
     },
-    sitemap: 'https://learn.webiny.com/sitemap.xml',
+    sitemap: 'https://www.webiny.com/sitemap-index.xml',
   }
 }
 

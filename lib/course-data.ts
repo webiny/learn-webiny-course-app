@@ -32,7 +32,7 @@ export const courseData: Course = {
   id: "learn-webiny",
   title: "Learn Webiny",
   description:
-    "Go from beginner to expert by learning the foundations of Webiny and building a fully functional application.",
+    "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
         id: "developing-with-webiny",

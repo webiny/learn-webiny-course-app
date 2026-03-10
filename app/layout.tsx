@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: 'Learn Webiny',
     images: [
       {
-        url: '/social/webiny-og-cover.png',
+        url: '/learn/social/webiny-og-cover.png',
         width: 2400,
         height: 1260,
         type: 'image/png',
@@ -43,20 +43,20 @@ export const metadata: Metadata = {
     title: 'Learn Webiny - Master Webiny from Beginner to Expert',
     description: 'Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application.',
     creator: '@WebinyCMS',
-    images: ['/social/webiny-og-cover.png'],
+    images: ['/learn/social/webiny-og-cover.png'],
   },
   icons: {
     icon: [
       {
-        url: "/favicon.ico",
+        url: "/learn/favicon.ico",
         media: "(prefers-color-scheme: light)",
       },
       {
-        url: "/favicon.ico",
+        url: "/learn/favicon.ico",
         media: "(prefers-color-scheme: dark)",
       },
     ],
-    apple: "/favicon.ico",
+    apple: "/learn/favicon.ico",
   },
 }
 
