@@ -149,6 +149,76 @@ The `.fields()` method uses a fluent API to define fields:
   and more. Each method returns a chainable API for configuring the field.
 </Callout>
 
+### Available Renderers
+
+The `.renderer()` method specifies how a field is displayed in the Admin UI. Here's the complete list of available renderers:
+
+**Text Fields:**
+
+- `textInput` - Single line text input
+- `textInputs` - Multiple single line text inputs (for list fields)
+- `textarea` - Multi-line text area (for long text)
+- `textareas` - Multiple text areas (for list fields)
+- `lexicalEditor` - Rich text editor (Lexical)
+- `lexicalEditors` - Multiple rich text editors (for list fields)
+
+**Number Fields:**
+
+- `numberInput` - Single number input
+- `numberInputs` - Multiple number inputs (for list fields)
+
+**Boolean Fields:**
+
+- `switch` - Toggle switch for boolean values
+
+**Selection Fields:**
+
+- `dropdown` - Dropdown select box
+- `radioButtons` - Radio button group
+- `checkboxes` - Checkbox group
+- `tags` - Tag input field
+
+**Date/Time Fields:**
+
+- `dateTimeInput` - Single date/time picker
+- `dateTimeInputs` - Multiple date/time pickers (for list fields)
+
+**Reference Fields:**
+
+- `refDialogSingle` - Advanced single reference with dialog
+- `refDialogMultiple` - Advanced multiple references with dialog
+- `refAutocompleteSingle` - Single reference with autocomplete
+- `refAutocompleteMultiple` - Multiple references with autocomplete
+- `refRadioButtons` - Single reference as radio buttons
+- `refCheckboxes` - Multiple references as checkboxes
+
+**File Fields:**
+
+- `file` - Single file upload
+- `files` - Multiple file uploads
+
+**Object Fields:**
+
+- `objectAccordionSingle` - Single object in accordion
+- `objectAccordionMultiple` - Multiple objects in accordion
+
+**Special Fields:**
+
+- `dynamicZone` - Dynamic zone for flexible content
+- `hidden` - Hidden field (not displayed in UI)
+- `passthrough` - Pass value through without UI
+
+**UI Elements (non-data fields):**
+
+- `uiSeparator` - Visual separator
+- `uiAlert` - Alert/notice message
+- `uiTabs` - Tab container
+
+<Callout type="info">
+  Choose the renderer that best matches your field type and desired user experience. For example,
+  use `radioButtons` for a small set of options, or `dropdown` for a larger set.
+</Callout>
+
 ### Step 3: Register the Extension
 
 Now we need to register this extension in `webiny.config.tsx`:
