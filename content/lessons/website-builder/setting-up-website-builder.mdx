@@ -20,7 +20,7 @@ In this lesson, we'll explore how the Website Builder works from a developer's p
 **Prerequisites:**
 
 - A running Webiny project (completed via the Getting Started chapter, or already deployed)
-- Node.js 20.9+ and npm/yarn installed
+- Node.js 20.9+ and npm/yarn installed (Node.js 24+ still required for Webiny CLI — if you're only working with the Next.js side, 20.9+ is sufficient)
 - Familiarity with Next.js App Router — the starter kit uses App Router, not Pages Router
 
 ## How It All Fits Together
@@ -88,14 +88,7 @@ cd my-website
 npm install
 ```
 
-Before running `npm install`, make sure the `@webiny/website-builder-nextjs` and `@webiny/sdk` versions in `package.json` match your Webiny version. You can find it at the bottom of the Admin sidebar, or by running `webiny --version` in your Webiny project.
-
-<Image
-  style={{ width: 400 }}
-  src="/images/website-builder/webiny-version-sidebar.png"
-  alt="Webiny Admin sidebar showing the Webiny version number at the bottom"
-  caption="The Webiny version is shown at the bottom of the Admin sidebar"
-/>
+Before running `npm install`, make sure the `@webiny/website-builder-nextjs` and `@webiny/sdk` versions in `package.json` match your Webiny version. You can find it by running `webiny --version` in your Webiny project.
 
 For example, if your Webiny version is `6.2.1`, your `package.json` should have (the `~` allows patch updates, which are safe):
 
@@ -250,6 +243,7 @@ Now that we've successfully rendered a page end-to-end, let's dive into a bit mo
 
     constants.ts
     middleware.ts             # Handles preview mode, tenant routing, redirects`}
+
 />
 
 The two folders you'll spend most time in are `editorComponents/` (building and registering components) and `theme/` (styling). Everything else is infrastructure the starter kit handles for you.
