@@ -37,7 +37,7 @@ API errors occur in AWS Lambda functions. During local development with `yarn we
 When developing API extensions, console logs are a quick and solid choice for debugging - they get the job done:
 
 ```typescript title="extensions/MyApiKeyAfterUpdate.ts"
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/api-key";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
   async handle() {
@@ -59,7 +59,7 @@ With Local AWS Lambda Development (`yarn webiny watch api`), your console logs a
 For a more robust logging solution, especially for production use, use Webiny's Logger:
 
 ```typescript title="extensions/MyApiKeyAfterUpdate.ts"
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/api-key";
 import { Logger } from "webiny/api/logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {

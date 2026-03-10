@@ -73,7 +73,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
         .fields(fields => ({
           name: fields
             .text()
-            .renderer("text-input")
+            .renderer("textInput")
             .label("Name")
             .help("Name of the product category")
             .required("Name is required")
@@ -81,7 +81,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
             .maxLength(100),
           slug: fields
             .text()
-            .renderer("text-input")
+            .renderer("textInput")
             .label("Slug")
             .help("URL-friendly identifier")
             .required("Slug is required")
@@ -90,11 +90,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
               "^[a-z0-9]+(?:-[a-z0-9]+)*$",
               "Slug must be lowercase letters, numbers, and hyphens only"
             ),
-          description: fields
-            .longText()
-            .renderer("long-text-text-area")
-            .label("Description")
-            .minLength(10)
+          description: fields.longText().renderer("textarea").label("Description").minLength(10)
         }))
         .layout([["name", "slug"], ["description"]])
         .titleFieldId("name")
@@ -151,6 +147,76 @@ The `.fields()` method uses a fluent API to define fields:
   The Model Builder provides fluent methods for all field types: `text()`, `longText()`,
   `richText()`, `number()`, `boolean()`, `datetime()`, `file()`, `ref()` (reference), `object()`,
   and more. Each method returns a chainable API for configuring the field.
+</Callout>
+
+### Available Renderers
+
+The `.renderer()` method specifies how a field is displayed in the Admin UI. Here's the complete list of available renderers:
+
+**Text Fields:**
+
+- `textInput` - Single line text input
+- `textInputs` - Multiple single line text inputs (for list fields)
+- `textarea` - Multi-line text area (for long text)
+- `textareas` - Multiple text areas (for list fields)
+- `lexicalEditor` - Rich text editor (Lexical)
+- `lexicalEditors` - Multiple rich text editors (for list fields)
+
+**Number Fields:**
+
+- `numberInput` - Single number input
+- `numberInputs` - Multiple number inputs (for list fields)
+
+**Boolean Fields:**
+
+- `switch` - Toggle switch for boolean values
+
+**Selection Fields:**
+
+- `dropdown` - Dropdown select box
+- `radioButtons` - Radio button group
+- `checkboxes` - Checkbox group
+- `tags` - Tag input field
+
+**Date/Time Fields:**
+
+- `dateTimeInput` - Single date/time picker
+- `dateTimeInputs` - Multiple date/time pickers (for list fields)
+
+**Reference Fields:**
+
+- `refDialogSingle` - Advanced single reference with dialog
+- `refDialogMultiple` - Advanced multiple references with dialog
+- `refAutocompleteSingle` - Single reference with autocomplete
+- `refAutocompleteMultiple` - Multiple references with autocomplete
+- `refRadioButtons` - Single reference as radio buttons
+- `refCheckboxes` - Multiple references as checkboxes
+
+**File Fields:**
+
+- `file` - Single file upload
+- `files` - Multiple file uploads
+
+**Object Fields:**
+
+- `objectAccordionSingle` - Single object in accordion
+- `objectAccordionMultiple` - Multiple objects in accordion
+
+**Special Fields:**
+
+- `dynamicZone` - Dynamic zone for flexible content
+- `hidden` - Hidden field (not displayed in UI)
+- `passthrough` - Pass value through without UI
+
+**UI Elements (non-data fields):**
+
+- `uiSeparator` - Visual separator
+- `uiAlert` - Alert/notice message
+- `uiTabs` - Tab container
+
+<Callout type="info">
+  Choose the renderer that best matches your field type and desired user experience. For example,
+  use `radioButtons` for a small set of options, or `dropdown` for a larger set.
 </Callout>
 
 ### Step 3: Register the Extension
@@ -337,31 +403,31 @@ class ProductModelImpl implements ModelFactory.Interface {
         .fields(fields => ({
           name: fields
             .text()
-            .renderer("text-input")
+            .renderer("textInput")
             .label("Name")
             .help("Product name")
             .required("Name is required"),
           sku: fields
             .text()
-            .renderer("text-input")
+            .renderer("textInput")
             .label("SKU")
             .help("Stock Keeping Unit - unique product identifier")
             .required("SKU is required")
             .unique(),
           description: fields
             .longText()
-            .renderer("long-text-text-area")
+            .renderer("textarea")
             .label("Description")
             .help("Detailed product description"),
           price: fields
             .number()
-            .renderer("number-input")
+            .renderer("numberInput")
             .label("Price")
             .required("Price is required")
             .gte(0, "Price must be greater than or equal to 0"),
           category: fields
             .ref()
-            .renderer("ref-advanced-single")
+            .renderer("refDialogSingle")
             .label("Category")
             .models([{ modelId: "productCategory" }])
         }))
@@ -382,9 +448,9 @@ export default ModelFactory.createImplementation({
 **Key points:**
 
 - `fields.ref()` - Creates a reference field
-- `.renderer("ref-advanced-single")` - Specifies the UI renderer for reference fields
+- `.renderer("refDialogSingle")` - Specifies the UI renderer for reference fields
 - `.models([{ modelId: "productCategory" }])` - Specifies which model(s) this field can reference
-- To allow multiple references, add `.list()` after `.ref()` and use `"ref-advanced-multiple"` renderer
+- To allow multiple references, add `.list()` after `.ref()` and use `"refDialogMultiple"` renderer
 - The reference field appears in the layout alongside other fields
 
 Then register it in `webiny.config.tsx`:
