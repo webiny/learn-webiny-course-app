@@ -56,15 +56,13 @@ export const sdk = new Webiny({
 
 ## What the SDK Covers
 
-The SDK provides access to multiple Webiny applications through namespaced modules on the `sdk` object:
+The SDK provides access to Webiny applications through namespaced modules on the `sdk` object:
 
-| Module               | Webiny App      | What you can do                                       |
-| -------------------- | --------------- | ----------------------------------------------------- |
-| `sdk.cms`            | Headless CMS    | List, get, create, update, publish, unpublish entries |
-| `sdk.fileManager`    | File Manager    | List, upload, and manage files and folders            |
-| `sdk.websiteBuilder` | Website Builder | List and retrieve website builder content             |
+| Module    | Webiny App   | What you can do                                       |
+| --------- | ------------ | ----------------------------------------------------- |
+| `sdk.cms` | Headless CMS | List, get, create, update, publish, unpublish entries |
 
-As Webiny evolves, additional modules may be added to the SDK.
+Additional modules for File Manager and Website Builder are planned for future releases.
 
 ## API Keys & Permissions
 
@@ -135,6 +133,58 @@ if (result.isOk()) {
 ## What's Coming
 
 In the **Headless CMS** chapter, you'll get hands-on with `sdk.cms` - covering listing entries with filters and sorting, creating and publishing content, and integrating it all into a real Next.js application. The same SDK instance and patterns carry forward into every lesson from there.
+
+## Try It Out: SDK Playground
+
+Before integrating the SDK into your application, you can test it directly in the Webiny Admin using the **SDK Playground** — an interactive code editor where you can write and run SDK code against your live Webiny instance.
+
+### Accessing the SDK Playground
+
+Open the **Support** menu at the bottom-left of the Admin sidebar and click **SDK Playground**:
+
+<Image
+  src="/images/developing-with-webiny/sdk-playground-menu.png"
+  alt="Webiny Admin sidebar showing the Support menu with SDK Playground option"
+  caption="Access the SDK Playground from the Support menu"
+/>
+
+The playground opens with a code editor and an output panel. The SDK is already initialized and available as a global `sdk` variable — no setup required.
+
+<Image
+  src="/images/developing-with-webiny/sdk-playground-editor.png"
+  alt="SDK Playground interface showing code editor with sample SDK code and output panel"
+  caption="The SDK Playground provides an interactive environment to test SDK operations"
+/>
+
+### Running Code in the Playground
+
+The playground comes with example code that demonstrates the Result pattern and basic SDK usage. You can modify the code and click **Run Code** (or press `Cmd+Enter`) to execute it immediately.
+
+For example, try listing entries from a content model:
+
+```typescript title="SDK Playground example"
+async function run() {
+  const result = await sdk.cms.listEntries({
+    modelId: "article",
+    fields: ["id", "createdOn", "values.title"]
+  });
+
+  if (result.isOk()) {
+    console.log("Entries:", result.value);
+  } else {
+    console.error("Error:", result.error);
+  }
+}
+
+run();
+```
+
+The output appears in the panel on the right, showing either the result data or any errors encountered.
+
+<Callout type="success">
+  The SDK Playground is perfect for testing queries, exploring available SDK methods, and
+  prototyping data operations before integrating them into your application code.
+</Callout>
 
 <Quiz
   question="What does every Webiny SDK method return instead of throwing an error?"
