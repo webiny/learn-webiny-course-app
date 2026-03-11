@@ -35,12 +35,12 @@ export default function HomePage() {
               <span>Webiny</span>
             </Link>
             <nav className="flex items-center gap-6">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Home
-              </Link>
-              <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Webiny Home
+              </a>
+              <a href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Docs
-              </Link>
+              </a>
 
               <FontSizeControl />
               <ThemeSwitcher />
