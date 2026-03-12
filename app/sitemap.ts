@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { getRegisteredSlugs } from '@/lib/mdx-registry'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://learn.webiny.com'
+  const baseUrl = 'https://www.webiny.com/learn'
 
   // Get all lessons from the registry
   const lessonSlugs = getRegisteredSlugs()
