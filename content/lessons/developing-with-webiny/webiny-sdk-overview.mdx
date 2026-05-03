@@ -58,11 +58,13 @@ export const sdk = new Webiny({
 
 The SDK provides access to Webiny applications through namespaced modules on the `sdk` object:
 
-| Module    | Webiny App   | What you can do                                       |
-| --------- | ------------ | ----------------------------------------------------- |
-| `sdk.cms` | Headless CMS | List, get, create, update, publish, unpublish entries |
-
-Additional modules for File Manager and Website Builder are planned for future releases.
+| Module               | What you can do                                       |
+| -------------------- | ----------------------------------------------------- |
+| `sdk.cms`            | List, get, create, update, publish, unpublish entries |
+| `sdk.fileManager`    | Upload and manage files                               |
+| `sdk.languages`      | Retrieve configured languages                         |
+| `sdk.tenantManager`  | Create and manage tenants                             |
+| `sdk.tasks`          | Trigger and manage background tasks                   |
 
 ## API Keys & Permissions
 
@@ -76,7 +78,7 @@ The SDK authenticates using an **API key token** generated inside the Webiny Adm
 
 ## Core Concepts
 
-The examples below use `sdk.cms` for illustration, but the same concepts apply across all SDK modules — `sdk.fileManager`, `sdk.websiteBuilder`, and any others.
+The examples below use `sdk.cms` for illustration, but the same concepts apply across all SDK modules — `sdk.fileManager`, `sdk.languages`, `sdk.tenantManager`, `sdk.tasks`, and any others.
 
 ### The Result Pattern
 
@@ -140,12 +142,12 @@ Before integrating the SDK into your application, you can test it directly in th
 
 ### Accessing the SDK Playground
 
-Open the **Support** menu at the bottom-left of the Admin sidebar and click **SDK Playground**:
+Expand **Dev Tools** in the Admin sidebar and click **SDK Playground**:
 
 <Image
   src="/learn/images/developing-with-webiny/sdk-playground-menu.png"
-  alt="Webiny Admin sidebar showing the Support menu with SDK Playground option"
-  caption="Access the SDK Playground from the Support menu"
+  alt="Webiny Admin sidebar showing the Dev Tools section with SDK Playground option highlighted"
+  caption="Access the SDK Playground from Dev Tools in the Admin sidebar"
 />
 
 The playground opens with a code editor and an output panel. The SDK is already initialized and available as a global `sdk` variable — no setup required.
