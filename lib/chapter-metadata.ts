@@ -54,14 +54,21 @@ export const chapterMetadata: Record<string, ChapterMetadata> = {
     description: "Learn how to create and manage websites using Webiny Website Builder.",
     icon: "table_chart"
   },
-  "multi-tenancy": {
+  "ai-agents-and-mcp-server": {
     number: 6,
+    title: "Building with AI Agents and Webiny MCP Server",
+    description:
+      "The new way of building with Webiny — drive the platform through AI agents using the built-in MCP server and skills.",
+    icon: "smart_toy"
+  },
+  "multi-tenancy": {
+    number: 7,
     title: "Multi-Tenancy Basics",
     description: "Learn how multi-tenancy works in Webiny and how to set it up.",
     icon: "table_chart"
   },
   "devops-best-practices": {
-    number: 7,
+    number: 8,
     title: "DevOps Best Practices",
     description: "Learn the devops practices for managing Webiny projects.",
     icon: "manufacturing"

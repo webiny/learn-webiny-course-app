@@ -35,6 +35,42 @@ export const courseData: Course = {
     "Go from beginner to expert by learning the foundations of Webiny and building a fully functional serverless application that uses all the latest features.",
   chapters: [
     {
+        id: "ai-agents-and-mcp-server",
+        ...chapterMetadata["ai-agents-and-mcp-server"],
+        lessons: [
+                  {
+                            "id": "built-in-skills",
+                            "title": "Built-in Skills",
+                            "slug": "ai-agents-and-mcp-server/built-in-skills"
+                  },
+                  {
+                            "id": "installing-the-mcp-server",
+                            "title": "Installing the MCP Server",
+                            "slug": "ai-agents-and-mcp-server/installing-the-mcp-server"
+                  },
+                  {
+                            "id": "intro",
+                            "title": "Building with AI Agents and Webiny MCP Server",
+                            "slug": "ai-agents-and-mcp-server/intro"
+                  },
+                  {
+                            "id": "real-world-workflows",
+                            "title": "Real-World Workflows",
+                            "slug": "ai-agents-and-mcp-server/real-world-workflows"
+                  },
+                  {
+                            "id": "what-is-the-webiny-mcp-server",
+                            "title": "What Is the Webiny MCP Server",
+                            "slug": "ai-agents-and-mcp-server/what-is-the-webiny-mcp-server"
+                  },
+                  {
+                            "id": "writing-custom-skills",
+                            "title": "Writing Your Own Skills",
+                            "slug": "ai-agents-and-mcp-server/writing-custom-skills"
+                  }
+        ]
+    },
+    {
         id: "developing-with-webiny",
         ...chapterMetadata["developing-with-webiny"],
         lessons: [

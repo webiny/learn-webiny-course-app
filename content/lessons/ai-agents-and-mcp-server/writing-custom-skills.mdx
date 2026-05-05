@@ -1,0 +1,217 @@
+---
+title: "Writing Your Own Skills"
+description: "Author project-specific skills that teach the AI agent your domain models, internal APIs, and team conventions — and ship them in version control so every teammate benefits."
+order: 4
+---
+
+# Writing Your Own Skills
+
+The built-in skills make the agent good at Webiny. **Custom skills make the agent good at *your* Webiny project.**
+
+Every project has patterns, conventions, and integrations that are not part of Webiny itself: a third-party API you keep wiring into the CMS, an internal taxonomy of content models, a deployment quirk, a coding standard the team agreed on. If those patterns only live in your senior engineers' heads, every new prompt is a chance for the agent to reinvent them — usually badly. If they live in custom skills committed alongside your code, every teammate's agent picks them up automatically.
+
+This lesson shows you how to write them well and how to wire them into the MCP server.
+
+<ChapterOverview
+    items={[
+        { icon: "lightbulb", text: "When a custom skill is the right answer (and when it isn't)." },
+        { icon: "description", text: "The anatomy of a SKILL.md file, with a worked example." },
+        { icon: "merge_type", text: "How to wire custom skills into the MCP server and version-control them with your project." },
+    ]}
+/>
+
+## When to write a custom skill
+
+Custom skills earn their keep when there is a Webiny-shaped task that the built-in skills do not cover, *and* you find yourself repeating the same context to the agent across sessions.
+
+Concrete signals:
+
+- **Domain-specific content models** — your project has a non-trivial content schema (Articles, Authors, Topics, Editorial Workflow states, etc.) with naming and relationship conventions you want every new model to follow.
+- **Internal APIs** — your team has built custom GraphQL endpoints, lifecycle hooks, or CLI commands. The agent should know they exist and how to use them, instead of inventing parallel ones.
+- **Recurring third-party integrations** — you regularly wire Webiny up to an external service (a product catalog API, an analytics provider, a CRM). The pattern for fetching, mapping, and persisting that data is non-obvious and worth documenting once.
+- **Team conventions** — coding standards, folder organization, error-handling patterns, what goes in API extensions vs Admin extensions for *your* codebase, what your PR review checklist actually checks.
+- **Migration playbooks** — step-by-step instructions for a recurring data migration or schema change pattern you do not want anyone to get wrong.
+
+If the answer to "should this be a custom skill?" is "every senior engineer on the team has had to explain this to AI more than twice", the answer is yes.
+
+### A motivating example
+
+Suppose your project regularly syncs products from an external catalog API into a Webiny CMS `Product` model. The agent does not know:
+
+- where the auth token for that API lives
+- the shape of the catalog response
+- which fields map to which CMS fields
+- how to handle rate limiting on the catalog side
+- what to do when a product is deleted upstream
+- how to schedule the sync
+
+Without a custom skill, every developer on your team has to re-explain all of this, every time they ask the agent for anything related to the integration. The result is six slightly different implementations across the codebase.
+
+With a custom skill, you write the playbook once, commit it, and from then on every teammate's agent generates code that fits *your* project's pattern — including the people who joined last week.
+
+## Anatomy of a skill
+
+A skill is a folder named after the skill, containing a single `SKILL.md` file. The file starts with YAML frontmatter and is otherwise plain markdown.
+
+<CodeBlock language="markdown" filename="my-skills/sync-product-catalog/SKILL.md" code={`---
+name: sync-product-catalog
+description: >
+  How this project syncs products from the ACME Catalog API into the Webiny "Product"
+  CMS model. Use this skill when the developer asks about catalog imports, product sync,
+  the ACME Catalog integration, scheduled product refresh, or upstream product deletes.
+context: webiny-extensions
+---
+
+# Sync Product Catalog
+
+## When to use this skill
+
+Use this skill any time the task involves the ACME Catalog → Webiny "Product" model
+integration: scheduled syncs, manual re-imports, handling upstream deletes, or
+modifying the field mapping. Do NOT use this skill for unrelated CMS imports.
+
+## Auth
+
+The catalog API token lives in the \`ACME_CATALOG_TOKEN\` environment variable,
+read via Webiny BuildParams. Never hardcode it.
+
+## Field mapping
+
+| ACME field         | Webiny "Product" field |
+| ------------------ | ---------------------- |
+| sku                | sku (string, required) |
+| name               | title (string, required) |
+| description_html   | description (richtext) |
+| price.amount_cents | priceCents (number)    |
+| images[].url       | images (file, multi)   |
+
+## Pattern
+
+Implement the sync as a CLI command (\`webiny-cli-extensions\` skill) that:
+- pages through \`/v2/products?cursor=\` until the cursor is empty
+- maps each record using the table above
+- upserts via the CMS \`createProduct\` / \`updateProduct\` use cases (DI)
+- soft-deletes Webiny entries whose ACME counterpart is missing
+
+## Rate limiting
+
+ACME enforces 10 req/sec. Use a simple token bucket; on 429, back off
+exponentially up to 30 seconds, then fail the job (do not silently swallow).
+
+## Gotchas
+
+- Never re-publish entries on every sync — only when content changed (compare hashes).
+- Image fields require uploading to Webiny File Manager first, then referencing.
+- Run inside a try/finally that always logs the run summary, even on failure.
+`} />
+
+That is a complete, useful skill. Notice what it includes:
+
+- **Frontmatter** — `name`, `description`, optional `context`. The `description` is what the agent reads when deciding whether to load the skill, so make it concrete about *when* to use this skill.
+- **A "when to use this skill" section** — the most important section after the frontmatter. Both *when to use* and *when not to use*.
+- **Concrete details that the agent cannot infer from the codebase** — auth, mapping tables, rate limits, gotchas.
+- **References to other skills** — the line about implementing as a CLI command points the agent to `webiny-cli-extensions`. Skills compose.
+
+### Frontmatter fields
+
+- **`name`** (required) — unique identifier for the skill, used as the topic argument when the agent asks the MCP server to load it. Keep it descriptive and dash-separated.
+- **`description`** (required) — what the skill is about and *when* the agent should pick it. This is the single most important field — the agent uses it to decide whether to load the skill at all. Write it like a description an engineer would skim.
+- **`context`** (optional) — groups related skills in the catalogue. Defaults to `webiny-extensions`. You can leave it as the default unless you have a strong reason to group differently.
+
+## Wiring custom skills into the MCP server
+
+You tell the MCP server where to find your custom skills with command-line flags in your `.mcp.json`.
+
+### `--additional-skills` (recommended)
+
+Stack your custom skills *on top of* the built-in ones. The agent gets both libraries.
+
+<CodeBlock language="json" filename=".mcp.json" code={`{
+  "mcpServers": {
+    "webiny": {
+      "command": "npx",
+      "args": [
+        "webiny-mcp",
+        "serve",
+        "--additional-skills=./my-skills"
+      ]
+    }
+  }
+}`} />
+
+This is what you want for almost every project. The built-in skills keep handling generic Webiny tasks; your custom skills add project-specific knowledge.
+
+You can pass the flag multiple times to stack folders — for example, a team-wide skills folder pulled from a shared repo plus a project-specific one:
+
+<CodeBlock language="json" filename=".mcp.json" code={`{
+  "mcpServers": {
+    "webiny": {
+      "command": "npx",
+      "args": [
+        "webiny-mcp",
+        "serve",
+        "--additional-skills=./team-skills",
+        "--additional-skills=./project-skills"
+      ]
+    }
+  }
+}`} />
+
+When two skills share a `name`, the one in the folder listed *later* on the command line wins, and any folder under `--additional-skills` takes precedence over the built-in version. So in the example above, project-specific skills override team skills, which override built-ins. That precedence chain is exactly what you usually want.
+
+### `--skills` (rare)
+
+Use this only when you want to **replace** the built-in skills entirely:
+
+<CodeBlock language="json" filename=".mcp.json" code={`{
+  "mcpServers": {
+    "webiny": {
+      "command": "npx",
+      "args": ["webiny-mcp", "serve", "--skills=./my-skills"]
+    }
+  }
+}`} />
+
+When `--skills` is set, the built-ins are not loaded at all. There are very few good reasons to do this — the most common one is a heavily customized fork of Webiny where the built-in patterns no longer apply. For nearly every project, prefer `--additional-skills`.
+
+## Folder layout
+
+A skills folder is just a flat collection of skill folders. Each skill folder contains exactly one `SKILL.md`:
+
+```
+my-skills/
+├── sync-product-catalog/
+│   └── SKILL.md
+├── editorial-workflow/
+│   └── SKILL.md
+└── webiny-deploy-runbook/
+    └── SKILL.md
+```
+
+Paths in `--skills` and `--additional-skills` are resolved relative to the project root (the same directory `.mcp.json` lives in for the built-in install, or the workspace root for the standalone install).
+
+## Version-control your skills with the project
+
+The single highest-leverage move you can make with custom skills is to **commit them in the same repository as your code**. Treat them like source.
+
+A few benefits this unlocks:
+
+- **Every teammate gets them automatically.** A new developer clones the repo, opens their AI agent, and immediately gets your project's patterns — without anyone having to explain them.
+- **Skills evolve with the code.** When you change a pattern in the codebase, you change the corresponding skill in the same PR. They stay in sync.
+- **PR review covers AI behavior.** A change to a skill is a change to how every future agent will write code in that area. That is worth reviewing the same way you review production code.
+- **Onboarding gets dramatically faster.** Half of "ramping up on this codebase" used to be tribal knowledge. Now a lot of that knowledge is read by your agent the moment a teammate types a prompt.
+
+A reasonable convention is to put them under `mcp/skills/` in your repo and reference that path from `.mcp.json` (`--additional-skills=./mcp/skills`). Pick whatever path works for your team — the important thing is that it is checked in.
+
+## What makes a good skill
+
+Some heuristics from experience:
+
+- **Focused scope.** One skill, one topic. If you find yourself writing two unrelated sections, that is two skills.
+- **Clear "when to use" and "when not to use".** The frontmatter `description` and the first section of the body. The agent leans on these heavily.
+- **Concrete over abstract.** Mapping tables, code examples, exact field names. Not philosophy.
+- **State the gotchas explicitly.** The things that bit you in production are exactly what you do not want the agent to bite anyone else with.
+- **Reference related skills.** "Implement as a CLI command (see `webiny-cli-extensions`)." Skills compose well when they cross-reference.
+- **Keep it under ~200 lines.** Past that, the agent struggles to use it well. If you are over, split it.
+
+That is everything you need to write your first project skill. The next and final lesson puts all of this together with a few concrete real-world workflows — including the popular Figma-to-Website-Builder flow that combines Webiny's MCP server with another MCP server entirely.

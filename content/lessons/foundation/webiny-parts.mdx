@@ -20,9 +20,7 @@ Webiny is a comprehensive, AI-programmable content platform that consists of sev
 
 Webiny is built on a foundation of several core components that work together to provide a robust and flexible content platform. Unlike many other platforms that are monolithic in nature, Webiny is designed from the ground up to be modular and extensible so that it can support even the most complex projects and use-cases. Developers can modify Webiny's functionality as needed in a maintainable and upgrade-safe way, so things don't break between updates.
 
-This architecture is also what makes Webiny especially well suited for modern AI-assisted development. Because Webiny is built on a strongly typed framework, exposes rich lifecycle events, and ships with ready-made apps that are intentionally designed to be extended, AI-generated code tends to fit naturally into the platform. Instead of producing one-off customizations that feel bolted on, developers can use AI to create features, integrations, workflows, and UI extensions that follow the platform's patterns and are much easier to maintain over time.
-
-To make this experience even better, Webiny also ships with an MCP server and AI skills that give AI tools richer context about the platform, its architecture, and its extension model. This helps developers move faster and get higher quality output when using AI to build on top of Webiny.
+This architecture is also what makes Webiny especially well suited for modern AI-assisted development. Because Webiny is built on a strongly typed framework, exposes rich lifecycle events, and ships with ready-made apps that are intentionally designed to be extended, AI-generated code tends to fit naturally into the platform. Webiny ships with a built-in MCP server and a curated library of skills that give AI coding agents project-specific context and authoritative how-to guidance — so the agent produces features, integrations, workflows, and UI extensions that follow Webiny's actual patterns instead of inventing parallel ones. We cover that workflow end-to-end in the final chapter, *Building with AI Agents and Webiny MCP Server*.
 
 The core components that make up Webiny include:
 
@@ -31,5 +29,3 @@ The core components that make up Webiny include:
 - **Infrastructure**: Webiny uses Infrastructure as Code principles to define the cloud infrastructure required to run the platform. You don't need to set up or manage any servers, databases, or other infrastructure components manually. Webiny takes care of all that for you, allowing you to focus on building your applications. The whole deployment process is fully automated and done within your own AWS account.
 
 Besides these core components, Webiny also includes a set of developer tools and utilities that facilitate the development process, such as the Webiny CLI, which helps with project setup, deployment, management, scaffolding, CI/CD integration, and more.
-
-These supporting tools now also include Webiny's MCP server and built-in AI skills, which help developers use AI more effectively when working with the platform. Together, they make Webiny not just extensible in the traditional sense, but increasingly optimized for a development workflow where developers and AI agents build together.

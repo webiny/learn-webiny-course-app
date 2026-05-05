@@ -1,0 +1,208 @@
+---
+title: "Real-World Workflows"
+description: "Three concrete workflows that put the Webiny MCP server to work — including the popular Figma-design-to-Website-Builder-component flow."
+order: 5
+---
+
+# Real-World Workflows
+
+We have covered the concepts, the install, the built-in skills, and how to author your own. This final lesson is about putting it all together. We will walk through three workflows that show what working *with* a Webiny-aware AI agent actually looks like day-to-day — including the popular Figma-to-Website-Builder flow that combines two MCP servers in the same task.
+
+<ChapterOverview
+    items={[
+        { icon: "schema", text: "Workflow 1 — Add a custom content model to the Headless CMS." },
+        { icon: "design_services", text: "Workflow 2 — Turn a Figma design into a Website Builder component." },
+        { icon: "auto_awesome", text: "Workflow 3 — Bootstrap a full feature module end-to-end." },
+    ]}
+/>
+
+## Workflow 1 — A custom content model for the Headless CMS
+
+One of the most common day-to-day tasks on a Webiny project is shaping the Headless CMS — adding a content model in code, wiring up a reference between models, evolving fields. It is a great fit for an AI agent because the pattern is well-defined (`ModelFactory`, fluent builder, `createImplementation`), and the variations are mostly per-project. With the MCP server connected, the agent loads the right skill and produces a model that follows Webiny's actual conventions instead of guessing.
+
+### The scenario
+
+You are working on the e-commerce-style project from the earlier chapters. There is already a `Product` model. You want to introduce a `ProductCategory` model and link products to it via a reference field — version-controlled, reviewable, deployable through your normal pipeline.
+
+### The prompt
+
+Open your AI agent in the Webiny project root:
+
+<CodeBlock language="text" filename="Prompt to your AI agent" code={`Add a new "ProductCategory" content model to our project, in code.
+
+- Fields: name (text, required, 2–100 chars), slug (text, required, unique,
+  lowercase-and-hyphens pattern), description (long text, optional, min 10 chars).
+- titleFieldId is "name". singularApiName "ProductCategory",
+  pluralApiName "ProductCategories".
+- Place the file at extensions/ProductCategoryModel.ts and register the extension in webiny.config.tsx.
+- Then update the existing Product model to add a "category" reference field
+  pointing at ProductCategory (single-select, optional).
+
+Use the standard ModelFactory pattern we already follow on this project.`} />
+
+### What the agent does
+
+With the MCP server connected:
+
+- It loads the `webiny-api-cms-content-models` skill, which is the playbook for `ModelFactory`, the builder API (`fields`, `layout`, `titleFieldId`, validators, `unique()`, `pattern()`), and the reference-field pattern.
+- It loads `webiny-dependency-injection` to get the export shape right (`ModelFactory.createImplementation({ implementation, dependencies: [] })`).
+- It writes `extensions/ProductCategoryModel.ts` with the full builder chain — `name`, `slug` with the regex, `description` — and the right `singularApiName` / `pluralApiName`.
+- It edits `webiny.config.tsx` to add the `<Api.Extension>` registration alongside any existing extensions.
+- It edits the existing `Product` model to add the `category` reference field pointing at `productCategory`.
+
+### What you do
+
+You review like you would review a teammate's PR:
+
+- Does it use `ModelFactory`, not some hand-rolled abstraction?
+- Are the validators correct (the `slug` pattern, the `minLength` / `maxLength` on `name`)?
+- Is the file at `extensions/ProductCategoryModel.ts`, registered in `webiny.config.tsx`?
+- Is the reference field on `Product` configured correctly (`modelId: "productCategory"`, single-select)?
+
+If anything is off, point at the specific issue ("the slug pattern should also allow numbers" / "the reference field should be required"), and the agent corrects it. Once it looks right, run `yarn webiny watch api` locally to confirm the new model appears in the Admin and the reference field works on `Product`. Commit and ship.
+
+The whole task — from blank file to a versioned, reviewable change set — is a few minutes of work. Without the MCP server, the agent would invent its own `ModelFactory` shape, miss the `unique()` validator, forget the registration line, or use the wrong import prefix. With it, all of that is handled.
+
+## Workflow 2 — Figma design to Website Builder component
+
+This is one of the most popular reasons teams reach for an AI agent on a Webiny project. A designer hands you a Figma frame for a new section — a hero, a feature grid, a pricing block — and you want to ship it as a real, configurable Website Builder component that editors can drop onto pages.
+
+What makes this powerful is that **MCP servers compose**: the agent can use the Figma MCP server to *read the design* and the Webiny MCP server to *generate the component correctly*, all in a single session.
+
+### One important thing about Website Builder components
+
+Website Builder components are **not registered in `webiny.config.tsx`**. They live entirely in your Next.js frontend app — the SDK running there announces them to the Website Builder editor over `postMessage` at runtime. Concretely, that means:
+
+- The component file lives in the **Next.js app**, typically under `src/editorComponents/`.
+- The `editorComponents/index.tsx` file (which exports the array passed to `DocumentRenderer`) must be marked `"use client"`.
+- Registration happens by calling `createComponent(YourComponent, manifest)` and adding it to the `editorComponents` array. That's it.
+
+This is the right framing to give the agent up front, otherwise it tends to drift toward the API-extension pattern and look for a `webiny.config.tsx` entry that does not exist.
+
+### Setup
+
+You need two MCP servers connected in the same project: the Webiny one (already wired up via `npx webiny-mcp configure {agent-name}` from the previous lessons) and the Figma one. Figma's official MCP server is documented at <ExternalLink href="https://help.figma.com/hc/en-us/articles/32132100833559">help.figma.com</ExternalLink>.
+
+The Webiny configure command writes its entry to your agent's MCP config file (e.g. `.mcp.json` for Claude Code) and leaves it open for additional servers. After installing the Figma MCP server per its docs, the resulting file looks roughly like:
+
+<CodeBlock language="json" filename="MCP config file (e.g. .mcp.json)" code={`{
+  "mcpServers": {
+    "webiny": {
+      "command": "npx",
+      "args": ["webiny-mcp", "serve"]
+    },
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-mcp"]
+    }
+  }
+}`} />
+
+Restart your agent and both MCP servers are available in the same session.
+
+### The prompt
+
+Open your agent in the **Next.js frontend app** for this Website Builder project and point it at the Figma frame:
+
+<CodeBlock language="text" filename="Prompt to your AI agent" code={`Look at this Figma frame: <figma-url>
+
+Create a new Website Builder editor component called "FeatureGrid" that matches
+this design.
+
+- Implement the React component at src/editorComponents/FeatureGrid.tsx.
+- Type its props with ComponentProps<FeatureGridInputs> from
+  @webiny/website-builder-nextjs.
+- Register it via createComponent in src/editorComponents/index.tsx and add it to
+  the editorComponents array (do NOT touch webiny.config.tsx — Website Builder
+  components are not registered there).
+- Use name "Custom/FeatureGrid", a sensible label, and place it in the existing
+  "custom" component group.
+- Map the configurable parts of the design to inputs: a heading (createTextInput),
+  a list of items each with title/description/icon (createObjectInput), and a CTA
+  with label and URL (createTextInput x2).
+- Use our project's theme tokens — don't hardcode colors or spacing where a
+  token already exists.`} />
+
+### What the agent does
+
+With both MCP servers connected:
+
+- The **Figma MCP** is asked for the frame's structure — layout, typography, colours, spacing, image slots, text content.
+- The **Webiny MCP** loads the `webiny-website-builder` skill, which is the playbook for `createComponent`, all the input factories (`createTextInput`, `createObjectInput`, `createColorInput`, `createSelectInput`, `createFileInput`, …), `ComponentProps` typing, and the editor-component file layout.
+- The agent writes `src/editorComponents/FeatureGrid.tsx` — your React component, with your styles, typed against the inputs interface.
+- It updates `src/editorComponents/index.tsx` to import the new component, call `createComponent` with the manifest, and append it to the `editorComponents` array. It leaves `"use client"` in place at the top of the file.
+- It does **not** touch `webiny.config.tsx`. If the agent ever drifts in that direction, your prompt above is enough to keep it on the right path.
+
+### What you do
+
+You review the generated component the way you would any other React component, plus a few Website-Builder-specific checks:
+
+- Is the React component typed with `ComponentProps<...>` from `@webiny/website-builder-nextjs`?
+- Are the inputs sensibly named, with reasonable `defaultValue`s and `label`s?
+- Does the manifest's `name` follow your project's namespace convention (`Custom/FeatureGrid`, `Acme/FeatureGrid`, etc.)?
+- Are the design's colours and spacing using your theme tokens, not hex values?
+
+Then test it: run the Next.js app locally, open the Website Builder in the Admin, and the new **FeatureGrid** appears in the **Custom** group. Drag it onto a page, fill in the inputs, publish, and refresh the Next.js app to see it rendered.
+
+A component built this way — from a real Figma design, through two composed MCP servers — typically takes a small fraction of the time it would take to hand-translate. And every WB component you build this way is shaped the same as the ones the team built by hand in the previous chapter, because the Webiny MCP loads the same skill the docs describe.
+
+## Workflow 3 — Bootstrapping a full feature module
+
+For larger work — say a publishing approval workflow, a new admin section, or a new integration — the trick is not to ask for the whole thing in one prompt. The agent does its best work when each step is reviewable.
+
+### The shape of the work
+
+Break the feature into commit-sized steps:
+
+- **Define the data model** — content model + any related models, registered.
+- **Add the backend logic** — UseCases, lifecycle hooks, custom GraphQL endpoints if needed.
+- **Customize the Admin UI** — list columns, custom forms, permission UI.
+- **Wire frontend consumption** — typed SDK queries, components.
+- **Add tests and a smoke deploy.**
+
+Each step is its own prompt. Each step ends with a review and a commit. You get an end-to-end feature in a fraction of the manual time, and every commit is reviewable in isolation. The agent uses different built-in skills at each step (`webiny-api-cms-content-models`, `webiny-use-case-pattern`, `webiny-event-handler-pattern`, `webiny-admin-ui-extensions`, `webiny-sdk`) — and any custom skills you have written for *your* project's conventions kick in alongside them.
+
+### Why this beats one giant prompt
+
+A single mega-prompt produces a sprawling change set you cannot meaningfully review. Five focused prompts produce five reviewable commits, each one fitting a familiar Webiny pattern, each one easy to roll back if something is wrong. You stay in control of architecture decisions; the agent handles the typing.
+
+## Tips for getting good output
+
+A few things that consistently improve the quality of what the agent produces:
+
+- **Describe intent clearly, then constrain.** "Add a custom HTTP route at `/exports/articles` that returns CSV. Use the standard `Api.Route` pattern. Auth is required." beats "make me a CSV endpoint."
+- **Point at examples in the codebase.** "Follow the same pattern as `extensions/ArticleApprovalHook.ts`" — the agent will read it, recognize the pattern, and stay consistent.
+- **Keep tasks focused.** Smaller, reviewable steps over giant prompts.
+- **Trust the skills, but review the output.** The skills get the patterns right; you check that the result fits *your* project, your domain, your security model.
+- **Lean on custom skills for repeated patterns.** If you find yourself explaining the same project-specific thing twice, write a custom skill (lesson 4).
+
+## When the output is not good enough
+
+The Webiny MCP server and its skills are built and improved by us, in the open. They cover a lot, but they will not be perfect for every project on every day. If you ask for something the built-in skills should handle and the result misses the mark, that feedback is genuinely useful to us.
+
+<Callout type="info" title="Tell us when something falls short">
+    Ping us in the <ExternalLink href="/slack">Webiny community Slack</ExternalLink> or open a <ExternalLink href="https://github.com/webiny/webiny-js/issues">GitHub issue</ExternalLink>. The most useful reports include: the prompt you sent, what the agent produced, and what you expected instead. The skills get measurably better when developers like you flag the gaps with concrete examples — and the next person who asks the same thing benefits from it.
+</Callout>
+
+This is the loop that keeps the platform improving for everyone: you build with it, you tell us where it falls short, we tighten the skills, and the next iteration of every agent on every project gets a little better.
+
+## Where this leaves you
+
+You started this course writing every line of Webiny by hand because that is the only way to build the judgment that lets you direct an AI agent productively. You finish it with that judgment intact, plus the practical setup to apply it through an agent that actually understands Webiny.
+
+That combination — your understanding plus a Webiny-aware agent armed with built-in and custom skills — is the way we recommend building with Webiny going forward. It is faster than typing, safer than vibe-coding, and it keeps getting better as the skill library grows.
+
+Build something with it.
+
+<Quiz
+    question="Where does a Website Builder editor component get registered?"
+    options={[
+        "In webiny.config.tsx, alongside API and Admin extensions.",
+        "Only in your Next.js frontend app — typically by adding a createComponent(...) entry to the editorComponents array in src/editorComponents/index.tsx.",
+        "In the Admin app's extensions folder.",
+        "Automatically via a CLI command — no code changes needed."
+    ]}
+    correctAnswer={2}
+    explanation="Website Builder components live entirely in the Next.js frontend app. The Editor SDK running there announces them to the Website Builder editor over postMessage at runtime, so there's no entry in webiny.config.tsx. Registration is just a createComponent(...) call appended to the editorComponents array — and that file must be marked 'use client'."
+    hint="Think about which side of the app actually renders Website Builder pages — and what announces components to the editor."
+/>

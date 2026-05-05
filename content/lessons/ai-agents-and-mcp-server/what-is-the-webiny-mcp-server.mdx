@@ -1,0 +1,111 @@
+---
+title: "What Is the Webiny MCP Server"
+description: "Understand what the Model Context Protocol is, what the Webiny MCP server adds on top, and how skills give an AI agent expert knowledge about Webiny."
+order: 1
+---
+
+# What Is the Webiny MCP Server
+
+Before we install anything, it is worth understanding what we are about to install — and, more importantly, why it makes such a difference compared to using an AI agent with no Webiny context at all.
+
+<ChapterOverview
+    items={[
+        { icon: "hub", text: "What MCP is, in one paragraph." },
+        { icon: "settings_remote", text: "What the Webiny MCP server adds on top, and the two ways you can install it." },
+        { icon: "menu_book", text: "What skills are and why they are the lever that decides how good your output gets." },
+    ]}
+/>
+
+## A one-paragraph primer on MCP
+
+The **Model Context Protocol (MCP)** is an open standard that lets AI agents talk to external systems through a common interface. Instead of every tool inventing its own way of feeding information to an agent, MCP defines a shared protocol for *tools the agent can call* and *resources the agent can read*. An "MCP server" is just a process that exposes those tools and resources over that protocol. If you want the full specification, the official site is at <ExternalLink href="https://modelcontextprotocol.io">modelcontextprotocol.io</ExternalLink>. For this course, that one paragraph is all you need.
+
+What matters for us is not the protocol itself, but what a *Webiny-aware* MCP server makes possible.
+
+## What the Webiny MCP server is
+
+The **Webiny MCP server** is an MCP server that knows about Webiny specifically. When your AI agent connects to it, the agent gains two things:
+
+- **Webiny-specific tools**: callable operations the agent can use to inspect your project, scaffold extensions, work with content models, and interact with a running Webiny instance — through the same patterns Webiny itself uses internally.
+- **A curated library of skills**: focused playbooks the agent loads on demand, each one teaching it how to do a particular Webiny task correctly.
+
+Without the MCP server, an agent's only knowledge of Webiny is whatever it scraped from public docs at training time — which is generic, often outdated, and missing all the project-specific context that actually matters. With the MCP server, the agent works from your real project structure, your real `webiny.config.tsx`, your real models, and authoritative how-to guidance that matches the version of Webiny you are on.
+
+That difference shows up immediately in the quality of the code you get back.
+
+## It runs locally and stays private
+
+Before going further, one property of the Webiny MCP server worth being explicit about: **it runs entirely on your own machine, inside your own environment.** It is not a hosted service, and it does not phone home.
+
+When your AI agent talks to the MCP server, that conversation happens locally between two processes on your computer. No prompts, no project schema, no source code, and no content are transmitted to Webiny or to any third party as a result of using the MCP server. There is no telemetry pipeline back to us — we have no visibility into what you ask, what gets returned, or what the agent does with it.
+
+The MCP server is also **agent-agnostic**. You decide which AI agent to connect — a cloud-hosted model like Claude or GPT, or a fully local model like Ollama running on your own hardware. The privacy posture of your AI-assisted workflow is therefore determined by the agent you choose to connect, not by Webiny. If your organization requires that AI interactions stay entirely on-premises, you can run a local model against the local MCP server and no conversation data leaves your network at any point.
+
+In short: the MCP server is a local interface between your agent and your Webiny project. Webiny imposes no constraints on what flows through it in either direction.
+
+## Why this beats prompting from scratch
+
+Without an MCP server, you spend a large part of every session re-explaining Webiny to your agent — pasting in files, correcting wrong import paths, telling it which extension point to use, fixing the same patterns over and over. The agent guesses, and you babysit.
+
+With the Webiny MCP server connected, that work goes away:
+
+- The agent can introspect the project itself instead of asking you to paste files.
+- It loads the right skill for the task instead of inventing a pattern.
+- It uses the right import paths, the right factories, and the right registration points because the skills tell it what those are.
+- When something is ambiguous, it asks better questions because it already has the right vocabulary.
+
+This is the difference between an agent that sounds confident but writes code you have to rewrite, and one that quietly produces code that fits your Webiny project on the first try.
+
+## Two ways to install it
+
+There are two installation modes, and the choice depends on whether the folder you want your AI agent to work in is a Webiny project or not.
+
+### Built-in (the default)
+
+Every Webiny project already ships with the MCP server. When your agent runs inside a Webiny project root, there is nothing extra to install — a single configure command is all that stands between you and a connected agent.
+
+This is the right setup any time you are working *inside* a Webiny project.
+
+### Standalone (for non-Webiny folders)
+
+Sometimes the agent is working in a folder that is **not** a Webiny project but still consumes Webiny — the most common case is a separate frontend repository (a Next.js app, a Vue app, a mobile codebase) that lives in its own repo and talks to a Webiny API in another. There is no `webiny.config.tsx` in that folder, but you still want the agent to know how to use `@webiny/sdk`, follow Webiny patterns, and load the right skills.
+
+For that, you install the **standalone** package (`@webiny/mcp`) in the non-Webiny folder and configure your agent there. The agent in that folder gets the same skill library, even without a Webiny project alongside it.
+
+Both modes use the exact same MCP server and the exact same skills — the only difference is whether the folder you are running it in is itself a Webiny project. The next lesson walks through the actual install commands for both cases.
+
+## What skills are (and why they matter most)
+
+The most important concept in this chapter is **skills**.
+
+A skill is a small markdown file (`SKILL.md`) that teaches the agent how to do one specific Webiny thing well — for example, how to create a custom field type, how to register a lifecycle event handler, how to wire up Auth0, or how to scaffold a Website Builder element. The MCP server ships a library of these skills. The agent picks the right one based on what you ask for, loads it into its context, and then writes code that follows the pattern the skill describes.
+
+There are two flavors:
+
+- **Built-in skills** — ship with the Webiny MCP server. These cover the standard Webiny patterns: project structure, content models, GraphQL extensions, lifecycle events, dependency injection, infrastructure extensions, Auth0 / Okta setup, the Website Builder, and more. We tour them in lesson 3.
+- **Custom skills** — skills *you* write. They live in your project and document the patterns specific to your team: your domain models, your internal APIs, your third-party integrations, your migration playbooks, your code review checklist. Once committed to the repo, every teammate's agent benefits from them automatically. We cover how to author these in lesson 4.
+
+The reason skills matter so much is that they are the lever by which AI quality scales with your project. Built-in skills make the agent good at Webiny. Custom skills make the agent good at *your* Webiny project.
+
+<Callout type="info" title="You don't invoke skills directly">
+    You don't tell the agent "load the lifecycle-events skill" — you describe the task in plain language ("add a hook that prevents publishing when status isn't approved") and the agent picks the matching skill from the catalogue. Knowing what skills exist still helps, because you can ask for things you would not have asked for otherwise.
+</Callout>
+
+## Where this leaves us
+
+With the MCP server connected and skills loaded, an AI agent goes from "knows about Webiny in general" to "knows how *your* Webiny project should be built". That is the foundation everything else in this chapter is built on.
+
+In the next lesson, we will get the MCP server actually running and connected to your AI agent — both for the standard built-in case and for the standalone, multi-folder case.
+
+<Quiz
+    question="When should you use the standalone MCP install instead of the built-in one?"
+    options={[
+        "When you are working inside a Webiny project folder.",
+        "When the folder your agent runs in is not a Webiny project — for example, a separate frontend repository that consumes a Webiny API.",
+        "When you want to use a different model than Claude.",
+        "Never — the built-in install always works."
+    ]}
+    correctAnswer={2}
+    explanation="Standalone install (`npm install @webiny/mcp`) is for folders that aren't Webiny projects but still need Webiny-aware help — a separate frontend repo is the classic case. Inside a Webiny project, the MCP server is already there and you just configure your agent."
+    hint="Think about whether the folder the agent is running in contains a Webiny project."
+/>

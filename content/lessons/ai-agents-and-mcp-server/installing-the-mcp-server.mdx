@@ -1,0 +1,166 @@
+---
+title: "Installing the MCP Server"
+description: "Connect the Webiny MCP server to your AI agent in one command, install the standalone package for use outside a Webiny project, or configure things manually for any agent."
+order: 2
+---
+
+# Installing the MCP Server
+
+Now that you understand what the Webiny MCP server is, let's get it actually connected to your AI agent. There is a one-command path that handles 95% of cases, a standalone install for when you are working outside a Webiny project, and a manual setup for anything else.
+
+<ChapterOverview
+    items={[
+        { icon: "checklist", text: "Which agents are supported out of the box." },
+        { icon: "bolt", text: "The fast path: one command to configure both the MCP server and your agent's instructions." },
+        { icon: "settings", text: "Standalone install, manual setup, and how to verify everything is wired up." },
+    ]}
+/>
+
+## Supported agents
+
+Webiny ships with built-in adapters for the most common AI coding agents:
+
+| Agent name (`{agent-name}`) | Tool                     |
+| --------------------------- | ------------------------ |
+| `claude`                    | Claude Code              |
+| `cline`                     | Cline                    |
+| `copilot`                   | GitHub Copilot / VS Code |
+| `cursor`                    | Cursor                   |
+| `kiro`                      | Kiro                     |
+| `opencode`                  | OpenCode                 |
+| `windsurf`                  | Windsurf                 |
+
+Pick the one you use, and remember the short name from the left column — that's what you'll pass to the configure command below.
+
+If your agent is not on this list, that's fine — you can either generate a copy-paste setup guide for it (covered in the manual-setup section) or follow the same pattern by hand.
+
+## The fast path: one command
+
+From the root of your Webiny project, run:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx webiny-mcp configure {agent-name}`} />
+
+For example, for Claude Code:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx webiny-mcp configure claude`} />
+
+That's it. The command writes two files for you:
+
+- **The MCP config file** — tells your agent how to start the Webiny MCP server. The file name and location depend on the agent (e.g. `.mcp.json` for Claude Code, `.cursor/mcp.json` for Cursor).
+- **The agent instructions file** — tells your agent to actually *use* the Webiny tools when working on Webiny-related tasks. Without these instructions, an agent might know the MCP server exists and still not call into it. With them, it knows to load the right skill before writing Webiny code.
+
+Restart your agent (or reload the editor window) and the Webiny MCP server is available immediately.
+
+<Callout type="info" title="Why both files?">
+    The MCP config tells the agent *that* the server exists. The instructions tell it *when* to actually use it. Both matter — and the configure command sets up both for you so you don't have to remember.
+</Callout>
+
+## Standalone install (for non-Webiny folders)
+
+The default install ships with every Webiny project — there is nothing to install separately when you run the configure command from inside a Webiny project root. You just run it.
+
+The **standalone install** is for the opposite case: when you are working in a folder that is *not* a Webiny project, but you still want your AI agent to have Webiny knowledge. The classic example is a separate frontend repository (a Next.js app, a Vue app, a mobile codebase) that consumes a Webiny API but lives in its own repo. You want the agent in that repo to know how to use `@webiny/sdk`, follow Webiny patterns, and load the right skills — even though there is no `webiny.config.tsx` in the folder.
+
+In that folder, install the standalone package:
+
+<CodeBlock language="shell" filename="Terminal" code={`npm install @webiny/mcp`} />
+
+Then run the same configure command:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx webiny-mcp configure {agent-name}`} />
+
+Same supported agents from the table above. The agent now has the Webiny MCP server available in the current directory, independent of any Webiny project.
+
+## Manual setup (any other agent or custom workflow)
+
+If your agent is not covered by the built-in adapters, or you prefer to configure things yourself, the configure command will print a complete, copy-paste-friendly setup guide:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx webiny-mcp configure --instructions`} />
+
+The output includes the JSON config to drop into your agent's MCP config file and the markdown to add to your agent's instruction or rules file, with the right paths for every supported agent.
+
+If you'd rather assemble it yourself, the two pieces are:
+
+### 1. Register the MCP server
+
+Add this entry to your agent's MCP config file:
+
+<CodeBlock language="json" filename="MCP config file" code={`{
+  "mcpServers": {
+    "webiny": {
+      "command": "npx",
+      "args": ["webiny-mcp", "serve"]
+    }
+  }
+}`} />
+
+The exact filename varies by agent:
+
+| Agent                    | MCP config file                     |
+| ------------------------ | ----------------------------------- |
+| Claude Code              | `.mcp.json` (project root)          |
+| Cursor                   | `.cursor/mcp.json` (project root)   |
+| Windsurf                 | `.windsurf/mcp.json` (project root) |
+| GitHub Copilot / VS Code | `.vscode/mcp.json` (project root)   |
+| Cline                    | `.vscode/cline_mcp_settings.json`   |
+| Kiro                     | `.kiro/settings/mcp.json`           |
+| OpenCode                 | `opencode.json` (project root)      |
+
+<Callout type="info" title="Two agents use a slightly different shape">
+    GitHub Copilot expects `servers` instead of `mcpServers` in its config. OpenCode expects `mcp` instead. The rest of the structure is identical.
+</Callout>
+
+### 2. Add agent instructions
+
+Add the following block to your agent's instruction or rules file:
+
+<CodeBlock language="markdown" filename="Agent instructions" code={`## Webiny
+
+This project uses the Webiny framework.
+A \`webiny\` MCP server is available.
+When helping with Webiny-related tasks:
+1. Call \`list_webiny_skills\` to see available skills.
+2. Call \`get_webiny_skill\` with the relevant topic before writing code.`} />
+
+The location of the instruction file depends on the agent:
+
+| Agent                    | Instruction file                  |
+| ------------------------ | --------------------------------- |
+| Claude Code              | `CLAUDE.md` (project root)        |
+| Cursor                   | `.cursor/rules/*.mdc`             |
+| Windsurf                 | `.windsurf/rules/*.md`            |
+| GitHub Copilot / VS Code | `.github/copilot-instructions.md` |
+| Cline                    | System prompt in settings         |
+| Kiro                     | `AGENTS.md` (project root)        |
+| OpenCode                 | `AGENTS.md` (project root)        |
+
+## Verifying the connection
+
+The simplest check is to just ask your agent:
+
+<CodeBlock language="text" filename="Prompt to your AI agent" code={`List all available Webiny skills.`} />
+
+If the MCP server is connected, the agent calls `list_webiny_skills` and returns a catalogue of topics — `content-models`, `lifecycle-events`, `dependency-injection`, and so on. If you instead get a generic answer or the agent says it has no Webiny tools available, the MCP server is not wired up. Restart the agent, and double-check that the configure command actually wrote the files in the expected location.
+
+For a deeper diagnostic, you can run the MCP server through the official MCP Inspector:
+
+<CodeBlock language="shell" filename="Terminal" code={`npx @modelcontextprotocol/inspector npx webiny-mcp serve`} />
+
+Connect, click **List Tools**, and confirm you see `list_webiny_skills` and `get_webiny_skill`. If those show up, the server itself is healthy and any remaining issue is in the agent-side configuration.
+
+A second, slightly more meaningful smoke test — once the basic connection is confirmed:
+
+<CodeBlock language="text" filename="Prompt to your AI agent" code={`Add a "publishedAt" datetime field to the Article content model. Follow the standard Webiny pattern.`} />
+
+A correctly wired-up agent will load the relevant skill before writing code, then produce a model definition that uses the right field type, the right factory, and the right registration line. If it just guesses generically, the MCP server is not connected — go back and verify.
+
+## Common setup pitfalls
+
+A few things that trip people up the first time:
+
+- **Wrong directory.** The configure command writes files in the *current* directory. Run it from your Webiny project root for the default install, or from your non-Webiny folder for the standalone install. Otherwise the MCP config ends up in the wrong place.
+- **Forgot to restart the agent.** Most clients only read their MCP config and instructions on startup. After running configure, restart the client.
+- **Multiple agents in the same project.** That works — just run configure once for each agent name. Each one writes to its own config and instruction files; they do not conflict.
+- **Permission errors on `npx`.** Make sure `npx` is on your `PATH` and that your shell profile loads correctly when the agent spawns subprocesses. On macOS, that usually means launching the agent from a terminal session, not from Spotlight.
+
+With the MCP server connected and a successful smoke test, your agent now has access to the full Webiny skill catalogue. The next lesson tours those built-in skills so you know what your agent already understands.

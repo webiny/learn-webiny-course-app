@@ -7,6 +7,12 @@
  * This registry maps slugs to their import functions
  */
 export const mdxImportRegistry: Record<string, () => Promise<any>> = {
+  "ai-agents-and-mcp-server/built-in-skills": () => import("@/content/lessons/ai-agents-and-mcp-server/built-in-skills.mdx"),
+  "ai-agents-and-mcp-server/installing-the-mcp-server": () => import("@/content/lessons/ai-agents-and-mcp-server/installing-the-mcp-server.mdx"),
+  "ai-agents-and-mcp-server/intro": () => import("@/content/lessons/ai-agents-and-mcp-server/intro.mdx"),
+  "ai-agents-and-mcp-server/real-world-workflows": () => import("@/content/lessons/ai-agents-and-mcp-server/real-world-workflows.mdx"),
+  "ai-agents-and-mcp-server/what-is-the-webiny-mcp-server": () => import("@/content/lessons/ai-agents-and-mcp-server/what-is-the-webiny-mcp-server.mdx"),
+  "ai-agents-and-mcp-server/writing-custom-skills": () => import("@/content/lessons/ai-agents-and-mcp-server/writing-custom-skills.mdx"),
   "developing-with-webiny/ai-assisted-development": () => import("@/content/lessons/developing-with-webiny/ai-assisted-development.mdx"),
   "developing-with-webiny/debugging-errors-best-practices": () => import("@/content/lessons/developing-with-webiny/debugging-errors-best-practices.mdx"),
   "developing-with-webiny/extensions": () => import("@/content/lessons/developing-with-webiny/extensions.mdx"),
@@ -58,6 +64,66 @@ export interface LessonRegistryItem {
  * Includes frontmatter and chapter info for each lesson
  */
 export const mdxRegistry: LessonRegistryItem[] = [
+  {
+    slug: "ai-agents-and-mcp-server/built-in-skills",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/built-in-skills.mdx"),
+    frontmatter: {
+          "title": "Built-in Skills",
+          "description": "A categorized tour of the skills that ship with the Webiny MCP server, so you know exactly what your AI agent already understands about Webiny.",
+          "order": 3
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
+  {
+    slug: "ai-agents-and-mcp-server/installing-the-mcp-server",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/installing-the-mcp-server.mdx"),
+    frontmatter: {
+          "title": "Installing the MCP Server",
+          "description": "Connect the Webiny MCP server to your AI agent in one command, install the standalone package for use outside a Webiny project, or configure things manually for any agent.",
+          "order": 2
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
+  {
+    slug: "ai-agents-and-mcp-server/intro",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/intro.mdx"),
+    frontmatter: {
+          "title": "Building with AI Agents and Webiny MCP Server",
+          "description": "An introduction to the AI-agent-driven way of building with Webiny — and why everything you learned in the previous chapters makes you good at it.",
+          "order": 0
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
+  {
+    slug: "ai-agents-and-mcp-server/real-world-workflows",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/real-world-workflows.mdx"),
+    frontmatter: {
+          "title": "Real-World Workflows",
+          "description": "Three concrete workflows that put the Webiny MCP server to work — including the popular Figma-design-to-Website-Builder-component flow.",
+          "order": 5
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
+  {
+    slug: "ai-agents-and-mcp-server/what-is-the-webiny-mcp-server",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/what-is-the-webiny-mcp-server.mdx"),
+    frontmatter: {
+          "title": "What Is the Webiny MCP Server",
+          "description": "Understand what the Model Context Protocol is, what the Webiny MCP server adds on top, and how skills give an AI agent expert knowledge about Webiny.",
+          "order": 1
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
+  {
+    slug: "ai-agents-and-mcp-server/writing-custom-skills",
+    import: () => import("@/content/lessons/ai-agents-and-mcp-server/writing-custom-skills.mdx"),
+    frontmatter: {
+          "title": "Writing Your Own Skills",
+          "description": "Author project-specific skills that teach the AI agent your domain models, internal APIs, and team conventions — and ship them in version control so every teammate benefits.",
+          "order": 4
+    },
+    chapter: "ai-agents-and-mcp-server"
+  },
   {
     slug: "developing-with-webiny/ai-assisted-development",
     import: () => import("@/content/lessons/developing-with-webiny/ai-assisted-development.mdx"),

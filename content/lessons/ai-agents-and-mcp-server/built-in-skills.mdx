@@ -1,0 +1,105 @@
+---
+title: "Built-in Skills"
+description: "A categorized tour of the skills that ship with the Webiny MCP server, so you know exactly what your AI agent already understands about Webiny."
+order: 3
+---
+
+# Built-in Skills
+
+Once the MCP server is connected, your agent does not start from a blank slate. It has access to a curated library of **built-in skills** that ship with the server — each one a focused playbook for doing a specific Webiny task correctly. The point of this lesson is not for you to memorize them; it is for you to know what is in the box, so you can ask for things you would not have thought to ask for otherwise.
+
+<ChapterOverview
+    items={[
+        { icon: "menu_book", text: "How to read this list and how the agent picks a skill." },
+        { icon: "category", text: "What every built-in skill covers, grouped by category." },
+        { icon: "feedback", text: "What to do when a skill's output does not meet your quality bar." },
+    ]}
+/>
+
+## How to read this list
+
+A skill is one well-scoped capability the agent has been taught — a how-to playbook for one Webiny pattern. You do not invoke skills directly. You write an intent-level prompt ("add a custom field type for color values"), and the agent looks at the catalogue, matches your intent to a skill's `description`, and loads the relevant ones into its context before writing code.
+
+That means two things for you:
+
+- The clearer your intent, the better the match. "Add a `color` custom field" beats "I need a color thing in the CMS."
+- The more skills you know exist, the more you can ask for. Reading through the list below is essentially expanding your vocabulary for what to delegate.
+
+The skills are organized into a few practical categories. We will only summarize each one — the full content lives in the MCP server itself and is loaded on demand.
+
+## Architecture and project setup
+
+Foundational skills the agent reaches for whenever the task touches the shape of the project, where code lives, or how local development works.
+
+- **`webiny-project-structure`** — The Webiny project layout, the anatomy of `webiny.config.tsx`, and how extensions are registered. The agent reaches for this any time it needs to know *where* something belongs.
+- **`webiny-full-stack-architect`** — The skeleton for an extension that spans both API and Admin: top-level component with `Api.Extension` and `Admin.Extension` entry points, shared domain layer, package structure.
+- **`webiny-local-development`** — Deployment commands, local watch mode, environment management (long-lived vs short-lived, production vs dev), build parameters, and debugging.
+
+## Backend and API
+
+Most of the day-to-day "build a feature" work lives here.
+
+- **`webiny-api-architect`** — The hub skill for API-side architecture: features vs services, feature naming and structure, the DI decision tree, anti-patterns, container registration, domain errors, scoping rules.
+- **`webiny-use-case-pattern`** — Implementing UseCases: DI, the `Result` type, error types, decorators, CMS repositories, entry mappers, schema-based permissions.
+- **`webiny-event-handler-pattern`** — The EventHandler pattern: handle method, payloads, filtering, DI, defining and publishing your own domain events, reacting to external events.
+- **`webiny-custom-graphql-api`** — Adding custom GraphQL queries and mutations via `GraphQLSchemaFactory`, with full DI for backend services (identity, tenancy, CMS use-cases).
+- **`webiny-http-route`** — Adding custom HTTP routes via `Api.Route` and `Route.Interface`, alongside the standard GraphQL handler.
+- **`webiny-api-cms-custom-field-type`** — Implementing a custom CMS field type: extending `DataFieldBuilder`, composing validators, the `FieldTypeFactory`, DI registration, TypeScript module augmentation for autocomplete.
+- **`webiny-api-permissions`** — The schema-based permission system for API features: permission schemas, `createPermissionsAbstraction`/`createPermissionsFeature`, read/write/delete/publish checks, own-record scoping.
+- **`webiny-cli-extensions`** — Custom CLI commands via `CliCommandFactory`: data migrations, code generators, deployment scripts, content exports, health checks.
+- **`webiny-dependency-injection`** — The universal `createImplementation` DI pattern and all injectable services (Logger, BuildParams, IdentityContext, CMS use-cases, etc.). The agent leans on this for almost every backend skill.
+- **`webiny-v5-to-v6-migration`** — Migrating v5 plugins and patterns to v6 architecture: context plugins to DI services, v5 event subscriptions to v6 EventHandlers, etc.
+
+## Content and CMS
+
+Anything to do with content modelling and reading or writing CMS data from elsewhere.
+
+- **`webiny-api-cms-content-models`** — Creating Headless CMS content models in code via the `ModelFactory` pattern: fields, validators, references between models, field layouts (including nested layouts in `object` and `dynamicZone` fields).
+- **`webiny-sdk`** — Using `@webiny/sdk` to read and write Webiny content from external apps (Next.js, Vue, Node, etc.): SDK setup, the `Result` pattern, list/get/create/update/publish, filtering, sorting, TypeScript generics.
+
+## Admin and Website Builder UI
+
+Frontend work — both the Webiny Admin app and the Website Builder.
+
+- **`webiny-admin-architect`** — Admin-side architecture: headless features (UseCase / Repository / Gateway), presentation features (Presenter / ViewModel / hooks / components), MobX-based presenters, `RegisterFeature`, Admin BuildParams.
+- **`webiny-admin-ui-extensions`** — Customizing the Admin UI: white-labeling (logo, title, theme), custom data list columns, page-type forms, and Lexical editor plugins via `AdminConfig`.
+- **`webiny-admin-permissions`** — Permission UI on the Admin side: schema-based auto-generated forms, injectable permissions, typed `createUsePermissions` hooks, the `HasPermission` component.
+- **`webiny-form-model`** — Building forms with the `FormModel` system: field types, renderers, layout (tabs/rows/separators), validation (Zod or imperative), conditional rules, computed fields, dynamic zones.
+- **`webiny-website-builder`** — Building Website Builder editor components, theming, and CMS integration using `@webiny/website-builder-nextjs`: registering components with `createComponent`, configurable inputs (text, number, boolean, color, select, file/image, slot, lexical, object, etc.).
+
+## Infrastructure
+
+When the change is not in your application code but in the AWS infrastructure underneath.
+
+- **`webiny-infrastructure-extensions`** — Modifying AWS infrastructure via Pulumi handlers and declarative Infra components: OpenSearch, VPC, resource tags, regions, custom domains, blue-green deployments, environment-conditional config, production vs development modes.
+
+## Authentication and integrations
+
+Things you wire up *to* Webiny rather than build *inside* Webiny.
+
+- **`webiny-configure-auth0`** — Auth0 as an identity provider: SSO, replacing Cognito, OIDC setup, mapping JWT claims to Webiny identities, customizing the Auth0 login flow.
+- **`webiny-configure-okta`** — Okta as an identity provider: SSO, replacing Cognito, OIDC setup, mapping JWT claims, customizing the Okta login flow.
+- **`webiny-mailer-smtp`** — Configuring SMTP email and the Webiny mailer (`Api.Mailer.Smtp`) — the right skill when "email is not working" or you need to set up sending.
+
+## How to actually use them
+
+You do not need to remember the exact skill names. In practice the workflow is:
+
+- Describe the *task* in your own words. ("Add an HTTP endpoint that returns a CSV export of published articles, with auth.")
+- Be concrete about *what* and *where*. ("Use a custom HTTP route, not GraphQL. The handler should live in `extensions/`.")
+- Let the agent pick the skill and write the code. It will usually load `webiny-http-route` plus `webiny-dependency-injection` here, for example.
+- Review the result against the patterns you learned in the earlier chapters. If anything is off, point at the specific issue and ask the agent to correct it.
+
+<Callout type="info" title="If you know the skill exists, mention it">
+    You normally let the agent pick. But if you already know which skill applies — say, you are deep into a custom field type and want to make sure it follows that exact playbook — you can name it directly: "Use the `webiny-api-cms-custom-field-type` pattern." The agent will load it explicitly.
+</Callout>
+
+## When the output is not what you expected
+
+The built-in skills are versioned and continuously improved. They cover a lot, but they will not be perfect for every project on every day. If you ever feel that a skill is producing code that does not match your quality bar — wrong pattern, missing edge cases, outdated import paths, anything — that is exactly the kind of feedback that drives the next iteration.
+
+<Callout type="info" title="Tell us when a skill falls short">
+    Ping us in the <ExternalLink href="/slack">Webiny community Slack</ExternalLink> or open a <ExternalLink href="https://github.com/webiny/webiny-js/issues">GitHub issue</ExternalLink> with the prompt you used and what came back. The skills get better when developers like you flag the gaps. Concrete examples are far more useful than "the agent is not great" — show us what you asked for and what you got.
+</Callout>
+
+The built-in skills cover Webiny in general. The next lesson covers the other half of the equation: writing your *own* skills, so the agent gets just as good at *your* project as it is at Webiny itself.

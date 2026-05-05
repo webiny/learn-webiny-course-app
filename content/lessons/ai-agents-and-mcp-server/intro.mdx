@@ -1,0 +1,69 @@
+---
+title: "Building with AI Agents and Webiny MCP Server"
+description: "An introduction to the AI-agent-driven way of building with Webiny — and why everything you learned in the previous chapters makes you good at it."
+order: 0
+---
+
+# Building with AI Agents and Webiny MCP Server
+
+Up to this point in the course, you have been writing every line of Webiny code yourself. That was on purpose. The previous chapters walked you through Webiny's architecture, project structure, extension points, content models, the Headless CMS, and the Website Builder so that you would build durable mental models of how Webiny is meant to be assembled.
+
+This chapter is where that effort starts paying off in a different way.
+
+We are now going to step into how you should build with Webiny day-to-day going forward: by directing AI agents that already understand Webiny, instead of typing every line of code by hand.
+
+<ChapterOverview
+    items={[
+        { icon: "smart_toy", text: "Why AI agents plus the Webiny MCP server are the recommended way to build with Webiny." },
+        { icon: "extension", text: "What the MCP server and skills are, and how to set them up for your project." },
+        { icon: "code", text: "How to drive an agent through real workflows — from Figma designs to full-stack features." },
+    ]}
+/>
+
+## Why this chapter exists
+
+There is a reason the earlier chapters made you do everything manually. If we had handed you an AI agent on day one and let it generate your project, your codebase would have grown into something nobody could maintain. You would not know which parts are correct, where to extend the platform safely, or how to recognize when a generated piece of code does not belong.
+
+Now, you do.
+
+You understand how Webiny is structured. You know where extensions live. You know how content models, lifecycle events, GraphQL extensions, and Website Builder components are supposed to be wired up. That knowledge is not made obsolete by AI — it is precisely what lets you use AI well.
+
+This chapter teaches you how to take that knowledge and combine it with the **Webiny MCP server** so that a coding agent can do most of the typing for you, while you stay in charge of the architecture, the review, and the final call.
+
+## The shift
+
+The shift we are making in this chapter is not about prompts or tricks. It is about a new working mode:
+
+- You describe **intent** instead of writing every line.
+- The agent loads **skills** that teach it how Webiny is supposed to be built.
+- You read, review, refine, and ship.
+
+This is not "vibe-coding". It is informed delegation. You still own the result. You still make the architectural decisions. You still review what gets committed. But you spend far less time on boilerplate and far more time on judgment — which is the part of the work that actually compounds.
+
+## The recommended way to build with Webiny
+
+This is the approach we recommend for building with Webiny going forward. Webiny ships with a built-in MCP server that exposes Webiny-specific tools and a curated library of skills to your AI coding agent. Once it is connected, the agent can introspect your project, follow Webiny's actual conventions, and produce output that fits the platform far better than anything generic prompting would give you.
+
+If you only take one thing away from this chapter, take this: pairing the foundations you already have with the Webiny MCP server is the fastest, safest, and most productive way to build on Webiny today.
+
+## What you will learn in this chapter
+
+In the lessons that follow, we will move from concept to hands-on:
+
+- What the Webiny MCP server actually is and how it relates to AI agents.
+- How to install and connect it to your AI agent — both the built-in setup and the standalone setup for cross-folder workspaces.
+- A tour of the built-in skills that ship with the MCP server, so you know what your agent already knows.
+- How to write your own skills to teach the agent project-specific patterns and integrations.
+- A few concrete real-world workflows, including the popular Figma-design-to-Website-Builder-component flow.
+
+<Callout type="info" title="When the output is not good enough — tell us">
+    The Webiny MCP server and its built-in skills are improved continuously. If you ever find that a skill is generating code that does not match your quality bar, that is exactly the kind of feedback we want. Ping us in the <ExternalLink href="/slack">Webiny community Slack</ExternalLink> or open a <ExternalLink href="https://github.com/webiny/webiny-js/issues">GitHub issue</ExternalLink>. The skills get better when developers like you flag the gaps.
+</Callout>
+
+## What this chapter is not
+
+This chapter is not a replacement for the previous chapters. We are not telling you to forget what you learned. The opposite: every lesson here assumes you understand what an extension is, how a content model is registered, what happens when you publish an entry, and why some code belongs in the API while other code belongs in the Admin app.
+
+It is also not a generic AI tutorial. We will not teach you how to write prompts in the abstract, or compare different AI models, or rebuild the wheel on what MCP is in general. Plenty of that exists elsewhere. The focus here is narrow: **how to build Webiny apps faster and better, with an AI agent that actually understands Webiny.**
+
+Let's start by looking at what the Webiny MCP server is and why it changes the game for your projects.
