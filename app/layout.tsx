@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter, Geist, Geist_Mono } from "next/font/google"
 import { GoogleTagManager } from "@next/third-parties/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Telemetry } from "@/components/telemetry"
 import "./globals.css"
 
 const _inter = Inter({ subsets: ["latin"] })
@@ -75,14 +76,16 @@ export default function RootLayout({
         <GoogleTagManager gtmId="GTM-5TG2W9G" />
       </head>
       <body className={`font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <Telemetry>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </Telemetry>
       </body>
     </html>
   )
