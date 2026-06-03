@@ -22,7 +22,13 @@ function PageViewTracker() {
  */
 export function Telemetry({ children }: { children: ReactNode }) {
   return (
-    <TelemetryProvider source="learn">
+    <TelemetryProvider
+      source="learn"
+      sessionRecording={{
+        posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY!,
+        apiHost: "https://s.webiny.com"
+      }}
+    >
       <Suspense fallback={null}>
         <PageViewTracker />
       </Suspense>
