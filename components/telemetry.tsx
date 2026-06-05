@@ -26,7 +26,8 @@ export function Telemetry({ children }: { children: ReactNode }) {
       source="learn"
       sessionRecording={{
         posthogKey: process.env.NEXT_PUBLIC_POSTHOG_KEY!,
-        apiHost: "https://s.webiny.com"
+        apiHost: "https://s.webiny.com",
+        loadPostHog: () => import("posthog-js")
       }}
     >
       <Suspense fallback={null}>
