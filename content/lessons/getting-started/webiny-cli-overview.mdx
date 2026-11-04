@@ -36,6 +36,6 @@ Here are some of the key commands you can use with the Webiny CLI:
 - `yarn webiny deploy`: Deploys your Webiny project to AWS. This command provisions all the necessary cloud resources and deploys your application.
 - `yarn webiny info`: Displays information about your deployed Webiny project, including the various endpoints and the admin panel URL.
 - `yarn webiny destroy`: Destroys the deployed Webiny project and all associated cloud resources. Use this command with caution, as it will permanently delete your deployment.
-- `yarn webiny watch`: Watches for changes in your project files and automatically redeploys the affected services. This is useful during development for quick iterations.
+- `yarn webiny watch`: Watches for changes in your project files. For the Admin app it runs a local development server, and for the API it forwards AWS Lambda invocations to your machine so your local code handles requests without a redeploy. This is useful during development for quick iterations.
 
 There are more commands that Webiny CLI supports, but these are the most commonly used ones for managing your Webiny projects and we'll be using them throughout this course.

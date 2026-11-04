@@ -1,17 +1,17 @@
 ---
 title: "Product Listing Editor Component"
-description: "Build a custom Website Builder component that fetches products from Webiny Headless CMS and renders them inside a Website Builder page."
+description: "Build a custom Website Builder component that lists products from Webiny Headless CMS, using a content entry input in query mode."
 order: 4
 ---
 
 # Product Listing Editor Component
 
-In this lesson we combine the Website Builder with the Headless CMS. You'll create a custom **Product Listing** editor component that content editors can drop onto any page, and that fetches published products from the HCMS at render time to display them.
+In this lesson we combine the Website Builder with the Headless CMS. You'll create a custom **Product Listing** editor component that content editors can drop onto any page. The editor picks the sort order and how many products to show, and the component renders the matching published products from the Headless CMS.
 
 <ChapterOverview
   items={[
-    { icon: "download", text: "Fetch CMS entries inside a Website Builder component." },
-    { icon: "key", text: "Configure the Headless CMS SDK alongside the Website Builder SDK." },
+    { icon: "download", text: "List CMS entries in a component with createContentEntryInput." },
+    { icon: "tune", text: "Let editors control sort order and item count from the sidebar." },
     {
       icon: "integration_instructions",
       text: "Register the component and publish a page that uses it."
@@ -22,199 +22,146 @@ In this lesson we combine the Website Builder with the Headless CMS. You'll crea
 **Prerequisites:**
 
 - Website Builder starter kit running (Lesson 1)
-- Product and Product Category content models set up in Webiny (from the Headless CMS chapter)
-- At least 2–3 published products in Webiny
+- The Product content model set up in Webiny (from the Headless CMS chapter)
+- At least 2-3 published products in Webiny
 
-## Why Combine Website Builder and Headless CMS?
+## Why combine Website Builder and Headless CMS?
 
-The Website Builder is great for layout and editorial composition. The Headless CMS is great for structured, reusable content. Combining them lets you get the best of both: editors compose a page visually, but the actual product data lives in the CMS where it can be authored, versioned, and reused across multiple surfaces.
+The Website Builder handles layout and editorial composition. The Headless CMS holds structured, reusable content. Combining them means editors compose a page visually, while the product data stays in the CMS, where it's authored, versioned, and reused on other pages and in other apps.
 
-## Step 1: Publish Some Products
+## How a component gets CMS data
 
-If you completed the Headless CMS chapter you should already have Product entries. If not, go to **Content → Product** in Webiny Admin and create 2–3 products. **Publish each one** — unpublished entries won't be returned by the Read API.
+Editor components in the starter kit are client components. `editorComponents/index.tsx` is imported by `components/DocumentRenderer.tsx`, which is marked `"use client"`, so every component you register there runs in the browser bundle. A client component can't be `async`, and it can't read server-only environment variables, so it shouldn't fetch CMS data itself.
 
-## Step 2: Set Up the Headless CMS SDK
+You don't need it to. The SDK has an input type for this: `createContentEntryInput`. It has two modes:
 
-The Website Builder starter kit already has `@webiny/sdk` installed (it's a dependency of `@webiny/website-builder-nextjs`). You just need to initialise it for Headless CMS queries.
+- **Manual mode.** The editor hand-picks one entry, or a list of entries, in the sidebar.
+- **Query mode.** The editor configures a query on a fixed model (sort field, sort order, limit). The page stores the query, not the entries.
 
-Create `src/lib/webiny.ts`:
+When your Next.js app loads a page with `sdk.wb.getPage()`, the SDK finds every content entry input in the page document and fetches the entries on the server before rendering. Your component receives the results in its `inputs` prop, the same way it receives a text input's value. It uses the same API key the starter kit already has in `.env`, so there's no extra SDK client or environment variable to set up.
 
-```typescript title="src/lib/webiny.ts"
-import { Sdk } from "@webiny/sdk";
+The starter kit ships `editorComponents/ContentEntryDemo.tsx`, which shows all three variants (manual single, manual list, query). In this lesson you'll build a focused version for products, using query mode.
 
-const API_ENDPOINT = process.env.WEBINY_API_ENDPOINT!;
-const API_TOKEN = process.env.WEBINY_API_TOKEN!;
-const API_TENANT = process.env.WEBINY_API_TENANT || "root";
+## Step 1: Publish some products
 
-if (!API_ENDPOINT || !API_TOKEN) {
-  throw new Error(
-    "Missing required environment variables: WEBINY_API_ENDPOINT and WEBINY_API_TOKEN"
-  );
-}
+If you completed the Headless CMS chapter you should already have Product entries. If not, go to **Content → Product** in Webiny Admin and create 2-3 products. **Publish each one.** The Website Builder reads published content, so entries that are only saved won't show up on the live page.
 
-export const sdk = new Sdk({
-  token: API_TOKEN,
-  endpoint: API_ENDPOINT,
-  tenant: API_TENANT
-});
-```
-
-Add the variables to your `.env` file. Use a **Read API** key (not the Manage key):
-
-```dotenv title=".env"
-# Existing Website Builder variables
-NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=...
-NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=...
-NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=...
-NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
-
-# Headless CMS (Read API)
-WEBINY_API_ENDPOINT=https://your-cloudfront-url.cloudfront.net/cms/read/en-US
-WEBINY_API_TOKEN=your_read_api_token
-WEBINY_API_TENANT=root
-```
-
-<Callout type="hint">
-  The Read API endpoint includes the locale — adjust `en-US` if your content is in a different
-  locale. You can copy the full endpoint URL from the **API Playground** in Webiny Admin.
+<Callout type="info">
+  The starter kit's "Frontend Integration" API key already has read access to Headless CMS
+  entries, so you don't need to change its permissions.
 </Callout>
 
-## Step 3: Define the Product Type
+## Step 2: Build the ProductListing component
 
-Create `src/lib/types.ts` (or add to an existing one). The fields match the Product model from the Headless CMS chapter:
+Create `editorComponents/ProductListing.tsx`:
 
-```typescript title="src/lib/types.ts"
-import type { CmsEntryData } from "@webiny/sdk";
-
-export interface ProductCategory {
-  name: string;
-  slug: string;
-}
-
-export interface Product {
-  name: string;
-  sku: string;
-  description: string;
-  price: number;
-  category?: CmsEntryData<ProductCategory>;
-}
-```
-
-## Step 4: Build the ProductListing React Component
-
-This component is a **Server Component** — it fetches data at render time using the SDK. Create `src/editorComponents/ProductListing.tsx`:
-
-```tsx title="src/editorComponents/ProductListing.tsx"
+```tsx title="editorComponents/ProductListing.tsx"
+"use client";
 import React from "react";
-import { ComponentProps } from "@webiny/website-builder-nextjs";
-import { sdk } from "@/lib/webiny";
-import type { Product } from "@/lib/types";
-import type { CmsEntryData } from "@webiny/sdk";
+import {
+  type ComponentProps,
+  type ResolvedContentEntryQuery,
+  useContentEntryList
+} from "@webiny/sdk-nextjs";
+
+interface Product {
+  entryId: string;
+  values: {
+    name: string;
+    sku: string;
+    description: string | null;
+    price: number | null;
+    onSale: boolean | null;
+  };
+}
 
 interface ProductListingInputs {
   heading: string;
-  limit: string; // inputs are always strings; parse as needed
+  products: ResolvedContentEntryQuery<Product>;
 }
 
-export async function ProductListing({
-  inputs: { heading, limit }
+export function ProductListing({
+  inputs: { heading, products }
 }: ComponentProps<ProductListingInputs>) {
-  const parsedLimit = parseInt(limit, 10) || 6;
-
-  const result = await sdk.cms.listEntries<Product>({
-    modelId: "product",
-    limit: parsedLimit,
-    sort: ["values.name_ASC"]
-  });
-
-  if (!result.isOk()) {
-    return <div className="p-8 text-red-600">Failed to load products: {result.error.message}</div>;
-  }
-
-  const products: CmsEntryData<Product>[] = result.value.data;
+  const { items, hasMore, loading, loadMore } = useContentEntryList(products);
 
   return (
     <section className="py-12 px-6">
       {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
 
-      {products.length === 0 ? (
-        <p className="text-center text-muted-foreground">No products published yet.</p>
+      {items.length === 0 ? (
+        <p className="text-center text-text-muted">No products published yet.</p>
       ) : (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
-          {products.map(product => (
+          {items.map(product => (
             <li
-              key={product.id}
+              key={product.entryId}
               className="border rounded-lg p-6 hover:shadow-md transition-shadow"
             >
               <h3 className="text-xl font-semibold mb-1">{product.values.name}</h3>
-              {product.values.category && (
-                <p className="text-xs text-muted-foreground mb-3">
-                  {product.values.category.values.name}
+              <p className="text-xs text-text-muted mb-3">SKU: {product.values.sku}</p>
+              {product.values.description && (
+                <p className="text-sm text-text-muted mb-4 line-clamp-3">
+                  {product.values.description}
                 </p>
               )}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                {product.values.description}
-              </p>
-              <p className="text-lg font-bold">${product.values.price.toFixed(2)}</p>
+              {product.values.price != null && (
+                <p className="text-lg font-bold">
+                  ${product.values.price.toFixed(2)}
+                  {product.values.onSale && (
+                    <span className="ml-2 text-sm font-medium text-primary">On sale</span>
+                  )}
+                </p>
+              )}
             </li>
           ))}
         </ul>
+      )}
+
+      {hasMore && (
+        <div className="mt-8 text-center">
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="px-6 py-2 rounded-md bg-primary text-white font-medium hover:bg-primary/80 disabled:opacity-50 transition-colors"
+          >
+            {loading ? "Loading..." : "Load more"}
+          </button>
+        </div>
       )}
     </section>
   );
 }
 ```
 
-<Callout type="info">
-  This component is an **async Server Component**. It runs on the server (or at build time) and
-  never ships the SDK or API token to the browser. This is the correct and secure pattern for
-  fetching CMS data inside a component.
+A few things to notice:
+
+- The component is a plain, synchronous React component. It doesn't import an SDK client or make a request on first render.
+- `products` is typed as `ResolvedContentEntryQuery<Product>`. In query mode the input value has the shape `{ items, pageInfo, query }`. `items` holds the entries for the first page, `pageInfo` has `cursor`, `hasMore` and `totalCount`, and `query` holds the parameters needed to fetch the next page.
+- Each item is a CMS entry. Your model's fields are under `values`, so the product name is `product.values.name`. The field names match the field IDs of the Product model.
+- `useContentEntryList()` starts from the server-resolved first page and returns `items`, `hasMore`, `loading` and `loadMore`. Calling `loadMore()` fetches the next page in the browser and appends it to `items`. The **Load more** button only appears when there are more products than the limit.
+
+<Callout type="hint">
+  In query mode, reference fields come back as `{ id, modelId }` and are not expanded. That's why
+  this component doesn't show the product's category name. If you need data from a referenced
+  entry, use manual mode, or fetch the referenced entry separately.
 </Callout>
 
-## Step 5: Register the Component
+## Step 3: Register the component
 
-Open `src/editorComponents/index.tsx` and add the ProductListing registration:
+Open `editorComponents/index.tsx`. The starter kit already imports `createContentEntryInput` there for the `ContentEntryDemo` registration. Import your new component next to the other component imports:
 
-```tsx title="src/editorComponents/index.tsx"
-"use client";
-import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
-import { Hero1 } from "./Hero1";
-import { Banner } from "./Banner";
+```tsx title="editorComponents/index.tsx"
 import { ProductListing } from "./ProductListing";
+```
 
-export const editorComponents = [
-  createComponent(Hero1, {
-    name: "Webiny/Hero",
-    label: "Hero #1",
-    inputs: []
-  }),
-  createComponent(Banner, {
-    name: "Custom/Banner",
-    label: "Banner",
-    inputs: [
-      createTextInput({
-        name: "headline",
-        label: "Headline",
-        description: "The main headline text displayed on the banner.",
-        defaultValue: "Ready to get started?"
-      }),
-      createTextInput({
-        name: "ctaLabel",
-        label: "Button Label",
-        description: "The text displayed on the call-to-action button.",
-        defaultValue: "Get started"
-      }),
-      createTextInput({
-        name: "ctaUrl",
-        label: "Button URL",
-        description: "The URL the button links to.",
-        defaultValue: "/"
-      })
-    ]
-  }),
-  createComponent(ProductListing, {
+Then add this registration as the last item in the `editorComponents` array, after the `ContentEntryDemo` registration:
+
+```tsx title="editorComponents/index.tsx"
+  createWbComponent(ProductListing, {
     name: "Custom/ProductListing",
     label: "Product Listing",
+    aiContext: "Lists products from the Headless CMS in a grid.",
     inputs: [
       createTextInput({
         name: "heading",
@@ -222,31 +169,57 @@ export const editorComponents = [
         description: "The heading displayed above the product list.",
         defaultValue: "Our Products"
       }),
-      createTextInput({
-        name: "limit",
-        label: "Number of products",
-        description: "How many products to display.",
-        defaultValue: "6"
+      createContentEntryInput({
+        name: "products",
+        label: "Products",
+        description: "Which products to show, in what order, and how many.",
+        models: ["product"],
+        mode: "query",
+        query: {
+          sort: {
+            fields: [
+              { field: "values_name", label: "Name" },
+              { field: "values_price", label: "Price" },
+              { field: "createdOn", label: "Created On" }
+            ]
+          },
+          limit: { default: 6, max: 24 },
+          pagination: true
+        },
+        defaultValue: {
+          modelId: "product",
+          sort: { field: "values_name", order: "asc" },
+          limit: 6
+        }
       })
     ]
   })
-];
 ```
 
+Here's what the `createContentEntryInput` options do:
+
+- `models` is the list of content model IDs the input works with. Query mode uses the first one, so the editor can only query products.
+- `mode: "query"` makes the sidebar show query controls instead of an entry picker.
+- `query.sort.fields` lists the fields the editor can sort by. Use the read API sort keys: model fields as `values_<fieldId>` (for example `values_price`), and meta fields such as `createdOn` as they are.
+- `query.limit` sets the number shown in the sidebar's limit field (`default`) and the highest number the editor can enter (`max`).
+- `query.pagination: true` enables "Load more" in the rendered component.
+- `defaultValue` is the query stored on the page when an editor drops the component onto the canvas.
+
 <Callout type="warning">
-  The `"use client"` directive at the top of `index.tsx` marks the *registration file* as a client
-  module — it does **not** force `ProductListing` itself to run on the client. `ProductListing` is
-  imported from `./ProductListing` which has no `"use client"` directive, so Next.js treats it as a
-  Server Component and renders it server-side.
+  Keep the `defaultValue` with a `limit`. The sidebar's limit field displays `query.limit.default`,
+  but that number is only saved to the page when the editor types into the field. The SDK uses the
+  saved query when it fetches entries, so without a saved limit the page would show a different
+  number of products than the sidebar suggests. `defaultValue` saves `limit: 6` and a sort order as
+  soon as the component is added, so the published page matches what the editor sees.
 </Callout>
 
-## Step 6: Use It in the Editor
+## Step 4: Use it in the editor
 
 1. Restart your dev server to pick up the new component.
 2. In the Admin sidebar, go to **Website Builder → Pages** and open or create a page.
 3. Find **Product Listing** in the **Custom** group of the component palette.
-4. Drag it onto the canvas.
-5. Set the heading and the number of products in the sidebar inputs.
+4. Drag it onto the canvas. The preview shows your published products.
+5. Click the component and use the sidebar inputs to set the heading, the sort field and order, and the number of products.
 6. **Publish** the page.
 
 [//]: # (<Image)
@@ -259,7 +232,7 @@ export const editorComponents = [
 
 [//]: # (/>)
 
-7. Visit the page in your Next.js app. You should see your products listed.
+7. Visit the page in your Next.js app. You should see your products listed. If you have more products than the limit, a **Load more** button appears below the grid.
 
 [//]: # (<Image)
 
@@ -271,62 +244,82 @@ export const editorComponents = [
 
 [//]: # (/>)
 
-## How the Data Flow Works
+<Callout type="info">
+  If you added a Product Listing to a page before you put `defaultValue` in the registration, that
+  instance has no saved limit. Select it, type a number into the limit field, and publish the page
+  again.
+</Callout>
+
+## How the data flow works
 
 ```
 Webiny Admin Editor
-  └── Editor saves page document to Webiny API
-         (document contains: "Custom/ProductListing", inputs: { heading, limit })
+  └── Editor saves the page document to the Webiny API
+         (document contains "Custom/ProductListing" with inputs:
+          heading: "Our Products"
+          products: { modelId: "product", sort: {...}, limit: 6 })
 
-Next.js request / build
-  └── contentSdk.getPage("/your-page-slug")
-         returns the page document
+Next.js request / build (server)
+  └── sdk.wb.getPage("/your-page-slug")
+         loads the page document
+         finds the "products" content entry input
+         lists published entries of the "product" model with that sort and limit
+         attaches the results to the document
+
+Rendering (server, then hydrated in the browser)
   └── DocumentRenderer encounters "Custom/ProductListing"
-         maps it to the ProductListing React component
-  └── ProductListing (Server Component) runs
-         calls sdk.cms.listEntries({ modelId: "product" })
-         renders the product cards
+         passes inputs.products = { items, pageInfo, query } to ProductListing
+  └── ProductListing renders the cards
+         useContentEntryList().loadMore() fetches the next page in the browser
 ```
 
-The page document from the Website Builder and the product entries from the Headless CMS are fetched independently and composed at render time.
+The page stores only the query. Each time the page is rendered, the products come from the Headless CMS, so a newly published product shows up without editing the page.
 
 ## Troubleshooting
 
 ### No products showing
 
-- Check that you published the products in Webiny Admin (not just saved them).
-- Verify `WEBINY_API_ENDPOINT` points to the **Read API**, not the Manage API.
-- Check `WEBINY_API_TOKEN` has Read permissions for the Headless CMS.
+- Check that you published the products in Webiny Admin, not just saved them.
+- Check that the content model ID in `models` matches your model. The Headless CMS chapter uses `product`.
+- Check the page has a saved query. Select the component, type a number into the limit field, and publish again.
 
-### "Custom/ProductListing not found" in the editor
+### "Custom/ProductListing" doesn't appear in the editor
 
-- Restart the dev server — new component registrations require a restart.
-- Make sure `ProductListing` is added to the `editorComponents` array before it's passed to `DocumentRenderer`.
+- Restart the dev server. New component registrations require a restart.
+- Make sure the `ProductListing` registration is inside the `editorComponents` array.
+
+### Fewer or more products than expected
+
+- The page uses the limit saved on the page, not the one in your code. Changing `defaultValue` or `query.limit.default` only affects components added after the change. Update existing instances in the sidebar.
+
+### Sorting by a field fails
+
+- Sort keys for model fields need the `values_` prefix, for example `values_name` rather than `name`.
 
 ### TypeScript error on `product.values.name`
 
-- Check that the `Product` interface field name matches the field ID in your Webiny content model (e.g. `name` not `productName`).
+- Check that the `Product` interface field names match the field IDs in your Webiny content model (e.g. `name` not `productName`).
 
 ## Summary
 
-In this lesson you built a hybrid component that bridges the Website Builder and Headless CMS:
+In this lesson you built a component that connects the Website Builder and the Headless CMS:
 
-- Configured the Headless CMS SDK alongside the existing Website Builder SDK in the starter kit.
-- Built an async Server Component that fetches CMS entries inside a Website Builder component.
-- Registered the component with `createComponent` and configurable inputs.
-- Placed the component on a page in the editor and saw live product data rendered.
+- Used `createContentEntryInput` in query mode so editors configure which products to show from the sidebar.
+- Received the resolved products as an input value, fetched on the server by `sdk.wb.getPage()`.
+- Added "Load more" pagination with `useContentEntryList`.
+- Saved a default query with `defaultValue`, so the published page uses the limit the editor sees.
 
-This pattern — a Website Builder page composing one or more Server Components that query the Headless CMS — is the core of building editorial-driven content experiences with Webiny.
+The same input covers hand-picked content too. Switch to `mode: "manual"` (with `list: true` for several entries) when editors should choose specific entries instead of a query.
 
 <Quiz
-  question="Why is it safe to use the Webiny SDK and API token inside an async Server Component?"
+  question="In this lesson, where are the products for the Product Listing component fetched on first render?"
   options={[
-    "Server Components are encrypted so tokens are safe",
-    "Server Components run on the server and are never sent to the browser, so secrets stay server-side",
-    "The Webiny SDK automatically hides tokens from the client",
-    "You still need to use an API route to keep tokens safe"
+    "Inside the ProductListing component, with an async call to the Headless CMS",
+    "On the server by sdk.wb.getPage(), which resolves the content entry input and passes the results to the component as an input value",
+    "In the Webiny Admin editor, which copies the product data into the page when you publish",
+    "In a separate API route that the component calls with fetch()"
   ]}
   correctAnswer={2}
-  explanation="Next.js Server Components execute on the server (or at build time) and their code is never shipped to the browser. Environment variables without the NEXT_PUBLIC_ prefix are only accessible server-side, making async Server Components the correct pattern for server-to-server API calls."
-  hint="Think about where Server Component code executes."
+  explanation="The page document stores only the query (model, sort, limit). When the app loads the page, sdk.wb.getPage() lists the matching entries on the server and attaches them to the document, so ProductListing receives them in inputs.products. Only the Load more button fetches further pages from the browser, through useContentEntryList."
+  hint="Think about what the page document stores for a query-mode input."
 />

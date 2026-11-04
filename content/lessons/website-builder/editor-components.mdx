@@ -11,7 +11,7 @@ Editor components are the building blocks that content editors use to compose pa
 <ChapterOverview
   items={[
     { icon: "widgets", text: "Understand the anatomy of an editor component." },
-    { icon: "code", text: "Register components with createComponent and createTextInput." },
+    { icon: "code", text: "Register components with createWbComponent and createTextInput." },
     { icon: "add_box", text: "Build a custom Banner component from scratch." }
   ]}
 />
@@ -30,69 +30,80 @@ It has two parts:
 1. **The React component** — your regular React code that renders the UI, with your styles, your markup, completely in your codebase. It receives editor-configured values via an `inputs` prop, typed with `ComponentProps<YourInputs>` from the SDK.
 2. **The manifest** — metadata that tells the editor about the component: its name, label, group, and what inputs (configurable props) it exposes to the editor sidebar.
 
-You combine both using `createComponent()` from `@webiny/website-builder-nextjs`, then add the result to the `editorComponents` array that you pass to `DocumentRenderer`.
+You combine both using `createWbComponent()` from `@webiny/sdk-nextjs`, then add the result to the `editorComponents` array that you pass to `DocumentRenderer`.
 
 ## The `editorComponents` Array
 
-Open `src/editorComponents/index.tsx` in the starter kit:
+Open `editorComponents/index.tsx` in the starter kit. Here is the registration of the built-in Hero component:
 
-```tsx title="src/editorComponents/index.tsx"
-"use client";
-import { createComponent } from "@webiny/website-builder-nextjs";
+```tsx title="editorComponents/index.tsx"
+import { createWbComponent, createTextInput, createContentEntryInput } from "@webiny/sdk-nextjs";
 import { Hero1 } from "./Hero1";
+// ...
 
 export const editorComponents = [
-  createComponent(Hero1, {
+  createWbComponent(Hero1, {
     name: "Webiny/Hero",
     label: "Hero #1",
+    aiContext: "Create a hero section with a headline and a call-to-action button.",
     inputs: []
   })
+  // ...more registrations
 ];
 ```
 
 A few things to notice:
 
-- The file is marked `"use client"` — component registrations must run on the client, because the SDK communicates the available components to the editor via the browser.
-- `createComponent` takes the React component as its first argument and the manifest as the second.
+- The file has no `"use client"` directive of its own. It's imported by `components/DocumentRenderer.tsx`, which is marked `"use client"`, so the registrations are part of the browser bundle, where the SDK communicates the available components to the editor.
+- `createWbComponent` takes the React component as its first argument and the manifest as the second.
 - `name` is a namespaced string — use a consistent convention like `"YourNamespace/ComponentName"`.
 - `inputs` defines the configurable props that appear in the editor sidebar. An empty array means no inputs — the component renders with fixed content.
 - `group` (optional) links the component to a named component group in the editor palette.
+- `aiContext` (optional) is a hint that tells Webiny's AI features how to use the component.
 
 ## Component Groups
 
-Component groups organise the editor's component palette into sections. They're registered in `src/contentSdk/groups.ts`:
+Component groups organise the editor's component palette into sections. They're defined in `sdk/groups.ts` (SVG icons trimmed here):
 
-```typescript title="src/contentSdk/groups.ts"
-import { registerComponentGroup, type ComponentManifest } from "@webiny/website-builder-nextjs";
+```typescript title="sdk/groups.ts"
+import type { ComponentManifest, ComponentGroup } from "@webiny/sdk-nextjs";
 
-export const registerComponentGroups = () => {
-  registerComponentGroup({
+export const componentGroups: ComponentGroup[] = [
+  {
     name: "basic",
     label: "Basic",
-    description: "Components for simple content creation"
-  });
-  registerComponentGroup({
+    description: "Components for simple content creation",
+    icon: '<svg>...</svg>'
+  },
+  {
     name: "custom",
     label: "Custom",
     description: "Assorted custom components",
+    icon: '<svg>...</svg>',
     filter: (component: ComponentManifest) => !component.group
-  });
-};
+  }
+];
 ```
 
-The `filter` option on the "custom" group is a catch-all: it collects any component that doesn't have an explicit `group` set in its manifest.
+`sdk/initializeSdk.ts` passes this array to `sdk.init()` as `wb.componentGroups`. The `filter` option on the "custom" group is a catch-all: it collects any component that doesn't have an explicit `group` set in its manifest.
 
 ## Building a Custom Component
 
 Let's build a simple **Banner** component — a full-width coloured strip with a headline and a call-to-action button link.
 
+<Callout type="info">
+  The 6.5 starter kit already ships this Banner component in `editorComponents/Banner.tsx` and
+  registers it in `editorComponents/index.tsx`. Follow the steps below to see how it's built, or
+  use them as a template for your own component.
+</Callout>
+
 ### Step 1: Create the React Component
 
-Create `src/editorComponents/Banner.tsx`:
+Create `editorComponents/Banner.tsx`:
 
-```tsx title="src/editorComponents/Banner.tsx"
+```tsx title="editorComponents/Banner.tsx"
 import React from "react";
-import { ComponentProps } from "@webiny/website-builder-nextjs";
+import { ComponentProps } from "@webiny/sdk-nextjs";
 
 interface BannerInputs {
   headline: string;
@@ -118,29 +129,30 @@ export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProp
 ```
 
 <Callout type="info">
-  Always type your component with `ComponentProps<YourInputs>` from `@webiny/website-builder-nextjs`.
+  Always type your component with `ComponentProps<YourInputs>` from `@webiny/sdk-nextjs`.
   Without it, TypeScript won't know the shape of the `inputs` prop and you'll get type errors.
 </Callout>
 
 ### Step 2: Register the Component
 
-Replace the contents of `src/editorComponents/index.tsx` with:
+Add a `createWbComponent` call for the Banner to the `editorComponents` array in `editorComponents/index.tsx` (the starter's `ContentEntryDemo` registration is left out here):
 
-```tsx title="src/editorComponents/index.tsx"
-"use client";
-import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
+```tsx title="editorComponents/index.tsx"
+import { createWbComponent, createTextInput } from "@webiny/sdk-nextjs";
 import { Hero1 } from "./Hero1";
 import { Banner } from "./Banner";
 
 export const editorComponents = [
-  createComponent(Hero1, {
+  createWbComponent(Hero1, {
     name: "Webiny/Hero",
     label: "Hero #1",
+    aiContext: "Create a hero section with a headline and a call-to-action button.",
     inputs: []
   }),
-  createComponent(Banner, {
+  createWbComponent(Banner, {
     name: "Custom/Banner",
     label: "Banner",
+    aiContext: "Never place multiple banners next to each other.",
     inputs: [
       createTextInput({
         name: "headline",
@@ -208,25 +220,26 @@ The SDK exports a factory function for each input type:
 | `createLexicalInput`  | Rich text (Lexical editor)          |
 | `createFileInput`     | File / media picker                 |
 | `createSlotInput`     | Slot for nesting other components   |
+| `createContentEntryInput` | Headless CMS entry picker or query |
 
 ## Summary
 
 - Editor components combine a React component with a manifest (name, label, group, inputs).
-- `createComponent` and `createTextInput` are the primary registration APIs.
-- Component groups are registered in `groups.ts` and organise the editor palette.
+- `createWbComponent` and `createTextInput` are the primary registration APIs.
+- Component groups are defined in `groups.ts` and organise the editor palette.
 - Component names are stored in page documents — treat them as stable identifiers, renaming breaks existing pages.
 
 **Next lesson**: Learn how theming and responsive styling work in the Website Builder.
 
 <Quiz
-  question="Why must the editorComponents file be marked 'use client'?"
+  question="Why must the editorComponents registrations end up in the browser bundle (via the 'use client' DocumentRenderer)?"
   options={[
     "Because React components can only run on the client",
     "Because component registration hooks into the editor SDK which runs in the browser",
     "Because Next.js App Router requires all component files to be client components",
-    "Because createComponent uses browser APIs internally"
+    "Because createWbComponent uses browser APIs internally"
   ]}
   correctAnswer={2}
-  explanation="When the editor loads your app in its iframe, the Editor SDK (running client-side) announces the registered components back to the Admin via postMessage. This handshake must happen in the browser — it can't run on the server. The 'use client' directive ensures the registration code runs where the editor can reach it."
+  explanation="When the editor loads your app in its iframe, the Editor SDK (running client-side) announces the registered components back to the Admin via postMessage. This handshake must happen in the browser — it can't run on the server. Because the registrations are imported by the client-side DocumentRenderer, they run where the editor can reach them."
   hint="Think about where the editor iframe runs and how the SDK communicates with the Admin."
 />

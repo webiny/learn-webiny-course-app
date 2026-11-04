@@ -26,10 +26,10 @@ What matters for us is not the protocol itself, but what a *Webiny-aware* MCP se
 
 The **Webiny MCP server** is an MCP server that knows about Webiny specifically. When your AI agent connects to it, the agent gains two things:
 
-- **Webiny-specific tools**: callable operations the agent can use to inspect your project, scaffold extensions, work with content models, and interact with a running Webiny instance — through the same patterns Webiny itself uses internally.
+- **Webiny-specific tools**: a small set of read-only tools the agent calls to find and load Webiny guidance. `get_started` returns a routing guide that maps the task to the right specialist agent and skills, `list_webiny_skills` and `get_webiny_skill` browse and load skills, and `list_webiny_agents` and `get_webiny_agent` browse and load specialist agents (task-oriented bundles of related skills).
 - **A curated library of skills**: focused playbooks the agent loads on demand, each one teaching it how to do a particular Webiny task correctly.
 
-Without the MCP server, an agent's only knowledge of Webiny is whatever it scraped from public docs at training time — which is generic, often outdated, and missing all the project-specific context that actually matters. With the MCP server, the agent works from your real project structure, your real `webiny.config.tsx`, your real models, and authoritative how-to guidance that matches the version of Webiny you are on.
+Without the MCP server, an agent's only knowledge of Webiny is whatever it scraped from public docs at training time — which is generic, often outdated, and missing all the project-specific context that actually matters. With the MCP server, the agent applies authoritative how-to guidance that matches the version of Webiny you are on to your real project structure, your real `webiny.config.tsx`, and your real models.
 
 That difference shows up immediately in the quality of the code you get back.
 
@@ -62,7 +62,7 @@ There are two installation modes, and the choice depends on whether the folder y
 
 ### Built-in (the default)
 
-Every Webiny project already ships with the MCP server. When your agent runs inside a Webiny project root, there is nothing extra to install — a single configure command is all that stands between you and a connected agent.
+Every Webiny project already ships with the MCP server. When your agent runs inside a Webiny project root, there is nothing extra to install. If you picked your agent when `create-webiny-project` asked for it, the agent is already connected; otherwise a single configure command is all that stands between you and a connected agent.
 
 This is the right setup any time you are working *inside* a Webiny project.
 
@@ -82,8 +82,8 @@ A skill is a small markdown file (`SKILL.md`) that teaches the agent how to do o
 
 There are two flavors:
 
-- **Built-in skills** — ship with the Webiny MCP server. These cover the standard Webiny patterns: project structure, content models, GraphQL extensions, lifecycle events, dependency injection, infrastructure extensions, Auth0 / Okta setup, the Website Builder, and more. We tour them in lesson 3.
-- **Custom skills** — skills *you* write. They live in your project and document the patterns specific to your team: your domain models, your internal APIs, your third-party integrations, your migration playbooks, your code review checklist. Once committed to the repo, every teammate's agent benefits from them automatically. We cover how to author these in lesson 4.
+- **Built-in skills** — ship with the Webiny MCP server. These cover the standard Webiny patterns: project structure, content models, GraphQL extensions, lifecycle events, dependency injection, infrastructure extensions, Auth0 / Okta / Entra ID setup, the Website Builder, and more. We tour them in lesson 3.
+- **Custom skills** — skills *you* write. They live in your project (new projects include a `my-skills/` folder for them) and document the patterns specific to your team: your domain models, your internal APIs, your third-party integrations, your migration playbooks, your code review checklist. Once committed to the repo, every teammate's agent benefits from them automatically. We cover how to author these in lesson 4.
 
 The reason skills matter so much is that they are the lever by which AI quality scales with your project. Built-in skills make the agent good at Webiny. Custom skills make the agent good at *your* Webiny project.
 

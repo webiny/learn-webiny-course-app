@@ -141,6 +141,8 @@ Stack your custom skills *on top of* the built-in ones. The agent gets both libr
 
 This is what you want for almost every project. The built-in skills keep handling generic Webiny tasks; your custom skills add project-specific knowledge.
 
+You usually don't have to add this yourself. New Webiny projects include a `my-skills/` folder (with a README explaining the format), and `npx webiny-mcp configure` writes exactly this entry for every supported agent except GitHub Copilot, whose `.vscode/mcp.json` entry gets the plain `["webiny-mcp", "serve"]` args. Drop a skill folder into `my-skills/`, restart your agent, and the skill shows up in `list_webiny_skills`.
+
 You can pass the flag multiple times to stack folders — for example, a team-wide skills folder pulled from a shared repo plus a project-specific one:
 
 <CodeBlock language="json" filename=".mcp.json" code={`{
@@ -176,7 +178,7 @@ When `--skills` is set, the built-ins are not loaded at all. There are very few 
 
 ## Folder layout
 
-A skills folder is just a flat collection of skill folders. Each skill folder contains exactly one `SKILL.md`:
+A skills folder is just a collection of skill folders. Each skill folder contains exactly one `SKILL.md` (the server scans recursively, so you can also group skills into nested folders):
 
 ```
 my-skills/
@@ -201,7 +203,7 @@ A few benefits this unlocks:
 - **PR review covers AI behavior.** A change to a skill is a change to how every future agent will write code in that area. That is worth reviewing the same way you review production code.
 - **Onboarding gets dramatically faster.** Half of "ramping up on this codebase" used to be tribal knowledge. Now a lot of that knowledge is read by your agent the moment a teammate types a prompt.
 
-A reasonable convention is to put them under `mcp/skills/` in your repo and reference that path from `.mcp.json` (`--additional-skills=./mcp/skills`). Pick whatever path works for your team — the important thing is that it is checked in.
+The simplest convention is the `my-skills/` folder that new projects already include and that the configure command already references (`--additional-skills=./my-skills`). You can pick another path, as long as you update the flag in your MCP config. The important thing is that it is checked in.
 
 ## What makes a good skill
 

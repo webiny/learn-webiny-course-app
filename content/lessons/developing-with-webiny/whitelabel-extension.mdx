@@ -64,7 +64,7 @@ const AdminTheme = () => {
   return (
     <AdminConfig.Public>
       <Theme.Color palette={"primary"} color={"purple"} />
-      <Theme.Color palette={"neutral"} color={"light-green"} />
+      <Theme.Color palette={"neutral"} color={"lightgreen"} />
     </AdminConfig.Public>
   );
 };
@@ -75,7 +75,7 @@ export default AdminTheme;
 This extension:
 
 - Sets the primary color to purple
-- Sets the neutral color to light-green
+- Sets the neutral color to light green
 - Uses `AdminConfig.Public` to make this configuration available to the Admin app
 
 <Callout type="info" title="Color Options">
@@ -134,6 +134,9 @@ export const Extensions = () => {
   return (
     <>
       <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.Env.IsProd>
+        <Infra.Encryption passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || ""} />
+      </Infra.Env.IsProd>
       <Cognito />
 
       {/* Admin branding */}
@@ -156,7 +159,7 @@ Open http://localhost:3001 in your browser. You should see:
 
 - Your custom logo
 - "ACME Corp" as the application title
-- Purple primary color and light-green neutral color
+- Purple primary color and light green neutral color
 
 ## Combining Into a Single Extension
 
@@ -186,7 +189,7 @@ const AdminBranding = () => {
 
       {/* Theme colors */}
       <Theme.Color palette={"primary"} color={"purple"} />
-      <Theme.Color palette={"neutral"} color={"light-green"} />
+      <Theme.Color palette={"neutral"} color={"lightgreen"} />
     </AdminConfig.Public>
   );
 };

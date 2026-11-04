@@ -88,6 +88,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
             .unique()
             .pattern(
               "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+              "",
               "Slug must be lowercase letters, numbers, and hyphens only"
             ),
           description: fields.longText().renderer("textarea").label("Description").minLength(10)
@@ -132,7 +133,7 @@ The `.fields()` method uses a fluent API to define fields:
 - `.required()` - Makes field required with custom error message
 - `.minLength()` / `.maxLength()` - Validation constraints
 - `.unique()` - Ensures field values are unique
-- `.pattern()` - Regular expression validation
+- `.pattern()` - Regular expression validation (arguments: regex, flags, error message)
 
 **Layout:**
 
@@ -145,7 +146,7 @@ The `.fields()` method uses a fluent API to define fields:
 
 <Callout type="hint" title="Field Types">
   The Model Builder provides fluent methods for all field types: `text()`, `longText()`,
-  `richText()`, `number()`, `boolean()`, `datetime()`, `file()`, `ref()` (reference), `object()`,
+  `richText()`, `number()`, `boolean()`, `datetime()`, `asset()`, `ref()` (reference), `object()`,
   and more. Each method returns a chainable API for configuring the field.
 </Callout>
 
@@ -173,7 +174,7 @@ The `.renderer()` method specifies how a field is displayed in the Admin UI. Her
 
 **Selection Fields:**
 
-- `dropdown` - Dropdown select box
+- `select` - Dropdown select box (`dropdown` is a deprecated alias)
 - `radioButtons` - Radio button group
 - `checkboxes` - Checkbox group
 - `tags` - Tag input field
@@ -182,6 +183,7 @@ The `.renderer()` method specifies how a field is displayed in the Admin UI. Her
 
 - `dateTimeInput` - Single date/time picker
 - `dateTimeInputs` - Multiple date/time pickers (for list fields)
+- `birthdayInput` - Day, month and year picker (for date-only fields)
 
 **Reference Fields:**
 
@@ -192,10 +194,11 @@ The `.renderer()` method specifies how a field is displayed in the Admin UI. Her
 - `refRadioButtons` - Single reference as radio buttons
 - `refCheckboxes` - Multiple references as checkboxes
 
-**File Fields:**
+**Asset Fields:**
 
-- `file` - Single file upload
-- `files` - Multiple file uploads
+- `assetField` - Single asset (image, video or document)
+- `assetFields` - Multiple assets (for list fields)
+- `file` / `files` - Deprecated renderers for the older file field type
 
 **Object Fields:**
 
@@ -216,7 +219,7 @@ The `.renderer()` method specifies how a field is displayed in the Admin UI. Her
 
 <Callout type="info">
   Choose the renderer that best matches your field type and desired user experience. For example,
-  use `radioButtons` for a small set of options, or `dropdown` for a larger set.
+  use `radioButtons` for a small set of options, or `select` for a larger set.
 </Callout>
 
 ### Step 3: Register the Extension
@@ -296,7 +299,7 @@ Try creating a category:
   caption="The layout shows Name and Slug side-by-side, with Description below"
 />
 
-Click **Save & Publish** to save your category.
+Click **Save**, then **Save & Publish** to publish your category. A new entry only shows **Save** until it has been saved once.
 
 <Image
   src="/learn/images/headless-cms/electronics-category-in-list.png"
@@ -322,7 +325,7 @@ Now let's link Product Category to the Product model by adding a reference field
 2. Configure in the **General** tab:
    - **Label**: Category
    - **Field ID**: category
-   - **Content Models**: Select "Product Category"
+   - **Content models**: Select "Product Category"
 
 <Image
   src="/learn/images/headless-cms/reference-field-settings.png"
@@ -337,7 +340,7 @@ Now let's link Product Category to the Product model by adding a reference field
 
 <Callout type="success" title="Models Are Linked!">
   You've just created a relationship between Product and Product Category. Now when creating or
-  editing products, you can select a category from a dropdown.
+  editing products, you can pick a category in the Category field.
 </Callout>
 
 ## Testing the Relationship
@@ -347,13 +350,13 @@ Let's test the product-category relationship:
 1. Navigate to **Content** > **Ungrouped** > **Product**
 2. Edit your "Wireless Headphones" product (or create a new one)
 3. You'll now see a **Category** field with a reference to the Electronics category
-4. You can select an existing category or create a new one using the buttons below the field
+4. Start typing in the field, or open its list, and select **Electronics**
 5. Click **Save & Publish**
 
 <Image
   src="/learn/images/headless-cms/product-with-category-reference.png"
   alt="Product form with Category reference field"
-  caption="The Category reference field shows the linked Electronics category with options to create or select records"
+  caption="The Category reference field with the Electronics category selected"
 />
 
 The product is now linked to the Electronics category!
@@ -434,7 +437,7 @@ class ProductModelImpl implements ModelFactory.Interface {
         .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
         .titleFieldId("name")
         .singularApiName("Product")
-        .pluralApiName("ProductCategories")
+        .pluralApiName("Products")
     ];
   }
 }
@@ -483,7 +486,7 @@ Then register it in `webiny.config.tsx`:
 
 Creating content models via code is powerful for production workflows:
 
-- **CmsModelPlugin** - Create models programmatically
+- **ModelFactory** - Create models programmatically
 - **Version control** - Track model changes in Git
 - **Reference fields** - Link models together for relationships
 - **Flexible approach** - Mix UI and code creation as needed

@@ -83,17 +83,17 @@ This is the right framing to give the agent up front, otherwise it tends to drif
 
 You need two MCP servers connected in the same project: the Webiny one (already wired up via `npx webiny-mcp configure {agent-name}` from the previous lessons) and the Figma one. Figma's official MCP server is documented at <ExternalLink href="https://help.figma.com/hc/en-us/articles/32132100833559">help.figma.com</ExternalLink>.
 
-The Webiny configure command writes its entry to your agent's MCP config file (e.g. `.mcp.json` for Claude Code) and leaves it open for additional servers. After installing the Figma MCP server per its docs, the resulting file looks roughly like:
+The Webiny configure command writes its entry to your agent's MCP config file (e.g. `.mcp.json` for Claude Code) and leaves it open for additional servers. After adding Figma's remote MCP server (hosted at `https://mcp.figma.com/mcp`) per its docs, the resulting file for Claude Code looks roughly like this. Other agents use their own syntax for remote servers, so follow Figma's per-client setup guide:
 
 <CodeBlock language="json" filename="MCP config file (e.g. .mcp.json)" code={`{
   "mcpServers": {
     "webiny": {
       "command": "npx",
-      "args": ["webiny-mcp", "serve"]
+      "args": ["webiny-mcp", "serve", "--additional-skills=./my-skills"]
     },
     "figma": {
-      "command": "npx",
-      "args": ["-y", "figma-mcp"]
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
     }
   }
 }`} />

@@ -389,7 +389,7 @@ export const mdxRegistry: LessonRegistryItem[] = [
     import: () => import("@/content/lessons/website-builder/article-listing-editor-component.mdx"),
     frontmatter: {
           "title": "Product Listing Editor Component",
-          "description": "Build a custom Website Builder component that fetches products from Webiny Headless CMS and renders them inside a Website Builder page.",
+          "description": "Build a custom Website Builder component that lists products from Webiny Headless CMS, using a content entry input in query mode.",
           "order": 4
     },
     chapter: "website-builder"
