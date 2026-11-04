@@ -35,12 +35,12 @@ If you completed the Headless CMS chapter you should already have Product entrie
 
 ## Step 2: Set Up the Headless CMS SDK
 
-The Website Builder starter kit already has `@webiny/sdk` installed (it's a dependency of `@webiny/website-builder-nextjs`). You just need to initialise it for Headless CMS queries.
+The Website Builder starter kit already has `@webiny/sdk` installed (it's a dependency of `@webiny/sdk-nextjs`). You just need to initialise it for Headless CMS queries.
 
-Create `src/lib/webiny.ts`:
+Create `lib/webiny.ts`:
 
-```typescript title="src/lib/webiny.ts"
-import { Sdk } from "@webiny/sdk";
+```typescript title="lib/webiny.ts"
+import { Webiny } from "@webiny/sdk";
 
 const API_ENDPOINT = process.env.WEBINY_API_ENDPOINT!;
 const API_TOKEN = process.env.WEBINY_API_TOKEN!;
@@ -52,7 +52,7 @@ if (!API_ENDPOINT || !API_TOKEN) {
   );
 }
 
-export const sdk = new Sdk({
+export const sdk = new Webiny({
   token: API_TOKEN,
   endpoint: API_ENDPOINT,
   tenant: API_TENANT
@@ -63,27 +63,28 @@ Add the variables to your `.env` file. Use a **Read API** key (not the Manage ke
 
 ```dotenv title=".env"
 # Existing Website Builder variables
-NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=...
-NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=...
-NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST=...
-NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
+NEXT_PUBLIC_WEBINY_API_KEY=...
+NEXT_PUBLIC_WEBINY_API_HOST=...
+NEXT_PUBLIC_WEBINY_ADMIN_HOST=...
+NEXT_PUBLIC_WEBINY_API_TENANT=root
 
 # Headless CMS (Read API)
-WEBINY_API_ENDPOINT=https://your-cloudfront-url.cloudfront.net/cms/read/en-US
+WEBINY_API_ENDPOINT=https://your-cloudfront-url.cloudfront.net
 WEBINY_API_TOKEN=your_read_api_token
 WEBINY_API_TENANT=root
 ```
 
 <Callout type="hint">
-  The Read API endpoint includes the locale — adjust `en-US` if your content is in a different
-  locale. You can copy the full endpoint URL from the **API Playground** in Webiny Admin.
+  `WEBINY_API_ENDPOINT` is the base URL of your Webiny API, the same value as
+  `NEXT_PUBLIC_WEBINY_API_HOST`. The SDK appends `/graphql` itself. Run `yarn webiny info` in your
+  Webiny project directory to find it.
 </Callout>
 
 ## Step 3: Define the Product Type
 
-Create `src/lib/types.ts` (or add to an existing one). The fields match the Product model from the Headless CMS chapter:
+Create `lib/types.ts` (or add to an existing one). The fields match the Product model from the Headless CMS chapter:
 
-```typescript title="src/lib/types.ts"
+```typescript title="lib/types.ts"
 import type { CmsEntryData } from "@webiny/sdk";
 
 export interface ProductCategory {
@@ -102,18 +103,18 @@ export interface Product {
 
 ## Step 4: Build the ProductListing React Component
 
-This component is a **Server Component** — it fetches data at render time using the SDK. Create `src/editorComponents/ProductListing.tsx`:
+This component is a **Server Component** — it fetches data at render time using the SDK. Create `editorComponents/ProductListing.tsx`:
 
-```tsx title="src/editorComponents/ProductListing.tsx"
+```tsx title="editorComponents/ProductListing.tsx"
 import React from "react";
-import { ComponentProps } from "@webiny/website-builder-nextjs";
+import { ComponentProps } from "@webiny/sdk-nextjs";
 import { sdk } from "@/lib/webiny";
 import type { Product } from "@/lib/types";
 import type { CmsEntryData } from "@webiny/sdk";
 
 interface ProductListingInputs {
   heading: string;
-  limit: string; // inputs are always strings; parse as needed
+  limit: string; // registered as a text input below, so parse it as a number
 }
 
 export async function ProductListing({
@@ -123,8 +124,15 @@ export async function ProductListing({
 
   const result = await sdk.cms.listEntries<Product>({
     modelId: "product",
+    fields: [
+      "id",
+      "values.name",
+      "values.description",
+      "values.price",
+      "values.category.values.name"
+    ],
     limit: parsedLimit,
-    sort: ["values.name_ASC"]
+    sort: { values_name: "asc" }
   });
 
   if (!result.isOk()) {
@@ -138,7 +146,7 @@ export async function ProductListing({
       {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
 
       {products.length === 0 ? (
-        <p className="text-center text-muted-foreground">No products published yet.</p>
+        <p className="text-center text-text-muted">No products published yet.</p>
       ) : (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           {products.map(product => (
@@ -148,11 +156,11 @@ export async function ProductListing({
             >
               <h3 className="text-xl font-semibold mb-1">{product.values.name}</h3>
               {product.values.category && (
-                <p className="text-xs text-muted-foreground mb-3">
+                <p className="text-xs text-text-muted mb-3">
                   {product.values.category.values.name}
                 </p>
               )}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+              <p className="text-sm text-text-muted mb-4 line-clamp-3">
                 {product.values.description}
               </p>
               <p className="text-lg font-bold">${product.values.price.toFixed(2)}</p>
@@ -173,22 +181,21 @@ export async function ProductListing({
 
 ## Step 5: Register the Component
 
-Open `src/editorComponents/index.tsx` and add the ProductListing registration:
+Open `editorComponents/index.tsx` and add the ProductListing registration:
 
-```tsx title="src/editorComponents/index.tsx"
-"use client";
-import { createComponent, createTextInput } from "@webiny/website-builder-nextjs";
+```tsx title="editorComponents/index.tsx"
+import { createWbComponent, createTextInput } from "@webiny/sdk-nextjs";
 import { Hero1 } from "./Hero1";
 import { Banner } from "./Banner";
 import { ProductListing } from "./ProductListing";
 
 export const editorComponents = [
-  createComponent(Hero1, {
+  createWbComponent(Hero1, {
     name: "Webiny/Hero",
     label: "Hero #1",
     inputs: []
   }),
-  createComponent(Banner, {
+  createWbComponent(Banner, {
     name: "Custom/Banner",
     label: "Banner",
     inputs: [
@@ -212,7 +219,7 @@ export const editorComponents = [
       })
     ]
   }),
-  createComponent(ProductListing, {
+  createWbComponent(ProductListing, {
     name: "Custom/ProductListing",
     label: "Product Listing",
     inputs: [
@@ -279,12 +286,12 @@ Webiny Admin Editor
          (document contains: "Custom/ProductListing", inputs: { heading, limit })
 
 Next.js request / build
-  └── contentSdk.getPage("/your-page-slug")
+  └── sdk.wb.getPage("/your-page-slug")
          returns the page document
   └── DocumentRenderer encounters "Custom/ProductListing"
          maps it to the ProductListing React component
   └── ProductListing (Server Component) runs
-         calls sdk.cms.listEntries({ modelId: "product" })
+         calls sdk.cms.listEntries({ modelId: "product", fields: [...] })
          renders the product cards
 ```
 
@@ -295,7 +302,7 @@ The page document from the Website Builder and the product entries from the Head
 ### No products showing
 
 - Check that you published the products in Webiny Admin (not just saved them).
-- Verify `WEBINY_API_ENDPOINT` points to the **Read API**, not the Manage API.
+- Verify `WEBINY_API_ENDPOINT` is the base URL of your Webiny API, without a `/graphql` or `/cms/...` suffix.
 - Check `WEBINY_API_TOKEN` has Read permissions for the Headless CMS.
 
 ### "Custom/ProductListing not found" in the editor
@@ -313,7 +320,7 @@ In this lesson you built a hybrid component that bridges the Website Builder and
 
 - Configured the Headless CMS SDK alongside the existing Website Builder SDK in the starter kit.
 - Built an async Server Component that fetches CMS entries inside a Website Builder component.
-- Registered the component with `createComponent` and configurable inputs.
+- Registered the component with `createWbComponent` and configurable inputs.
 - Placed the component on a page in the editor and saw live product data rendered.
 
 This pattern — a Website Builder page composing one or more Server Components that query the Headless CMS — is the core of building editorial-driven content experiences with Webiny.

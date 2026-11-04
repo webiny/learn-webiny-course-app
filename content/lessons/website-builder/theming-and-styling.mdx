@@ -33,10 +33,10 @@ There's also a third file — **`tailwind.css`** — which bridges the WB CSS va
 
 ## The theme.css File
 
-Open `src/theme/theme.css`:
+Open `theme/theme.css`:
 
-```css title="src/theme/theme.css"
-@import "@webiny/website-builder-nextjs/lexical.css";
+```css title="theme/theme.css"
+@import "@webiny/sdk-nextjs/lexical.css";
 
 :root {
   --wb-theme-color-primary: #4632f5;
@@ -69,13 +69,13 @@ CSS variables use semantic names (`--wb-theme-color-primary`, `--wb-theme-color-
 
 ## The tailwind.css File
 
-`src/theme/tailwind.css` bridges WB CSS variables to Tailwind's color tokens:
+`theme/tailwind.css` bridges WB CSS variables to Tailwind's color tokens:
 
-```css title="src/theme/tailwind.css"
+```css title="theme/tailwind.css"
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: InterVariable, sans-serif;
+  --font-sans: var(--wb-theme-font-family, "Inter", sans-serif);
   --color-primary: var(--wb-theme-color-primary);
   --color-secondary: var(--wb-theme-color-secondary);
   --color-text-base: var(--wb-theme-color-text-base);
@@ -88,10 +88,10 @@ This is why you can use `bg-primary`, `text-primary`, etc. in your components �
 
 ## The theme.ts File
 
-Open `src/theme/theme.ts`:
+Open `theme/theme.ts`:
 
-```typescript title="src/theme/theme.ts"
-import { createTheme } from "@webiny/website-builder-nextjs";
+```typescript title="theme/theme.ts"
+import { createTheme } from "@webiny/sdk-nextjs";
 
 declare const __THEME_CSS__: string;
 
@@ -100,6 +100,7 @@ export const css = __THEME_CSS__;
 export const theme = createTheme({
   css,
   fonts: ["https://fonts.googleapis.com/css2?family=Inter&display=swap"],
+  allowCustomColors: false,
   colors: [
     { id: "color-primary", label: "Primary", value: "var(--wb-theme-color-primary)" },
     { id: "color-secondary", label: "Secondary", value: "var(--wb-theme-color-secondary)" },
@@ -124,11 +125,12 @@ export const theme = createTheme({
       { id: "list1", label: "List 1", tag: "ul", className: "wb-unordered-list-1" },
       { id: "list2", label: "List 2", tag: "ol", className: "wb-ordered-list-1" }
     ]
-  }
+  },
+  fontSizes: ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "32px", "40px"]
 });
 ```
 
-The `colors` array (each item: `id`, `label`, `value`) populates the editor's colour picker. The `typography` object covers headings, paragraphs, quotes, and lists — each entry maps a CSS class to a tag and a label shown in the editor toolbar.
+The `colors` array (each item: `id`, `label`, `value`) populates the editor's colour picker, and `allowCustomColors: false` stops editors from picking custom colours in the rich text editor. The `typography` object covers headings, paragraphs, quotes, and lists — each entry maps a CSS class to a tag and a label shown in the editor toolbar. The optional `fontSizes` array adds a font size dropdown to the editor.
 
 <Image
   src="/learn/images/website-builder/editor-color-picker.png"
@@ -137,8 +139,9 @@ The `colors` array (each item: `id`, `label`, `value`) populates the editor's co
 />
 
 <Callout type="info">
-  The exported `theme` and `css` are imported in `initializeContentSdk` and passed to
-  `contentSdk.init()`.
+  The exported `theme` and `css` are imported in `app/layout.tsx`. The layout inlines `css` in a
+  `<style>` tag and passes `theme` to `SdkInitializer`, which hands it to `sdk.init()` through
+  `initializeSdk`.
 </Callout>
 
 ## Customising the Theme
@@ -151,7 +154,7 @@ For everything else (border radius, spacing, shadows, component layout) you just
 
 To change the colour palette, edit the CSS variables in `theme.css`:
 
-```css title="src/theme/theme.css"
+```css title="theme/theme.css"
 :root {
   --wb-theme-color-primary: #16a34a; /* changed to green */
   --wb-theme-color-secondary: #15803d;
@@ -179,7 +182,7 @@ The change propagates automatically to the rendered pages, the Tailwind tokens, 
 
 To add or modify a typography style, update both files:
 
-```css title="src/theme/theme.css — adding a display style"
+```css title="theme/theme.css — adding a display style"
 .wb-heading-display {
   font-family: var(--wb-theme-font-family);
   font-weight: 900;
@@ -190,7 +193,7 @@ To add or modify a typography style, update both files:
 }
 ```
 
-```typescript title="src/theme/theme.ts — registering the new style"
+```typescript title="theme/theme.ts — registering the new style"
 headings: [
   { id: "heading1", label: "Heading 1", tag: "h1", className: "wb-heading-1" },
   { id: "headingDisplay", label: "Display", tag: "h1", className: "wb-heading-display" }
@@ -208,11 +211,11 @@ The editor will now show "Display" as an option in the typography toolbar.
 
 ### Loading Custom Fonts
 
-The starter kit uses Inter by default. Here's how to switch to Geist — you need to update four files.
+The starter kit uses Inter by default. Here's how to switch to Geist — you need to update three files.
 
-**`src/app/layout.tsx`** — swap the font import and config:
+**`app/layout.tsx`** — swap the font import and config, and use `geist.className` instead of `inter.className` on the `<html>` element:
 
-```typescript title="src/app/layout.tsx"
+```typescript title="app/layout.tsx"
 import { Geist } from "next/font/google";
 
 const geist = Geist({
@@ -223,21 +226,15 @@ const geist = Geist({
 });
 ```
 
-**`src/theme/tailwind.css`** — update the `--font-sans` token:
+**`theme/theme.css`** — update the CSS variable. You don't need to touch `theme/tailwind.css`, because its `--font-sans` token already reads `--wb-theme-font-family`:
 
-```css title="src/theme/tailwind.css"
---font-sans: Geist, sans-serif;
-```
-
-**`src/theme/theme.css`** — update the CSS variable:
-
-```css title="src/theme/theme.css"
+```css title="theme/theme.css"
 --wb-theme-font-family: "Geist", sans-serif;
 ```
 
-**`src/theme/theme.ts`** — update the `fonts` array so the editor iframe gets the font too:
+**`theme/theme.ts`** — update the `fonts` array so the editor iframe gets the font too:
 
-```typescript title="src/theme/theme.ts"
+```typescript title="theme/theme.ts"
 fonts: ["https://fonts.googleapis.com/css2?family=Geist&display=swap"],
 ```
 
@@ -299,7 +296,7 @@ The most common cause is a mismatch between the font weights loaded in `layout.t
 
 For example, if `layout.tsx` loads all weights:
 
-```typescript title="src/app/layout.tsx"
+```typescript title="app/layout.tsx"
 const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"]
   // ...
@@ -308,7 +305,7 @@ const inter = Inter({
 
 But `theme.ts` only requests the default weight in the Google Fonts URL:
 
-```typescript title="src/theme/theme.ts — missing weight range"
+```typescript title="theme/theme.ts — missing weight range"
 fonts: ["https://fonts.googleapis.com/css2?family=Inter&display=swap"],
 ```
 
@@ -316,7 +313,7 @@ Then the editor iframe only has the default weight (400) available. Text that sh
 
 Fix it by including the full weight range in the URL:
 
-```typescript title="src/theme/theme.ts — correct"
+```typescript title="theme/theme.ts — correct"
 fonts: ["https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"],
 ```
 
@@ -325,10 +322,10 @@ The rule of thumb: whatever weights you load in `layout.tsx`, load the same rang
 ## Summary
 
 - `theme.css` defines semantic CSS variables for colours and `clamp()`-based typography classes.
-- `theme.ts` exports `theme` and `css` via `createTheme()` — these are passed to `contentSdk.init()`.
+- `theme.ts` exports `theme` and `css` via `createTheme()`. `app/layout.tsx` inlines the CSS and passes the theme to `sdk.init()`.
 - `tailwind.css` bridges WB CSS variables to Tailwind tokens — this is why `bg-primary` works in components.
 - For styles editors can pick in the Admin (colours, typography): define in `theme.css`, register in `theme.ts`. For everything else, use Tailwind or CSS directly in your components.
-- When switching fonts, update all four places: `layout.tsx`, `tailwind.css`, `theme.css`, and the `fonts` array in `theme.ts`.
+- When switching fonts, update all three places: `layout.tsx`, `theme.css`, and the `fonts` array in `theme.ts`.
 - The editor has built-in device controls (desktop, tablet, mobile) for previewing responsive layouts without leaving the Admin.
 
 **Next lesson**: Build an article listing component that fetches content from the Headless CMS.

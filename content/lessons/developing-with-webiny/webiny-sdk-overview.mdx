@@ -65,6 +65,7 @@ The SDK provides access to Webiny applications through namespaced modules on the
 | `sdk.languages`      | Retrieve configured languages                         |
 | `sdk.tenantManager`  | Create and manage tenants                             |
 | `sdk.tasks`          | Trigger and manage background tasks                   |
+| `sdk.webhooks`       | Create and manage webhooks, inspect deliveries        |
 
 ## API Keys & Permissions
 
@@ -78,7 +79,7 @@ The SDK authenticates using an **API key token** generated inside the Webiny Adm
 
 ## Core Concepts
 
-The examples below use `sdk.cms` for illustration, but the same concepts apply across all SDK modules — `sdk.fileManager`, `sdk.languages`, `sdk.tenantManager`, `sdk.tasks`, and any others.
+The examples below use `sdk.cms` for illustration, but the same concepts apply across all SDK modules — `sdk.fileManager`, `sdk.languages`, `sdk.tenantManager`, `sdk.tasks`, `sdk.webhooks`, and any others.
 
 ### The Result Pattern
 
@@ -107,7 +108,7 @@ const result = await sdk.cms.listEntries({
 });
 ```
 
-`fields` is optional. When omitted, the SDK returns all fields, with a `depth` parameter (default: `1`) controlling how deeply reference fields are resolved - depth `1` means direct references are included, but their nested references are not.
+`fields` is required and must contain at least one entry. Use the `values.` prefix for entry values (for example `values.author.name` for a field on a referenced entry) and plain names like `id` or `createdOn` for top-level entry fields.
 
 ### TypeScript Generics
 

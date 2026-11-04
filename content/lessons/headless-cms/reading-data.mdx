@@ -85,7 +85,8 @@ import type { CmsEntryData } from "@webiny/sdk";
 export default async function HomePage() {
   const result = await sdk.cms.listEntries<Product>({
     modelId: "product",
-    sort: ["values.name_ASC"]
+    fields: ["id", "entryId", "values.name", "values.description", "values.price", "values.sku"],
+    sort: { values_name: "asc" }
   });
 
   if (!result.isOk()) {
@@ -109,10 +110,10 @@ export default async function HomePage() {
         <ul className="space-y-4">
           {products.map(product => (
             <li key={product.id} className="border rounded-lg p-4">
-              <h2 className="text-xl font-semibold">{product.values.name}</h2>
-              <p className="text-gray-600 mt-1">{product.values.description}</p>
-              <p className="text-lg font-bold mt-2">${product.values.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-400">SKU: {product.values.sku}</p>
+              <h2 className="text-xl font-semibold">{product.values?.name}</h2>
+              <p className="text-gray-600 mt-1">{product.values?.description}</p>
+              <p className="text-lg font-bold mt-2">${product.values?.price.toFixed(2)}</p>
+              <p className="text-sm text-gray-400">SKU: {product.values?.sku}</p>
             </li>
           ))}
         </ul>
@@ -124,14 +125,15 @@ export default async function HomePage() {
 
 Let's walk through what's happening:
 
-1. **`sdk.cms.listEntries<Product>`** — Calls the ƒRead API to fetch published entries from the `product` model. The `<Product>` generic types the response so `product.values` is fully typed.
-2. **`sort: ["values.name_ASC"]`** — Returns products sorted alphabetically by name. The sort format is `values.<fieldId>_ASC` or `values.<fieldId>_DESC`.
-3. **Result pattern** — We check `result.isOk()` before accessing the data. If the call fails (network error, wrong model ID, expired token, etc.), we render an error message instead of crashing.
-4. **`result.value.data`** — An array of `CmsEntryData<Product>` objects. Each item has `id`, `entryId`, and a `values` object containing the actual product fields.
+1. **`sdk.cms.listEntries<Product>`** — Calls the Read API to fetch published entries from the `product` model. The `<Product>` generic types the response so `product.values` is fully typed.
+2. **`fields`**: The fields to return. This parameter is required. Use the `values.` prefix for content fields (e.g. `values.name`) and plain names for entry-level fields like `id` and `entryId`.
+3. **`sort: { values_name: "asc" }`**: Returns products sorted alphabetically by name. Each key is a sort field and each value is `"asc"` or `"desc"`. Content fields use the `values_<fieldId>` form, and meta fields use their name directly (e.g. `createdOn`).
+4. **Result pattern** — We check `result.isOk()` before accessing the data. If the call fails (network error, wrong model ID, expired token, etc.), we render an error message instead of crashing.
+5. **`result.value.data`** — An array of `CmsEntryData<Product>` objects. Each item has `id`, `entryId`, and a `values` object containing the actual product fields.
 
 <Callout type="hint">
-  The `fields` parameter is omitted here, so the SDK returns all fields at depth 1. That includes
-  all scalar fields on the Product model and one level of reference data for the `category` field.
+  The SDK only returns the fields you list in `fields`. To get all content fields without listing
+  them one by one, you can use the `values.*` wildcard, e.g. `fields: ["id", "values.*"]`.
 </Callout>
 
 ## Testing in Development
@@ -153,20 +155,22 @@ In development mode, Next.js fetches data on every request rather than at build 
 `listEntries` supports server-side filtering and sorting. Here are a few examples you can try:
 
 ```typescript title="Filter by price"
-const result = await sdk.cms.listEntries<Product>({y dev
+const result = await sdk.cms.listEntries<Product>({
   modelId: "product",
+  fields: ["id", "values.name", "values.price"],
   where: {
     "values.price_gte": 100
   },
-  sort: ["values.price_ASC"]
+  sort: { values_price: "asc" }
 });
 ```
 
 ```typescript title="Limit results"
 const result = await sdk.cms.listEntries<Product>({
   modelId: "product",
+  fields: ["id", "values.name"],
   limit: 10,
-  sort: ["values.name_ASC"]
+  sort: { values_name: "asc" }
 });
 ```
 
@@ -189,7 +193,6 @@ The SDK call succeeded but returned an empty list. Check:
 
 1. You have products created in Webiny Admin
 2. Those products are **Published** (not just saved as drafts) — the Read API only returns published entries
-3. You're viewing the correct locale (default: `en-US`)
 
 ### TypeScript Error on `product.values.name`
 

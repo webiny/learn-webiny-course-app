@@ -78,17 +78,20 @@ Choose the approach that works best for you!
 ### Step 1: Navigate to Content Models
 
 1. Open **Webiny Admin** in your browser
-2. Click **Headless CMS** in the left sidebar
+2. Click **Content Modeling** in the left sidebar
 3. Click **Models** to see your content models
 
 ### Step 2: Create New Model
 
-1. Click **New Model** in the top right
+1. Click **New** in the top right
 2. Fill in the model details:
-   - **Name:** `Contact Submission`
-   - **Model ID:** `contactSubmission` (auto-generated)
+   - **Name:** `Contact Submission` (the model ID `contactSubmission` is generated from it)
+   - **Singular API Name:** `ContactSubmission`
+   - **Plural API Name:** `ContactSubmissions`
+   - **Content model group:** `Ungrouped`
    - **Description:** `Stores contact form submissions from the website`
-3. Click **Create Model**
+   - **Create model with default fields:** unchecked
+3. Click **+ Create Model**
 
 ### Step 3: Add Fields
 
@@ -134,10 +137,10 @@ Add the following fields to your model:
 
 ### Step 4: Configure Model Settings
 
-Before saving, configure these settings:
+Before saving, configure these settings using each field's options menu in the editor:
 
-1. **Title Field:** Select `name` (this will be the display name in lists)
-2. **Description Field:** Select `message` (optional, shows preview in lists)
+1. **Title field:** On the `name` field, click **Use as title** (this will be the display name in lists)
+2. **Description field:** On the `message` field, click **Use as description** (optional, shows preview in lists)
 
 ### Step 5: Save the Model
 
@@ -293,7 +296,7 @@ Or if you're already running watch mode, the changes will be picked up automatic
 ### Step 6: Verify in Webiny Admin
 
 1. Open **Webiny Admin**
-2. Go to **Headless CMS** → **Models**
+2. Go to **Content Modeling** → **Models**
 3. You should see **Contact Submission** in the list
 4. Click **Content** in the left sidebar to expand it
 5. Under **Ungrouped**, you should now see **Contact Submission** as a content menu item
@@ -347,7 +350,7 @@ However, if you need more granular control - such as restricting this key to onl
 
 ### Step 4: Save Changes
 
-Click **Save API Key** to update the permissions.
+Click **Save** to update the permissions.
 
 <Callout type="info">
   **Do I need a new token?** No! The existing API token from Lesson 5 continues to work. The token
@@ -629,7 +632,7 @@ Click **Send Message**. You should see:
 ### Step 4: Verify in Webiny Admin
 
 1. Open **Webiny Admin**
-2. Go to **Headless CMS** → **Contact Submissions**
+2. Go to **Content** → **Ungrouped** → **Contact Submission**
 3. You should see your new submission!
 
 <Image
@@ -679,7 +682,7 @@ Let's review what happens when a user submits the form:
 - ✅ API tokens stay on server (never in browser)
 - ✅ Validation happens on both client and server
 - ✅ Webiny validates against content model schema
-- ✅ Limited API key permissions (Manage API only)
+- ✅ Limited API key permissions (Read and Manage APIs only)
 
 ## Troubleshooting
 
@@ -721,10 +724,9 @@ Let's review what happens when a user submits the form:
 
 **Solution:**
 
-1. Navigate to **Headless CMS** → **Contact Submissions** (not Models)
-2. Check if you're in the correct locale (default: "en-US")
-3. Remove any active filters in the content list view
-4. New entries are created in **draft** status - make sure you're not filtering to only show published entries
+1. Navigate to **Content** → **Ungrouped** → **Contact Submission** (not Content Modeling → Models)
+2. Remove any active filters in the content list view
+3. New entries are created in **draft** status - make sure you're not filtering to only show published entries
 
 ### Model ID Mismatch Error
 

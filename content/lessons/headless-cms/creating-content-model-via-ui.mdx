@@ -54,7 +54,7 @@ Fill in the following information:
 
 **Singular API Name**
 
-- Auto-generated from the name: `Product`
+- Enter: `Product`
 - This is used in GraphQL queries like `getProduct` and `createProduct`
 - Example format: `AuthorCategory`
 
@@ -85,7 +85,7 @@ Fill in the following information:
 **Create model with default fields** (checkbox)
 
 - Leave this UNCHECKED for this tutorial
-- When checked, Webiny automatically adds three fields: title (text), description (long text), and image (file)
+- When checked, Webiny automatically adds three fields: title (text), description (long text), and image (asset)
 - For learning purposes, we'll add our own custom fields from scratch to understand the process better
 
 Click **+ Create Model** to proceed to the content model builder.
@@ -93,8 +93,7 @@ Click **+ Create Model** to proceed to the content model builder.
 <Callout type="info" title="API Names Matter">
   The Singular and Plural API Names determine your GraphQL query names. For
   example, "Product" generates `getProduct` and `createProduct`, while
-  "Products" generates `listProducts`. These are auto-generated but can be
-  customized if needed.
+  "Products" generates `listProducts`.
 </Callout>
 
 ### Step 2: Adding Fields
@@ -129,7 +128,7 @@ In the **General** tab, configure:
 
 - **Label**: Name
 - **Field ID**: name (auto-generated from the label)
-- **Help text**: (optional) Helpful hint for content editors
+- **Help**: (optional) Helpful hint for content editors
 - **Placeholder text**: (optional) Placeholder shown in the input field
 
 Switch to the **Validations** tab:
@@ -157,7 +156,7 @@ Drag another **Text** field onto the canvas. In the settings modal:
 
 - **Label**: SKU
 - **Field ID**: sku
-- **Help text**: Stock Keeping Unit - unique product identifier
+- **Help**: Stock Keeping Unit - unique product identifier
 
 **Validations tab:**
 
@@ -214,7 +213,7 @@ Store the price as a number for calculations and filtering.
 
 <Callout type="hint" title="More Field Types Available">
   We've used Text, Long text, and Number fields for this tutorial. Webiny also
-  supports Rich text, Boolean, Date/Time, File, Reference, Object, and more. You
+  supports Rich text, Boolean, Date/Time, Asset, Reference, Object, and more. You
   can explore these when building your own models!
 </Callout>
 
@@ -254,7 +253,7 @@ Now that your Product model is created, let's test it by creating an entry:
   alt="Products list view"
 />
 
-You'll see the Products list view (currently empty). Click **+ New Product** to create your first entry.
+You'll see the Products list view (currently empty). Click **New Entry** to create your first entry.
 
 4. Fill out the form with sample product data:
 

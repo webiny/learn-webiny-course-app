@@ -27,13 +27,14 @@ A typical Webiny project structure looks like this:
   my-webiny-project/
     extensions/          # Your custom extensions and code
       README.md
+    my-skills/           # Project-specific skills for the Webiny MCP server
+      README.md
     node_modules/        # Dependencies
     public/              # Public assets for Admin app
       favicon.ico
       global.css
       index.html
       robots.txt
-    eslint.config.js     # ESLint configuration
     package.json         # Project dependencies
     tsconfig.json        # TypeScript configuration
     webiny.config.tsx    # Main configuration file
@@ -61,6 +62,10 @@ export const Extensions = () => {
   return (
     <>
       <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      {/* Encryption MUST always be configured for production environments. */}
+      <Infra.Env.IsProd>
+        <Infra.Encryption passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || ""} />
+      </Infra.Env.IsProd>
       <Cognito />
     </>
   );
@@ -70,6 +75,7 @@ export const Extensions = () => {
 This minimal configuration:
 
 - Sets the AWS region
+- Configures encryption for production environments (the passphrase is read from the `WEBINY_ENCRYPTION_PASSPHRASE` environment variable)
 - Enables Cognito for authentication
 
 <Callout type="hint" title="Extensions Lesson">
@@ -113,16 +119,17 @@ Your root `package.json` file contains all project dependencies. Here are the ke
 {
   "type": "module",
   "dependencies": {
-    "@webiny/cognito": "^6.0.0",
-    "webiny": "^6.0.0"
-  },
-  "devDependencies": {
-    "@webiny/cli": "^6.0.0"
+    "@webiny/cli": "6.5.1",
+    "@webiny/cognito": "6.5.1",
+    "@webiny/mcp": "6.5.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "webiny": "6.5.1"
   }
 }
 ```
 
-The `webiny` package is the unified API that provides all the building blocks for extensions, `@webiny/cognito` provides the default identity provider, and `@webiny/cli` provides the command-line tools for development and deployment.
+The `webiny` package is the unified API that provides all the building blocks for extensions, `@webiny/cognito` provides the default identity provider, `@webiny/cli` provides the command-line tools for development and deployment, and `@webiny/mcp` provides the Webiny MCP server for AI-assisted development.
 
 ### `tsconfig.json`
 
@@ -136,6 +143,10 @@ Contains public assets for the Admin application:
 - `global.css` - Global CSS styles
 - `index.html` - HTML entry point for the Admin app
 - `robots.txt` - Search engine crawling rules
+
+### `my-skills/` Folder
+
+Holds project-specific skills for the Webiny MCP server. Skills you add here (as `my-skills/<skill-name>/SKILL.md`) are served alongside the built-in Webiny skills.
 
 ### `webiny-env.d.ts`
 

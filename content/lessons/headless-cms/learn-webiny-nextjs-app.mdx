@@ -77,9 +77,10 @@ The starter project has a basic Next.js 16 setup with TypeScript and Tailwind CS
     public/             # Empty (for static assets)
     .env.local.example  # Environment variable template
     .gitignore
+    next.config.ts
     package.json
-    tsconfig.json
-    tailwind.config.ts`}
+    postcss.config.mjs  # Tailwind CSS 4 setup
+    tsconfig.json`}
 />
 
 ### Step 3: Run the Development Server
@@ -111,10 +112,10 @@ You'll see output similar to this:
 <Image
   src="/learn/images/headless-cms/webiny-info-output.png"
   alt="Terminal output showing Webiny API URLs including Headless CMS Read API endpoint"
-  caption="Look for the Headless CMS - Read API URL in the output"
+  caption="Look for the Read API URL under Headless CMS GraphQL API in the output"
 />
 
-Look for the **Headless CMS - Read API** URL in the output. It will look something like:
+Look for the **Read API** URL under **Headless CMS GraphQL API** in the output. It will look something like:
 
 ```text title="Example API URL"
 https://d1ud9w3i9i7d77.cloudfront.net/cms/read
@@ -175,8 +176,9 @@ Click the **New API Key** button in the top right.
 Fill in the following details:
 
 1. **Name:** `Next.js App`
-2. **Description:** `API access for Next.js application`
-3. **Permissions:** Click on **Headless CMS** to expand the section
+2. **Slug:** filled in automatically from the name (you can keep it)
+3. **Description:** `API access for Next.js application`
+4. **Permissions:** Click on **Headless CMS** to expand the section
 
 <Image
   src="/learn/images/headless-cms/api-key-form-basic.png"
@@ -216,7 +218,7 @@ Configure the permissions as follows:
 
 ### Step 5: Save and Copy the Token
 
-1. Click **Save API Key**
+1. Click **Save**
 2. The form will be saved and your **API Token** will be displayed in the Token field
 3. **Copy the token** by clicking the copy icon - you'll need it in the next step!
 
@@ -301,7 +303,7 @@ export type { CmsEntryData } from "@webiny/sdk";
 Let's break down what this code does:
 
 1.  **Environment Variables:** Loads the API endpoint, token, and tenant.
-2.  **SDK Initialization:** We initialize `Sdk` with the `token`, `endpoint`, and `tenant`.
+2.  **SDK Initialization:** We initialize `Webiny` with the `token`, `endpoint`, and `tenant`.
 3.  **Exports:** We export both the SDK instance and the `CmsEntryData` type for use throughout the application.
 
 <Callout type="info">

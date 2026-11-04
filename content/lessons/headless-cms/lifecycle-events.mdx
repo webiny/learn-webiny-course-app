@@ -20,7 +20,7 @@ In this lesson, we'll explore how to hook into Webiny's lifecycle events to auto
 
 **What you'll build:**
 
-- A backend extension that listens for the `onBeforeCreate` event
+- A backend extension that handles the entry "before create" event (`EntryBeforeCreateEventHandler`)
 - Logic to check if an email is from a free provider (Gmail, Yahoo, etc.)
 - Automatic setting of an `emailType` field on the Contact Submission entry
 
@@ -64,10 +64,10 @@ emailType: fields
 ```
 
 <Callout type="info">
-  **UI Approach:** If you prefer using the Admin UI: 1. Go to **Headless CMS > Models > Contact
+  **UI Approach:** If you prefer using the Admin UI: 1. Go to **Content Modeling > Models > Contact
   Submission**. 2. Add a new **Text** field. 3. Set the Label to "Email Type" and Field ID to
-  `emailType`. 4. In the **Appearance** tab, select **Radio Buttons**. 5. In the **Predefined
-  Values** tab, add two options: "Work" (value: `work`) and "Personal" (value: `personal`).
+  `emailType`, and enable **Use predefined values**. 4. In the **Appearance** tab, select **Radio Buttons**. 5. In the **Predefined
+  values** tab, add two options: "Work" (value: `work`) and "Personal" (value: `personal`).
 </Callout>
 
 <Image
@@ -84,7 +84,7 @@ Create a new file `extensions/contactSubmission/ContactSubmissionHook.ts` in you
 
 ```ts title="extensions/contactSubmission/ContactSubmissionHook.ts"
 import { EntryBeforeCreateEventHandler as EntryBeforeCreateEventHandlerAbstraction } from "webiny/api/cms/entry";
-import { Logger } from "webiny/api/logger";
+import { Logger } from "webiny/api";
 
 // List of common free email providers
 const PERSONAL_EMAIL_DOMAINS = [
@@ -101,18 +101,17 @@ class ContactSubmissionHookImpl implements EntryBeforeCreateEventHandlerAbstract
   public constructor(private logger: Logger.Interface) {}
 
   public async handle(event: EntryBeforeCreateEventHandlerAbstraction.Event): Promise<void> {
-    const { payload, modelId } = event;
+    const { model, input, entry } = event.payload;
 
     // 1. Check if this event is for our Contact Submission model
-    if (modelId !== "contactSubmission") {
+    if (model.modelId !== "contactSubmission") {
       return;
     }
 
-    this.logger.info(`Processing contact submission for model: ${modelId}`);
+    this.logger.info(`Processing contact submission for model: ${model.modelId}`);
 
-    // 2. Get the email from the payload
-    // Note: In Webiny CMS events, the entry data is typically in payload.values
-    const email = payload.values?.email as string;
+    // 2. Get the email from the input data
+    const email = input.values?.email as string;
 
     if (!email) {
       this.logger.warn("No email found in contact submission");
@@ -130,11 +129,8 @@ class ContactSubmissionHookImpl implements EntryBeforeCreateEventHandlerAbstract
     this.logger.info(`Classified email ${email} as ${type}`);
 
     // 4. Update the entry with the classification
-    // We can directly modify the payload.values object to set data before it's saved
-    if (!payload.values) {
-      payload.values = {};
-    }
-    payload.values.emailType = type;
+    // We can directly modify entry.values to set data before it's saved
+    entry.values.emailType = type;
   }
 }
 
@@ -146,9 +142,9 @@ export default EntryBeforeCreateEventHandlerAbstraction.createImplementation({
 
 **Key parts of the code:**
 
-1.  **Model Check**: We verify `modelId === "contactSubmission"` to ensure we only run this logic for our specific model.
+1.  **Model Check**: We verify `model.modelId === "contactSubmission"` to ensure we only run this logic for our specific model.
 2.  **Domain Check**: We compare the email domain against a list of known free providers.
-3.  **Data Modification**: We verify and set `payload.values.emailType`. Since this is a `beforeCreate` hook, any changes to `payload` are persisted to the database.
+3.  **Data Modification**: We set `entry.values.emailType`. Since this is a "before create" handler, changes to `event.payload.entry` are persisted to the database.
 
 ## Step 3: Register the Extension
 
@@ -195,7 +191,7 @@ Or if you're already running watch mode, the changes will be picked up automatic
 1.  Go to your Next.js app's contact form (`http://localhost:3000/contact`).
 2.  Submit a form with a **personal email** (e.g., `test@gmail.com`).
 3.  Submit another form with a **work email** (e.g., `test@company.com`).
-4.  Open **Webiny Admin > Headless CMS > Contact Submissions**.
+4.  Open **Webiny Admin > Content > Ungrouped > Contact Submission**.
 5.  Check the new entries. You should see the **Email Type** field automatically populated!
 
 <Image
@@ -217,7 +213,7 @@ In this lesson, you learned:
 
 **What's Next?**
 
-In the next lesson, we'll customize the **Data List** in the Admin UI to better display this new information and add a quick action button.
+In the next lesson, we'll customize the **Data List** in the Admin UI to better display this new information.
 
 <Quiz
   question="If you wanted to send an email notification AFTER the entry is saved, which event would you use?"

@@ -18,7 +18,7 @@ Once the MCP server is connected, your agent does not start from a blank slate. 
 
 ## How to read this list
 
-A skill is one well-scoped capability the agent has been taught — a how-to playbook for one Webiny pattern. You do not invoke skills directly. You write an intent-level prompt ("add a custom field type for color values"), and the agent looks at the catalogue, matches your intent to a skill's `description`, and loads the relevant ones into its context before writing code.
+A skill is one well-scoped capability the agent has been taught — a how-to playbook for one Webiny pattern. You do not invoke skills directly. You write an intent-level prompt ("add a custom field type for color values"), and the agent calls `get_started`, which routes the task to a specialist agent (see below) and the skills it bundles. It can also browse the full catalogue and match your intent to a skill's `description`. Either way, it loads the relevant skills into its context before writing code.
 
 That means two things for you:
 
@@ -46,6 +46,9 @@ Most of the day-to-day "build a feature" work lives here.
 - **`webiny-http-route`** — Adding custom HTTP routes via `Api.Route` and `Route.Interface`, alongside the standard GraphQL handler.
 - **`webiny-api-cms-custom-field-type`** — Implementing a custom CMS field type: extending `DataFieldBuilder`, composing validators, the `FieldTypeFactory`, DI registration, TypeScript module augmentation for autocomplete.
 - **`webiny-api-permissions`** — The schema-based permission system for API features: permission schemas, `createPermissionsAbstraction`/`createPermissionsFeature`, read/write/delete/publish checks, own-record scoping.
+- **`webiny-cms-bulk-actions`** — Custom Headless CMS bulk actions that run as background tasks, plus the Admin button that triggers them (Webiny 6.5.0+).
+- **`webiny-ai-powerups-content`** — Generating or rewriting CMS entry content from your own code by delegating to the AI Power Ups extension instead of calling an LLM directly (Webiny 6.5.0+).
+- **`webiny-websocket-notifications`** — Pushing real-time notifications from the API to the Admin app over websockets and reacting to them in the UI (Webiny 6.5.0+).
 - **`webiny-cli-extensions`** — Custom CLI commands via `CliCommandFactory`: data migrations, code generators, deployment scripts, content exports, health checks.
 - **`webiny-dependency-injection`** — The universal `createImplementation` DI pattern and all injectable services (Logger, BuildParams, IdentityContext, CMS use-cases, etc.). The agent leans on this for almost every backend skill.
 - **`webiny-v5-to-v6-migration`** — Migrating v5 plugins and patterns to v6 architecture: context plugins to DI services, v5 event subscriptions to v6 EventHandlers, etc.
@@ -55,23 +58,27 @@ Most of the day-to-day "build a feature" work lives here.
 Anything to do with content modelling and reading or writing CMS data from elsewhere.
 
 - **`webiny-api-cms-content-models`** — Creating Headless CMS content models in code via the `ModelFactory` pattern: fields, validators, references between models, field layouts (including nested layouts in `object` and `dynamicZone` fields).
-- **`webiny-sdk`** — Using `@webiny/sdk` to read and write Webiny content from external apps (Next.js, Vue, Node, etc.): SDK setup, the `Result` pattern, list/get/create/update/publish, filtering, sorting, TypeScript generics.
+- **`webiny-sdk`** — Using `@webiny/sdk` to read and write Webiny content from external apps (Next.js, Vue, Node, etc.): SDK setup, the `Result` pattern, list/get/create/update/publish, filtering, sorting, TypeScript generics, plus the File Manager, languages, background tasks and creating API keys.
 
 ## Admin and Website Builder UI
 
 Frontend work — both the Webiny Admin app and the Website Builder.
 
 - **`webiny-admin-architect`** — Admin-side architecture: headless features (UseCase / Repository / Gateway), presentation features (Presenter / ViewModel / hooks / components), MobX-based presenters, `RegisterFeature`, Admin BuildParams.
-- **`webiny-admin-ui-extensions`** — Customizing the Admin UI: white-labeling (logo, title, theme), custom data list columns, page-type forms, and Lexical editor plugins via `AdminConfig`.
+- **`webiny-admin-ui-extensions`** — Customizing the Admin UI: white-labeling (logo, title, theme), custom data list columns, page-type forms, named dialogs and drawers, and Lexical editor plugins via `AdminConfig`.
+- **`webiny-new-entry-wizard`** — A custom wizard shown before the entry form when creating new CMS entries, collecting fields like title or slug upfront and pre-filling the form.
 - **`webiny-admin-permissions`** — Permission UI on the Admin side: schema-based auto-generated forms, injectable permissions, typed `createUsePermissions` hooks, the `HasPermission` component.
 - **`webiny-form-model`** — Building forms with the `FormModel` system: field types, renderers, layout (tabs/rows/separators), validation (Zod or imperative), conditional rules, computed fields, dynamic zones.
 - **`webiny-website-builder`** — Building Website Builder editor components, theming, and CMS integration using `@webiny/website-builder-nextjs`: registering components with `createComponent`, configurable inputs (text, number, boolean, color, select, file/image, slot, lexical, object, etc.).
+- **`webiny-page-settings-extensions`** — Adding custom groups (tabs) to the Website Builder page settings drawer, or adding fields to existing groups like General or SEO.
+- **`wb-preview-url-modifier`** — Injecting custom query parameters (signed tokens, tenant identifiers, feature flags) into Website Builder live preview URLs.
 
 ## Infrastructure
 
 When the change is not in your application code but in the AWS infrastructure underneath.
 
 - **`webiny-infrastructure-extensions`** — Modifying AWS infrastructure via Pulumi handlers and declarative Infra components: OpenSearch, VPC, resource tags, regions, custom domains, blue-green deployments, environment-conditional config, production vs development modes.
+- **`api-bundle-size-limit`** — Changing the maximum allowed size of the API Lambda bundle with `Infra.Api.MaxBundleSize`, and reading the build error when the bundle is too large.
 
 ## Authentication and integrations
 
@@ -79,7 +86,26 @@ Things you wire up *to* Webiny rather than build *inside* Webiny.
 
 - **`webiny-configure-auth0`** — Auth0 as an identity provider: SSO, replacing Cognito, OIDC setup, mapping JWT claims to Webiny identities, customizing the Auth0 login flow.
 - **`webiny-configure-okta`** — Okta as an identity provider: SSO, replacing Cognito, OIDC setup, mapping JWT claims, customizing the Okta login flow.
+- **`webiny-cognito-federation`** — Federated sign-in through external identity providers (Google, Facebook, Apple, Amazon, OIDC) while keeping Cognito as the user pool.
+- **`webiny-configure-entraid`** — Microsoft Entra ID (formerly Azure AD) as a federated identity provider via Cognito Federation.
 - **`webiny-mailer-smtp`** — Configuring SMTP email and the Webiny mailer (`Api.Mailer.Smtp`) — the right skill when "email is not working" or you need to set up sending.
+
+## API reference catalogs
+
+Besides the hand-written playbooks above, the server ships around 40 generated catalog skills, named `webiny-<area>-catalog` (for example `webiny-api-cms-catalog`, `webiny-admin-ui-catalog`, `webiny-infra-catalog`, `webiny-cli-catalog`). Each one lists the public abstractions Webiny exposes in one area of the API, Admin, CLI or infrastructure. The agent uses them to look up exact names and import paths, and most of them appear in the catalogue under their own `webiny-api` context.
+
+## Specialist agents
+
+On top of individual skills, the server ships a set of specialist agents. An agent is a short blueprint that bundles related skills for one kind of task. When your agent calls `get_started`, it receives the root `webiny` routing guide, which maps the task to one of these:
+
+- **`api-developer`**: use cases, services, event handlers, GraphQL APIs, permissions, repositories.
+- **`admin-developer`**: Admin React components, MobX presenters, form models, UI extensions, permissions UI, entry wizards.
+- **`full-stack-developer`**: extensions that span API and Admin, project scaffolding, content models, local development.
+- **`website-builder-developer`**: editor components, theming, CMS data in pages, preview URLs, page settings.
+- **`infra-engineer`**: Pulumi, Lambda configuration, VPC, OpenSearch, custom domains, deployment, bundle size limits.
+- **`auth-specialist`**: Okta, Auth0, Entra ID, Cognito federation and other SSO setups.
+
+Tasks that fit none of these go straight to a skill, such as `webiny-cli-extensions`, `webiny-sdk` or `webiny-v5-to-v6-migration`.
 
 ## How to actually use them
 

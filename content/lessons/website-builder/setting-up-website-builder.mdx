@@ -20,7 +20,7 @@ In this lesson, we'll explore how the Website Builder works from a developer's p
 **Prerequisites:**
 
 - A running Webiny project (completed via the Getting Started chapter, or already deployed)
-- Node.js 20.9+ and npm/yarn installed (Node.js 24+ still required for Webiny CLI — if you're only working with the Next.js side, 20.9+ is sufficient)
+- Node.js 22+ and npm/yarn installed (Node.js 24+ still required for Webiny CLI — if you're only working with the Next.js side, 22+ is sufficient)
 - Familiarity with Next.js App Router — the starter kit uses App Router, not Pages Router
 
 ## How It All Fits Together
@@ -63,11 +63,11 @@ The practical upside: no style clashes, no fighting the platform, full ownership
                         ↕ postMessage (SDK)
 ┌──────────────────────────────────────────────────────────┐
 │  Your Next.js App (running separately)                   │
-│  @webiny/website-builder-nextjs SDK installed            │
+│  @webiny/sdk-nextjs SDK installed                        │
 └──────────────────────────────────────────────────────────┘
 ```
 
-The `@webiny/website-builder-nextjs` SDK is what connects the two sides — it handles the communication between the editor and your app when editing, and fetches published page documents from Webiny when rendering pages for visitors.
+The `@webiny/sdk-nextjs` SDK is what connects the two sides — it handles the communication between the editor and your app when editing, and fetches published page documents from Webiny when rendering pages for visitors.
 
 With that in mind, let's get everything set up.
 
@@ -80,60 +80,62 @@ You'll need the Webiny Admin app running before creating pages later in this les
 
 ## Step 2: Clone the Starter Kit
 
-Webiny provides starter kits that wire up the SDK, routing, and rendering so you have a working base to build from. At the moment there is a Next.js starter kit, with more frameworks planned. The official Next.js starter kit lives at [github.com/webiny/website-builder-nextjs](https://github.com/webiny/website-builder-nextjs).
+Webiny provides starter kits that wire up the SDK, routing, and rendering so you have a working base to build from. There are starter kits for Next.js and Nuxt; this course uses the Next.js one. The official Next.js starter kit lives at [github.com/webiny/website-builder-nextjs](https://github.com/webiny/website-builder-nextjs). Each Webiny release line has its own branch, so clone the one that matches your Webiny version (`starter-kit-6.5.x` for Webiny 6.5):
 
 ```bash title="Terminal"
-git clone https://github.com/webiny/website-builder-nextjs.git my-website
+git clone -b starter-kit-6.5.x https://github.com/webiny/website-builder-nextjs.git my-website
 cd my-website
 npm install
 ```
 
-Before running `npm install`, make sure the `@webiny/website-builder-nextjs` and `@webiny/sdk` versions in `package.json` match your Webiny version. You can find it by running `webiny --version` in your Webiny project.
+Before running `npm install`, make sure `package.json` lists `@webiny/sdk-nextjs` with a version that matches your Webiny version. You can find it by running `webiny --version` in your Webiny project.
 
-For example, if your Webiny version is `6.2.1`, your `package.json` should have (the `~` allows patch updates, which are safe):
+For example, if your Webiny version is `6.5.1`, your `package.json` should have (the `~` allows patch updates, which are safe):
 
 ```json title="package.json"
 {
   "dependencies": {
-    "@webiny/website-builder-nextjs": "~6.2.1",
-    "@webiny/sdk": "~6.2.1"
+    "@webiny/sdk-nextjs": "~6.5.1"
   }
 }
 ```
 
 ## Step 3: Gather Your Credentials
 
-To connect the starter kit to your Webiny project, you'll need an API key, API host URL, and tenant ID. The easiest way to get these is through the **Configure Next.js** shortcut in Webiny Admin — click **Support** in the bottom-left corner and select **Configure Next.js**.
+To connect the starter kit to your Webiny project, you'll need an API key, API host URL, and tenant ID. The easiest way to get these is through the **Configure Frontend** shortcut in Webiny Admin: open **Dev Tools** in the main menu and select **Configure Frontend**.
 
 <Image
     src="/learn/images/website-builder/configure-nextjs-menu.png"
-    alt="Webiny Admin sidebar with the Support menu open, showing the Configure Next.js option"
-    caption="Open the Support menu and select Configure Next.js"
+    alt="Webiny Admin main menu with Dev Tools open, showing the Configure Frontend option"
+    caption="Open Dev Tools and select Configure Frontend"
 />
 
-A dialog appears with the three environment variables already filled in and ready to copy:
+A dialog appears with a **Next.js** tab that has the three environment variables already filled in and ready to copy:
 
 <Image
     src="/learn/images/website-builder/configure-nextjs-dialog.png"
-    alt="Configure Next.js dialog showing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY, API_HOST, and API_TENANT pre-filled"
-    caption="The Configure Next.js dialog gives you all three values in one click"
+    alt="Configure Frontend dialog showing NEXT_PUBLIC_WEBINY_API_KEY, NEXT_PUBLIC_WEBINY_API_HOST, and NEXT_PUBLIC_WEBINY_API_TENANT pre-filled"
+    caption="The Configure Frontend dialog gives you all three values in one click"
 />
 
 Click the copy icon and paste the block directly into your `.env` file in the next step.
 
+The dialog also has a **Frontend Domain** field. This is the URL the editor loads in its iframe, and it defaults to `http://localhost:3000`, which is where the starter kit's dev server runs. Change it only if your app runs somewhere else.
+
 <Callout type="info">
     If your Admin is running on a non-localhost domain (i.e. a deployed CloudFront URL), the dialog
-    will also include a `NEXT_PUBLIC_WEBSITE_BUILDER_ADMIN_HOST` variable — make sure to copy that
-    too.
+    will also include a `NEXT_PUBLIC_WEBINY_ADMIN_HOST` variable — make sure to copy that
+    too. The starter kit adds it to the `frame-ancestors` header in `next.config.ts`, which allows
+    that Admin to load your app in the editor iframe.
 </Callout>
 
 ### API Key Is Auto-Created
 
-Note that unlike the Headless CMS chapter where you had to manually create an API key and configure its permissions, the Website Builder API key is created automatically for the current tenant — you'll find it under **Settings → Access Management → API Keys** as "Website Builder". It's a read-only key, intentionally scoped that way since it's meant to be used in external frontend apps like your Next.js project. The Configure Next.js dialog pulls it for you, so there's nothing to set up manually.
+Note that unlike the Headless CMS chapter where you had to manually create an API key and configure its permissions, the Website Builder API key is created automatically for the current tenant — you'll find it under **Settings → Access Management → API Keys** as "Frontend Integration". It's a read-only key, intentionally scoped that way since it's meant to be used in external frontend apps like your Next.js project. The Configure Frontend dialog pulls it for you, so there's nothing to set up manually.
 
 <Image
     src="/learn/images/website-builder/api-key-auto-created.png"
-    alt="API Keys page showing the auto-created Website Builder key"
+    alt="API Keys page showing the auto-created Frontend Integration key"
     caption="The Website Builder API key is created automatically — no manual setup needed"
 />
 
@@ -142,9 +144,9 @@ Note that unlike the Headless CMS chapter where you had to manually create an AP
 Create a `.env` file in the root of your Next.js project:
 
 ```dotenv title=".env"
-NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY=your_api_key_here
-NEXT_PUBLIC_WEBSITE_BUILDER_API_HOST=https://your-cloudfront-url.cloudfront.net
-NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
+NEXT_PUBLIC_WEBINY_API_KEY=your_api_key_here
+NEXT_PUBLIC_WEBINY_API_HOST=https://your-cloudfront-url.cloudfront.net
+NEXT_PUBLIC_WEBINY_API_TENANT=root
 ```
 
 <Callout type="hint">
@@ -170,7 +172,7 @@ Open [http://localhost:3000](http://localhost:3000). At this point you'll see a 
 
 1. Open your Webiny Admin app.
 2. In the sidebar, go to **Website Builder → Pages**.
-3. Click **New Page**.
+3. Click **New page**.
 4. Set the **title** to "Hello World" and the **path** to `/` (the homepage), then click **Create**.
 
 <Image
@@ -207,42 +209,50 @@ Now that we've successfully rendered a page end-to-end, let's dive into a bit mo
 
 <FileTree
     tree={`
-  src/
-    app/
+  app/
+    (site)/
       [[...slug]]/
         page.tsx              # Catch-all route — renders every Website Builder page
-      api/
-        preview/              # Enables Next.js draft mode for Website Builder preview
-        redirects/            # Serves redirect rules defined in Website Builder Admin
-      layout.tsx
-    
-        components/
-          DocumentRenderer.tsx    # Wires editorComponents into the SDK renderer
-          Header.tsx
-          NotFound.tsx
-          PageLayout.tsx
-    
-        contentSdk/
-          initializeContentSdk.ts # SDK init
-          groups.ts               # Component group registration
-          ContentSdkInitializer.ts # Client component wrapper for SDK init
-          getTenant.ts            # Reads tenant ID from request headers
-          index.ts
-    
-        editorComponents/
-          index.tsx               # Register your components here
-          Hero1.tsx               # Built-in Hero component
-    
-        theme/
-          theme.css               # CSS variables + typography classes
-          theme.ts                # createTheme() call
-          tailwind.css
-    
-        utils/
-          normalizeSlug.ts
-    
-        constants.ts
-        middleware.ts             # Handles preview mode, tenant routing, redirects`}
+      articles/               # Renders Headless CMS article entries
+    api/
+      preview/                # Enables Next.js draft mode for Website Builder preview
+      redirects/              # Serves redirect rules defined in Website Builder Admin
+    layout.tsx
+
+  components/
+    DocumentRenderer.tsx      # Wires editorComponents into the SDK renderer
+    Header.tsx
+    LanguageSelector.tsx
+    NotFound.tsx
+    PageLayout.tsx
+    Article/                  # Components used by the articles route
+
+  sdk/
+    initializeSdk.ts          # SDK init
+    groups.ts                 # Component group definitions
+    SdkInitializer.ts         # Client component wrapper for SDK init
+    getTenant.ts              # Reads tenant ID from request headers
+    index.ts
+
+  editorComponents/
+    index.tsx                 # Register your components here
+    Hero1.tsx                 # Built-in Hero component
+    Banner.tsx                # Example component with text inputs
+    ContentEntryDemo.tsx      # Example component with CMS entry inputs
+
+  theme/
+    theme.css                 # CSS variables + typography classes
+    theme.ts                  # createTheme() call
+    tailwind.css
+
+  utils/
+    normalizeSlug.ts
+    fetchTenantTheme.ts
+    mergeThemes.ts
+
+  constants.ts
+  middleware.ts               # Handles preview mode, tenant routing, redirects
+  next.config.ts              # Theme CSS injection, frame-ancestors header`}
 
 />
 
@@ -250,28 +260,34 @@ The two folders you'll spend most time in are `editorComponents/` (building and 
 
 ## How the Rendering Works
 
-The starter kit's catch-all route (`src/app/[[...slug]]/page.tsx`) handles all page rendering:
+The starter kit's catch-all route (`app/(site)/[[...slug]]/page.tsx`) handles all page rendering:
 
-```typescript title="src/app/[[...slug]]/page.tsx (simplified)"
-export default async function Page({ params }) {
+```typescript title="app/(site)/[[...slug]]/page.tsx (simplified)"
+export default async function Page({ params, searchParams }) {
   const { slug = [] } = await params;
+  const search = await searchParams;
 
   // Initialize the SDK with credentials from env vars
-  initializeContentSdk();
+  const previewMode = await draftMode();
+  initializeSdk({ preview: previewMode.isEnabled, tenantId: await getTenant() });
 
-  // Fetch the published page document from Webiny
-  const page = await contentSdk.getPage("/" + slug.join("/"));
+  // Is the page loaded inside the Website Builder editor?
+  const isEditing = search["wb.editing"] === "true";
+
+  // Fetch the page document from Webiny
+  const result = await sdk.wb.getPage(normalizeSlug(slug));
+  const page = result.isOk() ? result.value : null;
 
   // DocumentRenderer maps component names → your React components
-  return <DocumentRenderer document={page} />;
+  return <DocumentRenderer document={page} isEditing={isEditing} />;
 }
 ```
 
-`initializeContentSdk` (in `src/contentSdk/initializeContentSdk.ts`) calls `contentSdk.init()` with your env var credentials and registers the component groups. `DocumentRenderer` takes the page document — a JSON tree of component names and their input values — and renders it by looking up each name in your registered `editorComponents` array.
+`initializeSdk` (in `sdk/initializeSdk.ts`) calls `sdk.init()` with your env var credentials and passes in the theme and the component groups. `DocumentRenderer` takes the page document (a JSON tree of component names and their input values) and renders it by looking up each name in your registered `editorComponents` array.
 
 ## Troubleshooting
 
-### Still seeing "Not found!" after publishing
+### Still seeing "Page not found" after publishing
 
 - Make sure you set the page **path** to `/` exactly.
 - Check the browser console for API errors — a CORS or auth error means your env vars may be wrong.
@@ -279,14 +295,14 @@ export default async function Page({ params }) {
 
 ### Editor shows a blank canvas
 
-- Make sure your Next.js dev server is running on `http://localhost:3000`.
+- Make sure your Next.js dev server is running on the URL set as **Frontend Domain** in the Configure Frontend dialog (`http://localhost:3000` by default).
 
 ## Summary
 
 - The Website Builder editor loads your Next.js app in an iframe — components and styles live entirely in your project.
 - Cloned the starter kit and configured the three required env vars.
 - Created a page in the Admin editor using the built-in Hero #1 component and saw it rendered in the Next.js app.
-- The catch-all route + `initializeContentSdk` + `DocumentRenderer` is how every page gets rendered.
+- The catch-all route + `initializeSdk` + `DocumentRenderer` is how every page gets rendered.
 
 **Next lesson**: Learn how editor components work and how to register your own.
 
