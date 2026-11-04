@@ -38,7 +38,7 @@ const { Browser } = ContentEntryListConfig;
 
 interface ContactSubmissionTableRow {
   values: {
-    emailType: "work" | "personal";
+    emailType?: "work" | "personal";
   };
 }
 
@@ -54,7 +54,14 @@ export const EmailTypeCell = () => {
   }
 
   const emailType = row.data.values.emailType;
-  return emailType === "work" ? <>{"Business"}</> : <>{"Personal"}</>;
+  if (emailType === "work") {
+    return <>{"Business"}</>;
+  }
+  if (emailType === "personal") {
+    return <>{"Personal"}</>;
+  }
+  // Entries saved before the lifecycle hook existed have no email type.
+  return <>{"-"}</>;
 };
 
 const EmailTypeEntryListColumn = () => {
